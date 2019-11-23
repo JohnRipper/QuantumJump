@@ -1,4 +1,6 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+
+
 # ["room::join",{"room":"tech",
 # "user":{"user_id":"5c4b7b6746bb1a000712c13c",
 # "username":"johnripper",
@@ -50,8 +52,8 @@ class User:
 
 @dataclass
 class SelfBot:
-    user: User
     token: str
+    user: User = field(default_factory=User)
 
 
 @dataclass
