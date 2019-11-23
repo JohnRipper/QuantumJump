@@ -40,11 +40,8 @@ class QuantumJumpBot:
         await self.connect()
 
     async def connect(self):
-        print(self.settings["bot"].get("username", None))
         url = await self.api.login(self.settings["bot"].get("username", None),
                                    self.settings["bot"].get("password", None))
-        print("Starting socket")
-        print(url)
         async with websockets.connect(
                 uri=url,
                 timeout=600,
@@ -63,12 +60,7 @@ class QuantumJumpBot:
                     continue
                 if message.isdigit():
                     if message == "40":
-                        continue
-                        #await self._ws.send("42[\"room::join\",{\"room\":\"tech\"}]")
-                        #await self._ws.send("42[\"room::join\",{\"room\":\"johnripper\"}]")
-                    #await ws.send("42[\"room::handleChange\",{\"userId\":\"5dbe52979070930008f85b5c\",\"handle\":\"PROFESSOR_X\"}]")
-                        await self._ws.send(data)
-                        await asyncio.sleep(1)
+                        await self._ws.send("42[\"room::handleChange\",{\"userId\":\"5dbe52979070930008f85b5c\",\"handle\":\"PROFESSOR_X\"}]")
                     continue
                 adjusted = message[2:]
                 data = json.loads(str(adjusted))
