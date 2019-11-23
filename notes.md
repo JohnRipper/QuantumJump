@@ -22,7 +22,7 @@
 
 # WS Events<a id="sec-1"></a>
 
-Initial connection is sending `2probe` and receiving `3probe` then receiving `5`. Ping interval is sending `2` every 25 seconds; expecting `3` as response.
+Initial connection is sending `2probe` and receiving `3probe` then sending `5`. Ping interval is sending `2` every 25 seconds; expecting `3` as response.
 
 ## Room Events<a id="sec-1-1"></a>
 
@@ -30,6 +30,8 @@ Initial connection is sending `2probe` and receiving `3probe` then receiving `5`
 
 1.  `room::getIgnoreList`
 
+    Response: `room::updateIgnore`
+    
     ```json
     42[
       "room::getIgnoreList",
@@ -41,6 +43,8 @@ Initial connection is sending `2probe` and receiving `3probe` then receiving `5`
 
 2.  `room::handleChange`
 
+    Response: `client::handleChange`, `room::handleChange`, `room::status`
+    
     ```json
     42[
       "room::handleChange",
@@ -52,7 +56,7 @@ Initial connection is sending `2probe` and receiving `3probe` then receiving `5`
 
 3.  `room::isStillJoined`
 
-    Sent every 5 minutes
+    Response: `client::stillConnected` Sent every 5 minutes
     
     ```json
     42[
@@ -66,6 +70,8 @@ Initial connection is sending `2probe` and receiving `3probe` then receiving `5`
 4.  `room::join`
 
     Generated from POST to session API
+    
+    Response: `room::updateUserList`, `self::join` (maybe?)
     
     ```json
     42[
@@ -108,6 +114,8 @@ Initial connection is sending `2probe` and receiving `3probe` then receiving `5`
 
 5.  `room::message`
 
+    Response: `room::message`
+    
     ```json
     42[
       "room::message",
@@ -120,7 +128,7 @@ Initial connection is sending `2probe` and receiving `3probe` then receiving `5`
 
 6.  `room::operation::closeBroadcast`
 
-    Expect `room::status` and `room::updateUser` as response
+    Response: `room::status`, `room::updateUser`
     
     ```json
     42[
@@ -133,7 +141,7 @@ Initial connection is sending `2probe` and receiving `3probe` then receiving `5`
 
 7.  `room::operation::ban`
 
-    Responses: `room::status`, `room:userbanned`, `room::disconnect`
+    Response: `room::status`, `room:userbanned`, `room::disconnect`
     
     Duration is in hours, "permanent" ban is `duration: "4464"`
     
@@ -175,7 +183,7 @@ Initial connection is sending `2probe` and receiving `3probe` then receiving `5`
 
 10. `room::operation::unban`
 
-    Responses: `room::status`, `client::banlist`
+    Response: `room::status`, `client::banlist`
     
     ```json
     42[
@@ -189,6 +197,8 @@ Initial connection is sending `2probe` and receiving `3probe` then receiving `5`
 
 11. `room::setUserIsBroadcasting`
 
+    Response: `room::updateUser`
+    
     ```json
     42[
       "room::setUserIsBroadcasting",
@@ -200,7 +210,31 @@ Initial connection is sending `2probe` and receiving `3probe` then receiving `5`
 
 ### Receive<a id="sec-1-1-2"></a>
 
-1.  `room::updateIgnore`
+1.  `room::updateUser`
+
+    ```json
+    42[
+      "room::updateUser",
+      {
+        "user": {
+          "_id": "",
+          "handle": "",
+          "operator_id": "",
+          "user_id": "",
+          "username": "",
+          "isBroadcasting": true,
+          "assignedBy": null,
+          "isAdmin": false,
+          "isSiteMod": false,
+          "isSupporter": false,
+          "userIcon": null,
+          "color": "green"
+        }
+      }
+    ]
+    ```
+
+2.  `room::updateIgnore`
 
     ```json
     42[
@@ -211,7 +245,7 @@ Initial connection is sending `2probe` and receiving `3probe` then receiving `5`
     ]
     ```
 
-2.  `room::updateUserList`
+3.  `room::updateUserList`
 
     ```json
     42[
@@ -235,7 +269,7 @@ Initial connection is sending `2probe` and receiving `3probe` then receiving `5`
     ]
     ```
 
-3.  `room::status`
+4.  `room::status`
 
     ```json
     42[
@@ -264,7 +298,7 @@ Initial connection is sending `2probe` and receiving `3probe` then receiving `5`
     
     TODO: log `notification_type`'s
 
-4.  `room::handleChange`
+5.  `room::handleChange`
 
     ```json
     42[
@@ -276,7 +310,7 @@ Initial connection is sending `2probe` and receiving `3probe` then receiving `5`
     ]
     ```
 
-5.  `room::disconnect`
+6.  `room::disconnect`
 
     ```json
     42[
@@ -300,7 +334,7 @@ Initial connection is sending `2probe` and receiving `3probe` then receiving `5`
     ]
     ```
 
-6.  `room::message`
+7.  `room::message`
 
     ```json
     42[
@@ -462,7 +496,7 @@ Again, this probably doesn't matter
 
 ### Receive<a id="sec-1-4-1"></a>
 
-1.  `self::join~`
+1.  `self::join`
 
     ```json
     42[
