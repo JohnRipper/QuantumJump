@@ -131,7 +131,63 @@ Initial connection is sending `2probe` and receiving `3probe` then receiving `5`
     ]
     ```
 
-7.  `room::setUserIsBroadcasting`
+7.  `room::operation::ban`
+
+    Responses: `room::status`, `room:userbanned`, `room::disconnect`
+    
+    Duration is in hours, "permanent" ban is `duration: "4464"`
+    
+    ```json
+    42[
+      "room::operation::ban",
+      {
+        "user_list_id": "<USER ID>",
+        "duration": "1"
+      }
+    ]
+    ```
+
+8.  `room::operation::banlist`
+
+    Response `client::banlist`
+    
+    ```json
+    42[
+      "room::operation::banlist",
+      {
+        "user_list_id": "<SELF ID>"
+      }
+    ]
+    ```
+
+9.  `room::operation::kick`
+
+    Response: `room::status` , `room::disconnect`
+    
+    ```json
+    42[
+      "room::operation::kick",
+      {
+        "user_list_id": "<USER ID>"
+      }
+    ]
+    ```
+
+10. `room::operation::unban`
+
+    Responses: `room::status`, `client::banlist`
+    
+    ```json
+    42[
+      "room::operation::unban",
+      {
+        "banlistId": "<BAN ID FROM client::banlist>",
+        "handle": "<HANDLE FROM client::banlist>"
+      }
+    ]
+    ```
+
+11. `room::setUserIsBroadcasting`
 
     ```json
     42[
@@ -360,11 +416,28 @@ Initial connection is sending `2probe` and receiving `3probe` then receiving `5`
 
 ## Client Events<a id="sec-1-3"></a>
 
-These probably don't matter.
-
 ### Receive<a id="sec-1-3-1"></a>
 
-1.  `client::stillConnected`
+1.  `client::banlist`
+
+    Includes global bans, no clear way to filter out
+    
+    ```json
+    42[
+      "client::banlist",
+      {
+        "list": [
+          {
+            "_id": "<BANLIST ID>",
+            "handle": "<BANLIST HANDLE>",
+            "timestamp": "<ISO 8601 UTC>"
+          },
+        ]
+      }
+    ]
+    ```
+
+2.  `client::stillConnected`
 
     ```json
     42[
@@ -372,7 +445,7 @@ These probably don't matter.
     ]
     ```
 
-2.  `client::handleChange`
+3.  `client::handleChange`
 
     ```json
     42[

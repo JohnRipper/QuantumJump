@@ -93,6 +93,50 @@ Expect ~room::status~ and ~room::updateUser~ as response
   }
 ]
 #+end_src
+**** ~room::operation::ban~
+Responses: ~room::status~, ~room:userbanned~, ~room::disconnect~
+
+Duration is in hours, "permanent" ban is ~duration: "4464"~
+#+begin_src json
+42[
+  "room::operation::ban",
+  {
+    "user_list_id": "<USER ID>",
+    "duration": "1"
+  }
+]
+#+end_src
+**** ~room::operation::banlist~
+Response ~client::banlist~     
+#+begin_src json
+42[
+  "room::operation::banlist",
+  {
+    "user_list_id": "<SELF ID>"
+  }
+]
+#+end_src
+**** ~room::operation::kick~
+Response: ~room::status~ , ~room::disconnect~
+#+begin_src json
+42[
+  "room::operation::kick",
+  {
+    "user_list_id": "<USER ID>"
+  }
+]
+#+end_src
+**** ~room::operation::unban~
+Responses: ~room::status~, ~client::banlist~
+#+begin_src json
+42[
+  "room::operation::unban",
+  {
+    "banlistId": "<BAN ID FROM client::banlist>",
+    "handle": "<HANDLE FROM client::banlist>"
+  }
+]
+#+end_src
 **** ~room::setUserIsBroadcasting~
 #+begin_src json
 42[
@@ -293,8 +337,23 @@ id comes from API ~/api/youtube/ROOM/playlist~
 #+end_src
 
 ** Client Events
-These probably don't matter.
 *** Receive
+**** ~client::banlist~
+Includes global bans, no clear way to filter out
+#+begin_src json
+42[
+  "client::banlist",
+  {
+    "list": [
+      {
+        "_id": "<BANLIST ID>",
+        "handle": "<BANLIST HANDLE>",
+        "timestamp": "<ISO 8601 UTC>"
+      },
+    ]
+  }
+]
+#+end_src
 **** ~client::stillConnected~
 #+begin_src json
 42[
