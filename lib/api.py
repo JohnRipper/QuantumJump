@@ -57,11 +57,18 @@ class Api:
         # todo check if successful or not. consider logging in as guest
         resp = await self.post(self.urls.SESSION)
         self._session = SelfBot(**json.loads(await resp.text()))
-        r = await self.get(self.urls.sio(token=self._session))
+        print(self._session)
+        r = await self.get("https://jumpin.chat/tech")
+        r = await self.get(self.urls.sio(token=self._session.token))
         pattern = r"(?<=\"sid\":\")(.*?)(?=\",)"
         io = regex.search(pattern, await r.text())
         # # hmm cookies instead?
         print(self.client.cookie_jar.__dict__)
         # for cookie  in self.session.cookie_jar:
         #     print(cookie)
-        return self.urls.wss(token=self._session.token, io=io[0])
+        print(self.urls.wss(token=self._session.token, io=io[0]))
+        return self.urls.wss(token=self._session.token, io=io[1])
+
+
+
+
