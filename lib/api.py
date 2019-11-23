@@ -49,25 +49,32 @@ class Api:
     async def logout(self):
         await self.post(url=self.urls.LOGOUT)
 
+    async def get_login_session(self):
+        resp = await self.post(self.urls.SESSION)
+        self._session = SelfBot(**json.loads(await resp.text()))
+        return self._session
+
+    async def get_sio_sid(self):
+        r = await self.get(self.urls.sio(token=self._session.token))
+        pattern = r"(?<=\"sid\":\")(.*?)(?=\",)"
+        io = regex.search(pattern, await r.text())
+        return io[0]
+
+    async def print_cookies(self):
+        print(self.client.cookie_jar.__dict__)
+
+    async def get_wss(self):
+        await self.get_login_session()
+        return self.urls.wss(token=self._session.token, io=await self.get_sio_sid())
+
     async def login(self, username: str, password: str):
         await self.post(url=self.urls.LOGIN,
                         data={"action": "login",
                               "username": username,
                               "password": password})
-        # todo check if successful or not. consider logging in as guest
-        resp = await self.post(self.urls.SESSION)
-        self._session = SelfBot(**json.loads(await resp.text()))
-        print(self._session)
-        r = await self.get("https://jumpin.chat/tech")
-        r = await self.get(self.urls.sio(token=self._session.token))
-        pattern = r"(?<=\"sid\":\")(.*?)(?=\",)"
-        io = regex.search(pattern, await r.text())
-        # # hmm cookies instead?
-        print(self.client.cookie_jar.__dict__)
-        # for cookie  in self.session.cookie_jar:
-        #     print(cookie)
-        print(self.urls.wss(token=self._session.token, io=io[0]))
-        return self.urls.wss(token=self._session.token, io=io[1])
+        # todo check if successful
+
+
 
 
 
