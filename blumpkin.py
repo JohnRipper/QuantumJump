@@ -23,10 +23,8 @@ class QuantumJumpBot:
         self.start_time = time.time()
 
         self.settings = None
-
         self.load_config("default.toml")
         self.api = Api()
-
 
     def load_config(self, config):
         config = Path(config)
@@ -36,7 +34,6 @@ class QuantumJumpBot:
             sys.exit("Configuration not found, exiting.")
 
     async def run(self):
-        print(self.settings)
         await self.connect()
 
     async def connect(self):
@@ -56,14 +53,12 @@ class QuantumJumpBot:
                 if message == "3probe":
                     await self._ws.send("5")
                     await self._ws.send("42[\"room::join\",{\"room\":\"tech\"}]")
-
                     continue
                 if message.isdigit():
                     if message == "40":
                         await self._ws.send("42[\"room::handleChange\",{\"userId\":\"5dbe52979070930008f85b5c\",\"handle\":\"PROFESSOR_X\"}]")
                     continue
-                adjusted = message[2:]
-                data = json.loads(str(adjusted))
+                data = json.loads(message[2:])
 
     def pacemaker(self):
         while True:
@@ -75,6 +70,8 @@ class QuantumJumpBot:
         while True:
             if self.is_running:
                 f = input()
+                if f == "exit":
+                    sys.exit()
 
     def process_message_queue(self):
         while True:
