@@ -37,10 +37,11 @@ class QuantumJumpBot:
         await self.connect()
 
     async def connect(self):
-        url = await self.api.login(self.settings["bot"].get("username", None),
+        await self.api.login(self.settings["bot"].get("username", None),
                                    self.settings["bot"].get("password", None))
+
         async with websockets.connect(
-                uri=url,
+                uri=await self.api.get_wss(),
                 timeout=600,
                 origin="https://jumpin.chat"
         ) as self._ws:
@@ -56,7 +57,8 @@ class QuantumJumpBot:
                     continue
                 if message.isdigit():
                     if message == "40":
-                        await self._ws.send("42[\"room::handleChange\",{\"userId\":\"5dbe52979070930008f85b5c\",\"handle\":\"PROFESSOR_X\"}]")
+                        # print(self.api.session.user.user_id)
+                        await self._ws.send(f"42[\"room::handleChange\",{{\"userId\":\"{self.api.session.user.get('user_id')}\",\"handle\":\"PROFESSOR_X\"}}]")
                     continue
                 data = json.loads(message[2:])
 
