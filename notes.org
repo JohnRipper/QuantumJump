@@ -1,0 +1,143 @@
+#+TITLE: Jumpin Notes
+#+OPTIONS: toc:3 
+* WS Events
+Initial connection is sending ~2probe~ and receiving ~3probe~ then receiving ~5~.
+Ping interval is sending ~2~ every 25 seconds; expecting ~3~ as response.
+** SEND
+*** Room
+**** room::join
+Generated from POST to session API
+#+begin_src json
+42[
+  "room::join",
+  {
+    "room": "<ROOM>",
+    "user": {
+      "user_id": "<24 CHAR STR>", 
+      "username": "<ACCOUNT>",
+      "isAdmin": false,
+      "isSiteMod": false,
+      "isSupporter": false,
+      "isGold": null,
+      "userIcon": null,
+      "settings": {
+        "playYtVideos": false,
+        "allowPrivateMessages": true,
+        "pushNotificationsEnabled": false,
+        "receiveUpdates": false,
+        "receiveMessageNotifications": true,
+        "darkTheme": true,
+        "videoQuality": "VIDEO_240",
+        "userIcon": null,
+        "ignoreList": []
+      },
+      "videoQuality": {
+        "id": "VIDEO_240",
+        "label": "240p",
+        "dimensions": {
+          "width": 320,
+          "height": 240
+        },
+        "frameRate": 15,
+        "bitRate": 128000
+      }
+    }
+  }
+]
+#+end_src
+**** ~room::getIgnoreList~
+#+begin_src json
+42[
+  "room::getIgnoreList",
+  {
+    "roomName": "<ROOM>"
+  }
+]
+#+end_src
+**** ~room::updateIgnore~
+ #+begin_src json
+42[
+  "room::updateIgnore",
+  {
+    "ignoreList": []
+  }
+]
+ #+end_src
+**** ~room::handleChange~
+#+begin_src json
+42[
+  "room::handleChange",
+  {
+    "handle": "<NICK>"
+  }
+]
+#+end_src
+**** ~room::isStillJoined~
+Sent every 5 minutes
+#+begin_src json
+42[
+  "room::isStillJoined",
+  {
+    "room": "<ROOM>"
+  }
+]
+#+end_src
+**** ~room::message~
+#+begin_src json
+42[
+  "room::message",
+  {
+    "message": "<MESSAGE>",
+    "room": "<ROOM>"
+  }
+]
+#+end_src
+**** ~room::setUserIsBroadcasting~
+#+begin_src json
+42[
+  "room::setUserIsBroadcasting",
+  {
+    "isBroadcasting": true
+  }
+]
+#+end_src
+**** ~room::operation::closeBroadcast~
+Expect ~room::status~ and ~room::updateUser~ as response
+#+begin_src json
+42[
+  "room::operation::closeBroadcast",
+  {
+    "user_list_id": "<USER'S ID>"
+  }
+]
+#+end_src
+*** Youtube
+**** ~youtube::checkisplaying~
+ #+begin_src json
+42[
+  "youtube::checkisplaying",
+  {
+    "notify": true
+  }
+]
+ #+end_src
+**** ~youtube::play~
+#+begin_src json
+42[
+  "youtube::play",
+  {
+    "videoId": "<YT ID>",
+    "title": "<TITLE STR>"
+  }
+]
+#+end_src
+**** ~youtube::remove~
+id comes from API ~/api/youtube/ROOM/playlist~
+#+begin_src json
+42[
+  "youtube::remove",
+  {
+    "id": "<JUMPIN'S ASSIGNED ID>"
+  }
+]
+#+end_src
