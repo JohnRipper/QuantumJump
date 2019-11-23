@@ -1,0 +1,616 @@
+#+TITLE: Jumpin Notes
+
+* WS Events
+Initial connection is sending ~2probe~ and receiving ~3probe~ then receiving ~5~.
+Ping interval is sending ~2~ every 25 seconds; expecting ~3~ as response.
+** Room Events
+*** Send
+**** ~room::getIgnoreList~
+#+begin_src json
+42[
+  "room::getIgnoreList",
+  {
+    "roomName": "<ROOM>"
+  }
+]
+#+end_src
+**** ~room::handleChange~
+#+begin_src json
+42[
+  "room::handleChange",
+  {
+    "handle": "<NICK>"
+  }
+]
+#+end_src
+**** ~room::isStillJoined~
+Sent every 5 minutes
+#+begin_src json
+42[
+  "room::isStillJoined",
+  {
+    "room": "<ROOM>"
+  }
+]
+#+end_src
+**** ~room::join~
+Generated from POST to session API
+#+begin_src json
+42[
+  "room::join",
+  {
+    "room": "<ROOM>",
+    "user": {
+      "user_id": "<24 CHAR STR>", 
+      "username": "<ACCOUNT>",
+      "isAdmin": false,
+      "isSiteMod": false,
+      "isSupporter": false,
+      "isGold": null,
+      "userIcon": null,
+      "settings": {
+        "playYtVideos": false,
+        "allowPrivateMessages": true,
+        "pushNotificationsEnabled": false,
+        "receiveUpdates": false,
+        "receiveMessageNotifications": true,
+        "darkTheme": true,
+        "videoQuality": "VIDEO_240",
+        "userIcon": null,
+        "ignoreList": []
+      },
+      "videoQuality": {
+        "id": "VIDEO_240",
+        "label": "240p",
+        "dimensions": {
+          "width": 320,
+          "height": 240
+        },
+        "frameRate": 15,
+        "bitRate": 128000
+      }
+    }
+  }
+]
+#+end_src
+**** ~room::message~
+#+begin_src json
+42[
+  "room::message",
+  {
+    "message": "<MESSAGE>",
+    "room": "<ROOM>"
+  }
+]
+#+end_src
+**** ~room::operation::closeBroadcast~
+Expect ~room::status~ and ~room::updateUser~ as response
+#+begin_src json
+42[
+  "room::operation::closeBroadcast",
+  {
+    "user_list_id": "<USER'S ID>"
+  }
+]
+#+end_src
+**** ~room::operation::ban~
+Responses: ~room::status~, ~room:userbanned~, ~room::disconnect~
+
+Duration is in hours, "permanent" ban is ~duration: "4464"~
+#+begin_src json
+42[
+  "room::operation::ban",
+  {
+    "user_list_id": "<USER ID>",
+    "duration": "1"
+  }
+]
+#+end_src
+**** ~room::operation::banlist~
+Response ~client::banlist~     
+#+begin_src json
+42[
+  "room::operation::banlist",
+  {
+    "user_list_id": "<SELF ID>"
+  }
+]
+#+end_src
+**** ~room::operation::kick~
+Response: ~room::status~ , ~room::disconnect~
+#+begin_src json
+42[
+  "room::operation::kick",
+  {
+    "user_list_id": "<USER ID>"
+  }
+]
+#+end_src
+**** ~room::operation::unban~
+Responses: ~room::status~, ~client::banlist~
+#+begin_src json
+42[
+  "room::operation::unban",
+  {
+    "banlistId": "<BAN ID FROM client::banlist>",
+    "handle": "<HANDLE FROM client::banlist>"
+  }
+]
+#+end_src
+**** ~room::setUserIsBroadcasting~
+#+begin_src json
+42[
+  "room::setUserIsBroadcasting",
+  {
+    "isBroadcasting": true
+  }
+]
+#+end_src
+
+*** Receive
+**** ~room::updateIgnore~
+ #+begin_src json
+42[
+  "room::updateIgnore",
+  {
+    "ignoreList": []
+  }
+]
+ #+end_src
+**** ~room::updateUserList~
+#+begin_src json
+42[
+  "room::updateUserList",
+  {
+    "user": {
+      "_id": "<ID?>",
+      "handle": "addicted_profit",
+      "operator_id": "<OP ID>",
+      "user_id": "<USER ID>",
+      "username": "aida",
+      "isBroadcasting": false,
+      "assignedBy": null,
+      "isAdmin": false,
+      "isSiteMod": false,
+      "isSupporter": false,
+      "userIcon": null,
+      "color": "bluealt"
+    }
+  }
+]
+#+end_src
+**** ~room::status~
+#+begin_src json
+42[
+  "room::status",
+  {
+    "message": "<MSG>",
+    "timestamp": "<ISO 8601 UTC>",
+    "id": "<UUID4>"
+  }
+]
+#+end_src
+Or?
+#+begin_src json
+42[
+  "room::status",
+  {
+    "notification_type": "room",
+    "message": "<MSG>",
+    "timestamp": "<ISO 8601 UTC>",
+    "id": "<UUID4>"
+  }
+]
+#+end_src
+TODO: log ~notification_type~'s
+**** ~room::handleChange~
+#+begin_src json
+42[
+  "room::handleChange",
+  {
+    "userId": "<USER ID>",
+    "handle": "<NICK>"
+  }
+]
+#+end_src
+**** ~room::disconnect~
+#+begin_src json
+42[
+  "room::disconnect",
+  {
+    "user": {
+      "_id": "<USER ID>",
+      "handle": "<NICK>",
+      "operator_id": null,
+      "user_id": null,
+      "username": null,
+      "isBroadcasting": false,
+      "assignedBy": null,
+      "isAdmin": false,
+      "isSiteMod": false,
+      "isSupporter": false,
+      "userIcon": null,
+      "color": "red"
+    }
+  }
+]
+#+end_src
+
+**** ~room::message~
+#+begin_src json
+42[
+  "room::message",
+  {
+    "handle": "<NICK>",
+    "color": "redalt",
+    "userId": "<USER ID>",
+    "message": "<MESSAGE>",
+    "timestamp": "<ISO 8601 UTC>",
+    "id": "<UUID4>"
+  }
+]
+#+end_src
+
+** Youtube Events
+*** Send
+**** ~youtube::checkisplaying~
+ #+begin_src json
+42[
+  "youtube::checkisplaying",
+  {
+    "notify": true
+  }
+]
+ #+end_src
+**** ~youtube::play~
+#+begin_src json
+42[
+  "youtube::play",
+  {
+    "videoId": "<YT ID>",
+    "title": "<TITLE STR>"
+  }
+]
+#+end_src
+**** ~youtube::remove~
+id comes from API ~/api/youtube/ROOM/playlist~
+#+begin_src json
+42[
+  "youtube::remove",
+  {
+    "id": "<JUMPIN'S ASSIGNED ID>"
+  }
+]
+#+end_src
+*** Receive
+**** ~youtube::playlistUpdate~
+#+begin_src json
+42[
+  "youtube::playlistUpdate",
+  [
+    {
+      "startTime": null,
+      "endTime": null,
+      "description": null,
+      "channelId": "<YT CHANNEL ID STR>",
+      "pausedAt": null,
+      "_id": "<JUMPIN'S VIDEO ID STR>",
+      "mediaId": "<YT ID STR>",
+      "title": "<YT TITLE STR>",
+      "link": "<YT SHORT URL STR>",
+      "duration": 240,
+      "thumb": "<THUMBNAIL URL STR>",
+      "mediaType": "TYPE_YOUTUBE",
+      "startedBy": "<USER ID>",
+      "createdAt": "<ISO 8601 UTC>"
+    }
+  ]
+]
+#+end_src
+**** ~youtube::playvideo~
+#+begin_src json
+42[
+  "youtube::playvideo",
+  {
+    "startTime": "<ISO 8601 UTC>",
+    "endTime": "<ISO 8601 UTC + YT DURACTION>",
+    "description": null,
+    "channelId": "<YT CHANNEL ID STR>",
+    "pausedAt": null,
+    "createdAt": "<ISO 8601 UTC>",
+    "_id": "<JUMPIN'S VIDEO ID STR>",
+    "mediaId": "<YT ID STR>",
+    "title": "<YT TITLE STR>",
+    "link": "<YT SHORT URL STR>",
+    "duration": 240,
+    "thumb": "<THUMBNAIL URL STR",
+    "mediaType": "TYPE_YOUTUBE",
+    "startedBy": {
+      "profile": {
+        "pic": "user-avatar/avatar-blank.png"
+      },
+      "_id": "<USER ID>",
+      "username": "<USER>"
+    }
+  }
+]
+#+end_src
+
+** Client Events
+*** Receive
+**** ~client::banlist~
+Includes global bans, no clear way to filter out
+#+begin_src json
+42[
+  "client::banlist",
+  {
+    "list": [
+      {
+        "_id": "<BANLIST ID>",
+        "handle": "<BANLIST HANDLE>",
+        "timestamp": "<ISO 8601 UTC>"
+      },
+    ]
+  }
+]
+#+end_src
+**** ~client::stillConnected~
+#+begin_src json
+42[
+  "client::stillConnected"
+]
+#+end_src
+**** ~client::handleChange~
+#+begin_src json
+42[
+  "client::handleChange",
+  {
+    "handle": "<OWN NICK>"
+  }
+]
+#+end_src
+
+** Self Events
+Again, this probably doesn't matter
+*** Receive
+**** ~self::join~~
+#+begin_src json
+42[
+  "self::join",
+  {
+    "user": {
+      "user_id": "<USER ID>",
+      "operator_id": "<OP ID>",
+      "assignedBy": null,
+      "username": "<USER>",
+      "isBroadcasting": false,
+      "isAdmin": false,
+      "isSiteMod": false,
+      "isSupporter": false,
+      "userIcon": null,
+      "_id": "<PUBLIC ID??>",
+      "handle": "<TMP NICK>",
+      "color": "bluealt",
+      "createdAt": "<ISO 8601 UTC>",
+      "joinTime": "<ISO 8601 UTC>",
+      "operatorPermissions": {
+        "ban": true,
+        "close_cam": true,
+        "mute_user_audio": true,
+        "mute_user_chat": true,
+        "mute_room_chat": false,
+        "mute_room_audio": false,
+        "apply_password": false,
+        "assign_operator": true,
+        "play_youtube": true
+      }
+    }
+  }
+]
+#+end_src
+
+* API
+Base URL: ~https://jumpin.chat/api/~
+** Youtube
+*** Playlist
+Path: ~youtube/<ROOM>/playlist~
+
+Method: ~GET~
+
+Response:
+#+begin_src json
+[
+  {
+    "startTime": "<ISO 8601 UTC>",
+    "endTime": "<ISO 8601 UTC + DURATION>",
+    "description": null,
+    "channelId": "<YT CHANNEL ID STR>",
+    "pausedAt": null,
+    "createdAt": "<ISO 8601 UTC>",
+    "_id": "<JUMPIN'S VIDEO ID>",
+    "mediaId": "<YT ID STR>",
+    "title": "<YT TITLE STR>",
+    "link": "<YT SHORT LINK STR>",
+    "duration": 240,
+    "thumb": "<THUMBNAIL URL STR>",
+    "mediaType": "TYPE_YOUTUBE",
+    "startedBy": {
+      "userId": "<USER ID>",
+      "username": "<USER>",
+      "pic": "user-avatar/avatar-blank.png"
+    }
+  }
+]
+#+end_src
+*** Search
+Path: ~youtube/search/<QUERY>~
+
+Method: ~GET~
+
+Response: (for query as "abc")
+#+begin_src json
+[
+  {
+    "title": "ABC SONG | ABC Songs for Children - 13 Alphabet Songs &amp; 26 Videos",
+    "videoId": "_UR-l3QI2nE",
+    "thumb": {
+      "url": "https://i.ytimg.com/vi/_UR-l3QI2nE/mqdefault.jpg",
+      "width": 320,
+      "height": 180
+    },
+    "channelId": "UCbCmjCuTUZos6Inko4u57UQ",
+    "urls": {
+      "video": "https://youtu.be/_UR-l3QI2nE",
+      "channel": "https://youtube.com/channel/UCbCmjCuTUZos6Inko4u57UQ"
+    }
+  },
+  {
+    "title": "ABC Song + More Nursery Rhymes &amp; Kids Songs - CoCoMelon",
+    "videoId": "71h8MZshGSs",
+    "thumb": {
+      "url": "https://i.ytimg.com/vi/71h8MZshGSs/mqdefault.jpg",
+      "width": 320,
+      "height": 180
+    },
+    "channelId": "UCbCmjCuTUZos6Inko4u57UQ",
+    "urls": {
+      "video": "https://youtu.be/71h8MZshGSs",
+      "channel": "https://youtube.com/channel/UCbCmjCuTUZos6Inko4u57UQ"
+    }
+  },
+  {
+    "title": "ABC Song with Balloons | CoCoMelon Nursery Rhymes &amp; Kids Songs",
+    "videoId": "RIQDmnIJZv8",
+    "thumb": {
+      "url": "https://i.ytimg.com/vi/RIQDmnIJZv8/mqdefault.jpg",
+      "width": 320,
+      "height": 180
+    },
+    "channelId": "UCbCmjCuTUZos6Inko4u57UQ",
+    "urls": {
+      "video": "https://youtu.be/RIQDmnIJZv8",
+      "channel": "https://youtube.com/channel/UCbCmjCuTUZos6Inko4u57UQ"
+    }
+  },
+  {
+    "title": "ABC Song | Wendy Pretend Play Learning Alphabet w/ Toys &amp; Nursery Rhyme Songs",
+    "videoId": "BNTCpF_n6J4",
+    "thumb": {
+      "url": "https://i.ytimg.com/vi/BNTCpF_n6J4/mqdefault.jpg",
+      "width": 320,
+      "height": 180
+    },
+    "channelId": "UCgFXm4TI8htWmCyJ6cVPG_A",
+    "urls": {
+      "video": "https://youtu.be/BNTCpF_n6J4",
+      "channel": "https://youtube.com/channel/UCgFXm4TI8htWmCyJ6cVPG_A"
+    }
+  },
+  {
+    "title": "Alphabet Song | ABC Song | Phonics Song",
+    "videoId": "36IBDpTRVNE",
+    "thumb": {
+      "url": "https://i.ytimg.com/vi/36IBDpTRVNE/mqdefault.jpg",
+      "width": 320,
+      "height": 180
+    },
+    "channelId": "UC1jhiDqp-jIYR07Ini8Jamw",
+    "urls": {
+      "video": "https://youtu.be/36IBDpTRVNE",
+      "channel": "https://youtube.com/channel/UC1jhiDqp-jIYR07Ini8Jamw"
+    }
+  }
+]
+#+end_src
+** Room
+*** Users
+Path: ~rooms/<ROOM>~
+
+Method: ~GET~
+
+Response:
+#+begin_src json
+{
+  "_id": "<ROOM ID>",
+  "name": "tech",
+  "users": [
+    {
+      "_id": "<CURRENT ID>",
+      "handle": "matriarch",
+      "operator_id": "<OP ID>",
+      "user_id": "<USER ID>",
+      "username": "<ACCOUNT>",
+      "isBroadcasting": true,
+      "assignedBy": null,
+      "isAdmin": false,
+      "isSiteMod": false,
+      "isSupporter": false,
+      "userIcon": null,
+      "color": "aquaalt"
+    },
+  ],
+  "attrs": {
+    "owner": "<USER ID>",
+    "janus_id": 1782420776,
+    "fresh": false,
+    "ageRestricted": false
+  },
+  "settings": {
+    "public": true,
+    "modOnlyPlayMedia": true,
+    "forcePtt": true,
+    "forceUser": false,
+    "description": "Technology, Games, and THC 18+ ☮ Discord.gg/UpDZMB3 ☮",
+    "topic": {
+      "text": "Join our Discord server!",
+      "updatedAt": "<ISO 8601 UTC>",
+      "updatedBy": {
+        "_id": "<USER ID>",
+        "username": "<ROOM>"
+      }
+    },
+    "display": "room-display/display-tech.jpg",
+    "requiresPassword": false
+  }
+}
+#+end_src
+*** Unread
+Path: ~message/<USER ID>/unread~
+
+Method: ~GET~
+
+Response:
+#+begin_src json
+{
+  "unread": 0
+}
+#+end_src
+TODO: Sort this out
+
+*** Profile
+Path: ~user/<USER ID>/profile~
+
+Method: ~GET~
+
+Response:
+#+begin_src json
+{
+  "username": "<ACCOUNT>",
+  "joinDate": "<ISO 8601 UTC>",
+  "lastActive": "<ISO 8601 UTC>",
+  "location": null,
+  "pic": "user-avatar/avatar-blank.png",
+  "trophies": [],
+  "trophyCount": 0,
+  "userType": "registered user"
+}
+#+end_src
+*** Emoji
+Path: ~rooms/tech/emoji~ 
+
+Method: ~GET~
+
+Response:
+#+begin_src json
+[]
+#+end_src
