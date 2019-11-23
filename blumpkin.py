@@ -1,22 +1,17 @@
 import asyncio
 import sys
-from http.cookies import SimpleCookie
 from pathlib import Path
 
-import aiohttp
 import json
-import re as regex
 import time
 from concurrent import futures
 
 import tomlkit
 import websockets
-import toml
 from lib.api import Api
 
 
 class QuantumJumpBot:
-
     def __init__(self):
         self._ws = None
         self.is_running = False
@@ -26,7 +21,6 @@ class QuantumJumpBot:
 
         self.load_config("default.toml")
         self.api = Api()
-
 
     def load_config(self, config):
         config = Path(config)
@@ -46,10 +40,8 @@ class QuantumJumpBot:
         print("Starting socket")
         print(url)
         async with websockets.connect(
-                uri=url,
-                timeout=600,
-                origin="https://jumpin.chat"
-        ) as self._ws:
+                uri=url, timeout=600,
+                origin="https://jumpin.chat") as self._ws:
             print("Socket started")
             self.is_running = True
             await self._ws.send("2probe")
@@ -58,7 +50,8 @@ class QuantumJumpBot:
                 print(message)
                 if message == "3probe":
                     await self._ws.send("5")
-                    await self._ws.send("42[\"room::join\",{\"room\":\"tech\"}]")
+                    await self._ws.send(
+                        "42[\"room::join\",{\"room\":\"tech\"}]")
 
                     continue
                 if message.isdigit():
@@ -66,7 +59,7 @@ class QuantumJumpBot:
                         continue
                         #await self._ws.send("42[\"room::join\",{\"room\":\"tech\"}]")
                         #await self._ws.send("42[\"room::join\",{\"room\":\"johnripper\"}]")
-                    #await ws.send("42[\"room::handleChange\",{\"userId\":\"5dbe52979070930008f85b5c\",\"handle\":\"PROFESSOR_X\"}]")
+                        #await ws.send("42[\"room::handleChange\",{\"userId\":\"5dbe52979070930008f85b5c\",\"handle\":\"PROFESSOR_X\"}]")
                         await self._ws.send(data)
                         await asyncio.sleep(1)
                     continue
@@ -92,12 +85,14 @@ class QuantumJumpBot:
 
 async def start(executor, bot):
     asyncio.get_event_loop().run_in_executor(executor, bot.pacemaker)
-    asyncio.get_event_loop().run_in_executor(executor, bot.process_message_queue)
+    asyncio.get_event_loop().run_in_executor(executor,
+                                             bot.process_message_queue)
     asyncio.get_event_loop().run_in_executor(executor, bot.process_input)
     try:
         await bot.run()
     except websockets.WebSocketException as e:
         bot.is_running = False
+
 
 executor = futures.ThreadPoolExecutor(max_workers=3, )
 bot = QuantumJumpBot()

@@ -18,10 +18,13 @@ class Api:
 
     async def login(self, username: str, password: str):
         print(username)
-     
-        result = await self.session.post('https://jumpin.chat/login', data={"action": "login",
-                                                              "username": username,
-                                                              "password": password})
+
+        result = await self.session.post('https://jumpin.chat/login',
+                                         data={
+                                             "action": "login",
+                                             "username": username,
+                                             "password": password
+                                         })
         if result.status != 200:
             raise HttpStatus(code=result.status)
 
@@ -31,7 +34,9 @@ class Api:
         data = json.loads(await resp.text())
 
         await self.session.get('https://jumpin.chat/tech')
-        r = await self.session.get(f"https://jumpin.chat/socket.io/?token={data.get('token')}&EIO=3&transport=polling&t=Muk-CB0")
+        r = await self.session.get(
+            f"https://jumpin.chat/socket.io/?token={data.get('token')}&EIO=3&transport=polling&t=Muk-CB0"
+        )
 
         print(await r.text())
         pattern = r"(?<=\"sid\":\")(.*?)(?=\",)"
