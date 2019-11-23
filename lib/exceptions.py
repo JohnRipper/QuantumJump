@@ -15,4 +15,4 @@ class HttpStatus(Exception):
         if message:
             print(f"{self.__class__.__name__}: {code}:{message}")
         else:
-            print(self.__class__.__name__)
+            print(f"{self.__class__.__name__}: {code}")
