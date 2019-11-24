@@ -1,32 +1,41 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 
-# ["room::join",{"room":"tech",
-# "user":{"user_id":"5c4b7b6746bb1a000712c13c",
-# "username":"johnripper",
-# "isAdmin":false,
-# "isSiteMod":false,
-# "isSupporter":false,"isGold":null,
-# "userIcon":null,
-# "settings":{"playYtVideos":false,"allowPrivateMessages":true,"pushNotificationsEnabled":false,"receiveUpdates":false,"receiveMessageNotifications":true,
-# "darkTheme":true,"videoQuality":"VIDEO_240","userIcon":null,"ignoreList":[]},"videoQuality":{"id":"VIDEO_240","label":"240p","dimensions":{"width":320,"height":240},"frameRate":15,"bitRate":128000}}}]
 @dataclass
-class Dimensions:
+class JumpinObject:
+
+    def __post_init__(self):
+        _routes = {
+            "dimensions": Dimensions,
+            "user": User,
+            "settings": Settings,
+            "videoQuality": VideoQuality
+        }
+        for attr in self.__dict__:
+            cheddar = getattr(self, attr)
+            if type(cheddar) is dict:
+                setattr(self, attr, _routes.get(attr)(**cheddar))
+
+
+
+
+@dataclass
+class Dimensions(JumpinObject):
     width: int
     height: int
 
 
 @dataclass
-class VideoQuality:
-    id: str
-    label: str
-    dimensions: Dimensions
-    frameRate: int
-    bitRate: int
+class VideoQuality(JumpinObject):
+    dimensions: Dimensions = None
+    id: str = None
+    label: str = None
+    frameRate: int = None
+    bitRate: int = None
 
 
 @dataclass
-class Settings:
+class Settings(JumpinObject):
     playYtVideos: bool
     allowPrivateMessages: bool
     pushNotificationsEnabled: bool
@@ -39,24 +48,46 @@ class Settings:
 
 
 @dataclass
-class User:
+class User(JumpinObject):
     user_id: str
     username: str
     isGold: None
     userIcon: None
-    settings: Settings
+    settings: Settings = None
+    videoQuality: VideoQuality = None
     isAdmin: bool = False
     isSiteMod: bool = False
     isSupporter: bool = False
 
 
+
+
 @dataclass
-class SelfBot:
+class Session:
     token: str
-    user: User = field(default_factory=User)
+    user: User
+
+
+
 
 
 @dataclass
-class Room_Join:
+class Status:
+    message: str
+    timestamp: str
+    id: str
+    notification_type: str = None
+
+
+@dataclass
+class Join:
     user: User
     room: str = ""
+
+@dataclass
+class HandleChange:
+    pass
+
+@dataclass
+class Message:
+    pass
