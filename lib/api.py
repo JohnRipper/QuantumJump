@@ -3,7 +3,7 @@ import re as regex
 from aiohttp import ClientSession
 
 from lib.exceptions import HttpStatus
-from lib.objects import SelfBot
+from lib.objects import Session
 
 
 class UrlBuilder:
@@ -51,7 +51,7 @@ class Api:
 
     async def get_login_session(self):
         resp = await self.post(self.urls.SESSION)
-        self._session = SelfBot(**json.loads(await resp.text()))
+        self._session = Session(**json.loads(await resp.text()))
         return self._session
 
     async def get_sio_sid(self):
