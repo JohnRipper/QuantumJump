@@ -1,19 +1,14 @@
 import asyncio
 import sys
-from http.cookies import SimpleCookie
 from pathlib import Path
 
-import aiohttp
 import json
-import re as regex
 import time
 from concurrent import futures
 
 import tomlkit
 import websockets
-import toml
 from lib.api import Api
-
 
 class QuantumJumpBot:
 
@@ -57,7 +52,6 @@ class QuantumJumpBot:
                     continue
                 if message.isdigit():
                     if message == "40":
-                        # print(self.api.session.user.user_id)
                         await self._ws.send(f"42[\"room::handleChange\",{{\"userId\":\"{self.api.session.user.get('user_id')}\",\"handle\":\"PROFESSOR_X\"}}]")
                     continue
                 data = json.loads(message[2:])
