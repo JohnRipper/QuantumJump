@@ -54,7 +54,7 @@ class QuantumJumpBot:
                 print(message)
                 if message == "3probe":
                     await self._ws.send("5")
-                    await self._ws.send("42[\"room::join\",{\"room\":\"tech\"}]")
+                    await self._ws.send("42[\"room::join\",{\"room\":\"johnripper\"}]")
                     continue
                 if message.isdigit():
                     if message == "40":
@@ -63,7 +63,7 @@ class QuantumJumpBot:
 
                 data = json.loads(message[2:])
 
-                self.cm.do_event(data=data)
+                await self.cm.do_event(data=data)
                 # todo run bot commands
                 # todo run sever events
 
