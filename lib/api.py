@@ -10,6 +10,7 @@ class UrlBuilder:
     LOGIN = "https://jumpin.chat/login"
     LOGOUT = "https://jumpin.chat/logout"
     SESSION = "https://jumpin.chat/api/user/session"
+    _room = "https://jumpin.chat/api/rooms/{room}"
     _sio = "https://jumpin.chat/socket.io/?token={token}&EIO=3&transport=polling&t=Muk-CB0"
     _wss = "wss://jumpin.chat/socket.io/?token={token}&EIO=3&transport=websocket&sid={io}"
 
@@ -18,6 +19,9 @@ class UrlBuilder:
 
     def wss(self, token, io):
         return self._wss.format(token=token, io=io)
+
+    def room(self, room):
+        return self._room.format(room=room)
 
 
 class Api:
@@ -73,6 +77,10 @@ class Api:
                               "username": username,
                               "password": password})
         # todo check if successful
+
+    async def getroominfo(self, room: str):
+        action = await self.get(url=self.urls.room(room=room))
+        return await action.text()
 
 
 
