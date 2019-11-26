@@ -195,6 +195,7 @@ class QuantumJumpBot:
             title = f"10 Hour Twerk Compilation #{kek} [EMOTIONAL] You won't believe what Trump is hiding!"
         else:
             res = await self.api.get(searchurl.format(msg, aidasapikey))
+            res = await res.text()
             videoid = json.loads(res)["items"][0]["id"]["videoId"]
             title = json.loads(res)["items"][0]["snippet"]["title"]
             id_ = videoid
