@@ -1,5 +1,5 @@
-from lib.cog import Cog
-from lib.objects import User, Status, HandleChange, Message
+from lib.cog import Cog, event
+from lib.objects import User, Status, HandleChange, Message, UpdateUserList
 
 
 class Debug(Cog):
@@ -21,4 +21,9 @@ class Debug(Cog):
 
     def message(self, message: Message):
         print(message.message)
+        pass
+
+    @event(event="room::updateUserList")
+    async def updateUserList(self, userlist: UpdateUserList):
+        print("that" + userlist.user.username)
         pass

@@ -179,44 +179,42 @@ class Cog():
     def __repr__(self) -> str:
         return self.name
 
+    # these dont actually need to be here anymore.
     @event(event="room::updateUser")
-    def updateUser(self, user: User):
+    async def updateUser(self, user: User):
         pass
 
     @event(event="room::updateUserList")
-    def updateUserList(self, userlist: UpdateUserList):
+    async def updateUserList(self, userlist: UpdateUserList):
         print("this" + userlist.user.username)
         pass
 
     @event(event="room::updateIgnore")
-    def updateIgnore(self, ignore_list: list):
+    async def updateIgnore(self, ignore_list: list):
         pass
 
     @event(event="room::status")
-    def status(self, status: Status):
+    async def status(self, status: Status):
         pass
 
     @event(event="room::handleChange")
-    def handleChange(self, handle_change: HandleChange):
+    async def handleChange(self, handle_change: HandleChange):
         pass
 
     @event(event="room::message")
-    def message(self, message: Message):
+    async def message(self, message: Message):
 
         pass
 
     @event(event="room::error")
-    def error(self, message):
+    async def error(self, message):
         print(message)
         pass
 
     @event(event="room::alert")
-    def alert(self, message):
+    async def alert(self, message):
         print(message)
         pass
-
-
-
 
 @dataclass
 class CogManager:
@@ -250,10 +248,11 @@ class CogManager:
         if module in self.cogs.keys:
             return self.cogs.get(module)
 
-    def do_event(self, data: dict = None):
+    async def do_event(self, data: dict = None):
         # trigger event for all cogs
         for cog in self.cogs.values():
             for meth in cog.events:
+                print(f"{meth.__event__} {data[0]}")
                 if meth.__event__ == data[0]:
                     print("in here")
                     # this
@@ -262,7 +261,7 @@ class CogManager:
                     }
 
                     if choice := routes.get(data[0]):
-                        meth( choice(**data[1]))
+                        await meth( choice(**data[1]))
                     # or this.  hardcoded
 
 
