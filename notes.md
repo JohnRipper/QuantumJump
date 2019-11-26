@@ -19,6 +19,22 @@
     - [Profile](#sec-2-2-3)
     - [Emoji](#sec-2-2-4)
 
+## Some notes on IDs
+In most if not all cases `_id` is the "user_list_id", that's the key used for sending ban messages so we might aswell call it that's
+
+The `user_id` is the ID for account
+
+`operator_id` This exists only if the user is a moderator, so we can do
+
+```py
+if User.operator_id:
+    do_a_thing()
+```
+
+There is also a unique id for unbanning, retrieved from `42["room::operation::banlist",{"user_list_id":""}]`
+
+AND youtube videos get an id, not sure if it's unique per playlist or unique like youtube's actual ids are unique TODO
+
 
 # WS Events<a id="sec-1"></a>
 
