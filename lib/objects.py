@@ -1,8 +1,11 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import List
 
 
 @dataclass
 class JumpinObject:
+    def __init__(self):
+        self.__jumpin_object__ = True
 
     def __post_init__(self):
         _routes = {
@@ -15,8 +18,6 @@ class JumpinObject:
             cheddar = getattr(self, attr)
             if type(cheddar) is dict:
                 setattr(self, attr, _routes.get(attr)(**cheddar))
-
-
 
 
 @dataclass
@@ -49,26 +50,27 @@ class Settings(JumpinObject):
 
 @dataclass
 class User(JumpinObject):
-    user_id: str
-    username: str
-    isGold: None
     userIcon: None
+    assignedBy : None
+    operator_id: str = None
+    handle: str = None
+    user_id: str = None
+    username: str = None
+    _id: str = None
+    color: str = None
     settings: Settings = None
     videoQuality: VideoQuality = None
     isAdmin: bool = False
     isSiteMod: bool = False
     isSupporter: bool = False
-
-
+    isBroadcasting: bool = False
+    isGold: bool = False
 
 
 @dataclass
 class Session:
     token: str
     user: User
-
-
-
 
 
 @dataclass
@@ -84,10 +86,73 @@ class Join:
     user: User
     room: str = ""
 
+
 @dataclass
 class HandleChange:
-    pass
+    userId: str
+    handle: str
+
 
 @dataclass
 class Message:
-    pass
+    handle: str
+    color: str
+    userId: str
+    message: str
+    timestamp: str
+    id: str
+
+@dataclass
+class PlaylistUpdate:
+    startTime: str = None
+    endTime: str = None
+    description: str = None
+    channelId: str = None
+    pausedAt: str = None
+    _id: str = None
+    mediaId: str = None
+    title: str = None
+    link: str = None
+    duration: str = None
+    thumb: str = None
+    mediaType: str = None
+    startedBy: str = None
+    createdAt: str = None
+
+@dataclass
+class PlayVideo(JumpinObject):
+    startTime: str = None
+    endTime: str = None
+    description: str = None
+    channelId: str = None
+    pausedAt: str = None
+    _id: str = None
+    mediaId: str = None
+    title: str = None
+    link: str = None
+    duration: str = None
+    thumb: str = None
+    mediaType: str = None
+    startedBy: dict = None
+    createdAt: str = None
+
+@dataclass
+class BanListItem:
+    _id: str
+    handle: str
+    timestamp: str
+
+@dataclass
+class Banlist:
+    list: List[BanListItem]
+
+@dataclass
+class HandleChange:
+    handle: str
+
+@dataclass()
+class UpdateUserList(JumpinObject):
+    user: User
+
+    def __repr__(self):
+        return self.user

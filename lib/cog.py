@@ -1,11 +1,42 @@
-from lib.objects import Status, User, Session, HandleChange, Message
+import importlib
+from asyncio import Protocol
+from dataclasses import dataclass, field
+from imp import reload
+from types import ModuleType
+from typing import List
+
+from lib.objects import Status, User, HandleChange, Message, UpdateUserList
 
 
-class Cog:
+def event(event: str, **attrs):
+    def wrap(f: classmethod):
+        f.__jumpin_event__ = True
+        f.__event__ = event
+        return f
+
+    return wrap
+
+
+class Cog():
     def __init__(self, bot):
-        self.name = self.__class__.__name__
         self.bot = bot
+        self.name = self.__class__.__name__
+        self.__cog__ = True
         self.settings = bot.settings
+        self.registered_events = []
+        self.events = [getattr(self, name)  # what gets stored.
+                       for name in dir(self)  # loop
+                       if "__" not in name  # ignore builtins
+                       and callable(getattr(self, name))  # is callable
+                       and hasattr(getattr(self, name), "__event__")
+                       ]
+
+        self.commands = [getattr(self, name)  # what gets stored.
+                       for name in dir(self)  # loop
+                       if "__" not in name  # ignore builtins
+                       and callable(getattr(self, name))  # is callable
+                       and hasattr(getattr(self, name), "__command__")
+                       ]
 
     #####
     # client control
@@ -29,6 +60,35 @@ class Cog:
     #####
     # Jumpin Commands
     #####
+
+    def checkisplaying(self, notify: bool = True):
+        data = [
+            "youtube::checkisplaying",
+            {
+                "notify": notify
+            }
+        ]
+        self.ws_send(data=data)
+
+    def play(self, video_id: str, title: str):
+        data = [
+            "youtube::play",
+            {
+                "videoId": video_id,
+                "title": title
+            }
+        ]
+        self.ws_send(data=data)
+
+    def remove(self, id: str):
+        data = [
+            "youtube::remove",
+            {
+                "id": id
+            }
+        ]
+        self.ws_send(data=data)
+
     def get_ignore_list(self, room: str):
         data = [
             "room::getIgnoreList",
@@ -77,11 +137,7 @@ class Cog:
         ]
         self.ws_send(data=data)
 
-    def do_youtube(self):
-        pass
-
     def handle_change(self, nick: str):
-
         data = [
             "room::handleChange",
             {
@@ -120,21 +176,95 @@ class Cog:
     def do_pm(self):
         pass
 
-    #####
-    # Events
-    #####
+    def __repr__(self) -> str:
+        return self.name
 
+    @event(event="room::updateUser")
     def updateUser(self, user: User):
         pass
 
+    @event(event="room::updateUserList")
+    def updateUserList(self, userlist: UpdateUserList):
+        print("this" + userlist.user.username)
+        pass
+
+    @event(event="room::updateIgnore")
     def updateIgnore(self, ignore_list: list):
         pass
 
+    @event(event="room::status")
     def status(self, status: Status):
         pass
 
-    def handleChange(self, handleChange: HandleChange):
+    @event(event="room::handleChange")
+    def handleChange(self, handle_change: HandleChange):
         pass
 
+    @event(event="room::message")
     def message(self, message: Message):
+
+        pass
+
+    @event(event="room::error")
+    def error(self, message):
+        print(message)
+        pass
+
+    @event(event="room::alert")
+    def alert(self, message):
+        print(message)
+        pass
+
+
+
+
+@dataclass
+class CogManager:
+    modules: dict = field(default_factory=dict)
+    cogs: dict = field(default_factory=dict)
+
+    def import_module(self, module: str) -> ModuleType:
+        # attempt to reload if already loaded
+        for mod in self.modules:
+            if mod == f"{module}":
+                return reload(module)
+        # not loaded? try loading.
+        m = importlib.import_module(f"modules.{module}".lower())
+        self.modules.update({module: m})
+        return m
+
+    def load_all(self, module_list: [str], bot):
+        for module in module_list:
+            m = self.import_module(module)
+            self.add_cog(m, module, bot)
+
+    def add_cog(self, mod: ModuleType, name: str, bot):
+        cog = getattr(mod, name)
+        self.cogs.update({name: cog(bot)})
+
+    def unload(self, module: str):
+        if module in self.cogs.keys():
+            self.cogs.pop(module)
+
+    def get_cog(self, module: str) -> Cog:
+        if module in self.cogs.keys:
+            return self.cogs.get(module)
+
+    def do_event(self, data: dict = None):
+        # trigger event for all cogs
+        for cog in self.cogs.values():
+            for meth in cog.events:
+                if meth.__event__ == data[0]:
+                    print("in here")
+                    # this
+                    routes = {
+                        "room::updateUserList": UpdateUserList,
+                    }
+
+                    if choice := routes.get(data[0]):
+                        meth( choice(**data[1]))
+                    # or this.  hardcoded
+
+
+    def do_command(self, x: Cog, command: str, data: dict = None):
         pass

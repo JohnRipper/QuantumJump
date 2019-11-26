@@ -9,26 +9,32 @@ from concurrent import futures
 import tomlkit
 import websockets
 from lib.api import Api
+from lib.cog import CogManager
+
 
 class QuantumJumpBot:
 
-    def __init__(self):
+    def __init__(self, settings_file: str):
         self._ws = None
         self.is_running = False
         self.start_time = time.time()
-
-        self.settings = None
-        self.load_config("default.toml")
+        self._settings = None
+        self.settings_file = settings_file
         self.api = Api()
+        self.cm = CogManager()
 
-    def load_config(self, config):
-        config = Path(config)
-        if config.exists():
-            self.settings = tomlkit.loads(config.read_text())
-        else:
-            sys.exit("Configuration not found, exiting.")
+    @property
+    def settings(self):
+        if not self._settings:
+            config = Path(f"{self.settings_file}.toml")
+            if config.exists():
+                self._settings = tomlkit.loads(config.read_text())
+            else:
+                sys.exit("Configuration not found, exiting.")
+        return self._settings
 
     async def run(self):
+        self.cm.load_all(self.settings["modules"].get("enabled"), bot=self)
         await self.connect()
 
     async def connect(self):
@@ -54,7 +60,12 @@ class QuantumJumpBot:
                     if message == "40":
                         await self._ws.send(f"42[\"room::handleChange\",{{\"userId\":\"{self.api.session.user.get('user_id')}\",\"handle\":\"PROFESSOR_X\"}}]")
                     continue
+
                 data = json.loads(message[2:])
+
+                self.cm.do_event(data=data)
+                # todo run bot commands
+                # todo run sever events
 
     def pacemaker(self):
         while True:
@@ -74,18 +85,7 @@ class QuantumJumpBot:
             if self.is_running:
                 asyncio.run(asyncio.sleep(1))
 
+    async def GetClasses(self):
+        return [x for x in globals() if hasattr(globals()[str(x)], '__cog__')]
 
-async def start(executor, bot):
-    asyncio.get_event_loop().run_in_executor(executor, bot.pacemaker)
-    asyncio.get_event_loop().run_in_executor(executor, bot.process_message_queue)
-    asyncio.get_event_loop().run_in_executor(executor, bot.process_input)
-    try:
-        await bot.run()
-    except websockets.WebSocketException as e:
-        bot.is_running = False
 
-executor = futures.ThreadPoolExecutor(max_workers=3, )
-bot = QuantumJumpBot()
-bot.load_config("default.toml")
-
-asyncio.get_event_loop().run_until_complete(start(executor, bot))
