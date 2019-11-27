@@ -8,7 +8,6 @@ def makeCommand(name: str, description: str, **attrs):
         f.__command__ = True
         f.__command_name__ = name
         f.description = description
-
         return f
     return wrap
 

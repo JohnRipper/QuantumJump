@@ -78,9 +78,9 @@ class Api:
                               "password": password})
         # todo check if successful
 
-    async def getroominfo(self, room: str):
+    async def getroominfo(self, room: str) -> dict:
         action = await self.get(url=self.urls.room(room=room))
-        return await action.text()
+        return await action.json()
 
 
 

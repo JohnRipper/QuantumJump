@@ -27,6 +27,7 @@ class Cog():
         self.__cog__ = True
         self.settings = bot.settings
 
+
         self.events = [getattr(self, name)  # what gets stored.
                        for name in dir(self)  # loop
                        if "__" not in name  # ignore builtins
@@ -229,9 +230,8 @@ class CogManager:
 
     def import_module(self, module: str) -> ModuleType:
         # attempt to reload if already loaded
-        for mod in self.modules:
-            if mod == f"{module}":
-                return reload(module)
+        if mod := self.modules.get(module, False):
+            return reload(mod)
         # not loaded? try loading.
         m = importlib.import_module(f"modules.{module}".lower())
         self.modules.update({module: m})
@@ -253,6 +253,10 @@ class CogManager:
     def get_cog(self, module: str) -> Cog:
         if module in self.cogs.keys:
             return self.cogs.get(module)
+
+    def get_module(self, module: str) -> Cog:
+        if module in self.cogs.keys:
+            return self.module.get(module)
 
     async def do_event(self, data: dict = None):
         # trigger event for all cogs

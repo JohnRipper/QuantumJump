@@ -12,11 +12,17 @@ class JumpinObject:
             "dimensions": Dimensions,
             "user": User,
             "settings": Settings,
-            "videoQuality": VideoQuality
+            "videoQuality": VideoQuality,
+            "attrs": Attrs,
+            "topic": Topic,
+            "updatedBy":UpdatedBy
+
+
         }
         for attr in self.__dict__:
             cheddar = getattr(self, attr)
             if type(cheddar) is dict:
+                print(cheddar)
                 setattr(self, attr, _routes.get(attr)(**cheddar))
 
 
@@ -154,5 +160,40 @@ class HandleChange:
 class UpdateUserList(JumpinObject):
     user: User
 
-    def __repr__(self):
-        return self.user
+@dataclass
+class Attrs(JumpinObject):
+    owner: str
+    janus_id: int
+    fresh: bool
+    ageRestricted: bool
+
+@dataclass
+class UpdatedBy(JumpinObject):
+    _id: str
+    username: str
+
+@dataclass
+class Topic(JumpinObject):
+    text: str
+    updatedAt: str
+    updatedBy: UpdatedBy = None
+
+
+@dataclass
+class Settings(JumpinObject):
+    public: bool
+    modOnlyPlayMedia: bool
+    forcePtt: bool
+    forceUser: bool
+    description: str
+    display: str
+    requiresPassword: bool
+    topic: Topic = None
+
+@dataclass
+class UserList(JumpinObject):
+    _id: str
+    name: str
+    attrs: Attrs = None
+    settings: Settings = None
+    users: List[User] = field(default_factory=User)
