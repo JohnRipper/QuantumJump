@@ -4,3 +4,13 @@ username = "johnripper"
 password = ""
 # blank to keep random issue
 nickname = ""
+
+
+
+room = "johnripper"
+
+[modules]
+enabled = [
+"Debug",]
+
+
