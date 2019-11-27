@@ -44,7 +44,7 @@ class Cog():
     #####
     # client control
     ######
-    async def send_message(self, message: str, room=None):
+    async def send_message(self, message: str, room: str = None):
         if not room:
             room = self.settings.Bot.roomname
         data = [
@@ -54,11 +54,10 @@ class Cog():
                 "room": room
             }
         ]
-        await self.ws_send(data=json.dumps(data))
+        await self.ws_send(data=data)
 
-    async def ws_send(self, data: list):
-        data = f"42{data}"
-        await self.bot.wsend(data)
+    async def ws_send(self, data):
+        await self.bot.wsend(data=data)
 
     #####
     # Jumpin Commands
@@ -274,4 +273,4 @@ class CogManager:
         for cog in self.cogs.values():
             for meth in cog.commands:
                 if meth.__command_name__ == command.name:
-                    await meth(Command)
+                    await meth(command)

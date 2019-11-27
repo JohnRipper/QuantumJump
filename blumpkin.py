@@ -111,7 +111,6 @@ class QuantumJumpBot:
         if not room:
             room = self.settings.Bot.roomname
         data = ["room::message", {"message": message, "room": room}]
-        print(data)
         await self.wsend(data=data)
 
     async def process_message_queue(self):
