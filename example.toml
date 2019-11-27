@@ -1,0 +1,9 @@
+[bot]
+nickname = ""
+password = ""
+prefix = ""
+roomname = ""
+username = ""
+
+[modules]
+enabled = []
