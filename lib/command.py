@@ -1,4 +1,4 @@
-from lib.objects import  Message
+from lib.objects import Message
 
 
 def makeCommand(name: str, description: str, **attrs):
@@ -9,6 +9,7 @@ def makeCommand(name: str, description: str, **attrs):
         f.__command_name__ = name
         f.description = description
         return f
+
     return wrap
 
 
@@ -21,4 +22,3 @@ class Command:
         # clean up the trailing spaces.
         self.message = self.message.strip()
         self.name = self.name[len(prefix):]
-

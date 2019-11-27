@@ -1,5 +1,6 @@
 import json
 import re as regex
+
 from aiohttp import ClientSession
 
 from lib.exceptions import HttpStatus
@@ -69,21 +70,18 @@ class Api:
 
     async def get_wss(self):
         await self.get_login_session()
-        return self.urls.wss(token=self._session.token, io=await self.get_sio_sid())
+        return self.urls.wss(token=self._session.token,
+                             io=await self.get_sio_sid())
 
     async def login(self, username: str, password: str):
         await self.post(url=self.urls.LOGIN,
-                        data={"action": "login",
-                              "username": username,
-                              "password": password})
+                        data={
+                            "action": "login",
+                            "username": username,
+                            "password": password
+                        })
         # todo check if successful
 
     async def getroominfo(self, room: str) -> dict:
         action = await self.get(url=self.urls.room(room=room))
         return await action.json()
-
-
-
-
-
-
