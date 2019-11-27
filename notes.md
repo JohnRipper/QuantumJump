@@ -19,7 +19,7 @@
     - [Profile](#sec-2-2-3)
     - [Emoji](#sec-2-2-4)
 
-## Some notes on IDs
+### Some notes on IDs
 In most if not all cases `_id` is the "user_list_id", that's the key used for sending ban messages so we might aswell call it that's
 
 The `user_id` is the ID for account
@@ -35,7 +35,10 @@ There is also a unique id for unbanning, retrieved from `42["room::operation::ba
 
 AND youtube videos get an id, not sure if it's unique per playlist or unique like youtube's actual ids are unique TODO
 
+### More notes on things
+If/when jumpin sorts out cloudflare, port [cfscrape](https://github.com/Anorov/cloudflare-scrape/blob/master/cfscrape/__init__.py) to aiohttp, maybe use pyjs to exec the javascript challenge instead of node.
 
+Text formatting: \***bold**\* \__italic_\_
 # WS Events<a id="sec-1"></a>
 
 Initial connection is sending `2probe` and receiving `3probe` then sending `5`. Ping interval is sending `2` every 25 seconds; expecting `3` as response.
@@ -222,6 +225,22 @@ Initial connection is sending `2probe` and receiving `3probe` then sending `5`. 
         "isBroadcasting": true
       }
     ]
+    ```
+
+12. `room::command`
+    Some of the commands: `me`, `topic`, `shrug`
+    Responses depend on command sent. 
+    ```json
+    42[
+      "room::command",
+      {
+        "message": {
+        "command": "<COMMAND>",
+        "value": "<MESSAGE>"
+        },
+      "room": "<ROOM>"
+      }
+    ] 
     ```
 
 ### Receive<a id="sec-1-1-2"></a>
