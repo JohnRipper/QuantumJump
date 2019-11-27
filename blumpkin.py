@@ -26,8 +26,10 @@ class QuantumJumpBot:
         return ul.users
 
     async def wsend(self, data):
-        data = "42{}".format(json.dumps(data))
-        await self._ws.send(f"42{data}")
+        if type(data) is list:
+            data = "42{}".format(json.dumps(data))
+        print(f"SEND {data}")
+        await self._ws.send(data)
 
     async def run(self):
         self.cm.load_all(self.settings.Modules, bot=self)
@@ -47,16 +49,16 @@ class QuantumJumpBot:
                 origin="https://jumpin.chat") as self._ws:
             print("Socket started")
             self.is_running = True
-            await self._ws.send("2probe")
+            await self.wsend("2probe")
             async for message in self._ws:
                 await self._recv(message=message)
 
     async def _recv(self, message: str):
-        print(message)
+        print(f"RECV {message}")
         if message.isdigit():
             return
         if message == "3probe":
-            await self._ws.send("5")
+            await self.wsend("5")
             await self.wsend(
                 ["room::join", {
                     "room": self.settings.Bot.roomname
@@ -90,28 +92,28 @@ class QuantumJumpBot:
     async def pacemaker(self):
         if self.is_running:
             await asyncio.sleep(25)
-            await self._ws.send("2")
+            await self.wsend("2")
             asyncio.create_task(self.pacemaker())
 
     def process_input(self, loop):
+        basemsg = '42["room::message", {}]'
         prefix = self.settings.Bot.prefix
         while True:
             if self.is_running:
-                f = input()
-                if f.startswith(prefix):
-                    m = Message(message=f)
-                    data = f"42[\"room::message\", {json.dumps(m.__dict__)}]"
-                    asyncio.run_coroutine_threadsafe(self._recv(message=data),
-                                                     loop)
+                stdin = input()
+                if stdin.startswith(prefix):
+                    msg = Message(message=stdin).__dict__
+                    formatted_msg = basemsg.format(json.dumps(msg))
+                    asyncio.run_coroutine_threadsafe(
+                        self._recv(message=formatted_msg), loop=loop)
                 else:
-                    asyncio.run_coroutine_threadsafe(self.send_message(f),
-                                                     loop)
-
-    async def send_message(self, message: str, room=None):
-        if not room:
-            room = self.settings.Bot.roomname
-        data = ["room::message", {"message": message, "room": room}]
-        await self.wsend(data=data)
+                    msg = basemsg.format(
+                        json.dumps({
+                            "message": stdin,
+                            "room:": self.settings.Bot.roomname
+                        }))
+                    asyncio.run_coroutine_threadsafe(self.wsend(msg),
+                                                     loop=loop)
 
     async def process_message_queue(self):
         if self.is_running:
