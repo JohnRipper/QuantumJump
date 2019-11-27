@@ -16,7 +16,7 @@ class Debug(Cog):
         await self.send_message("titty")
 
     @event(event="room::message")
-    def message(self, message: Message):
+    async def message(self, message: Message):
         print(message.message)
         pass
 
