@@ -26,6 +26,7 @@ class QuantumJumpBot:
         return ul.users
 
     async def wsend(self, data):
+        data = "42{}".format(json.dumps(data))
         await self._ws.send(f"42{data}")
 
     async def run(self):
