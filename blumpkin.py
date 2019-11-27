@@ -21,8 +21,7 @@ class QuantumJumpBot:
 
     @property
     async def userlist(self) -> [User]:
-        data = await self.api.getroominfo(
-            room=str(self.settings.Bot.roomname))
+        data = await self.api.getroominfo(room=str(self.settings.Bot.roomname))
         ul = UserList(**data)
         return ul.users
 
@@ -57,17 +56,22 @@ class QuantumJumpBot:
             return
         if message == "3probe":
             await self._ws.send("5")
-            await self.wsend(["room::join",
-                              {"room": self.settings.Bot.roomname}])
+            await self.wsend(
+                ["room::join", {
+                    "room": self.settings.Bot.roomname
+                }])
             asyncio.create_task(self.pacemaker())
             return
 
         data = json.loads(message[2:])
         await self.cm.do_event(data=data)
         if data[0] == "self::join":
-            await self.wsend(["room::handleChange",
-                              {"userId": self.api.session.user.get("user_id"),
-                               "handle": self.settings.Bot.nickname}])
+            await self.wsend([
+                "room::handleChange", {
+                    "userId": self.api.session.user.get("user_id"),
+                    "handle": self.settings.Bot.nickname
+                }
+            ])
 
         if data[0] == "room::message":
             prefix = self.settings.Bot.prefix
@@ -89,8 +93,6 @@ class QuantumJumpBot:
             asyncio.create_task(self.pacemaker())
 
     def process_input(self, loop):
-        prefix = '.'
-        # would be easier if we could trigger a websocket recieve then let the same manager
         prefix = self.settings.Bot.prefix
         while True:
             if self.is_running:

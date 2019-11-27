@@ -17,8 +17,6 @@ class JumpinObject:
             "attrs": Attrs,
             "topic": Topic,
             "updatedBy": UpdatedBy
-
-
         }
         for attr in self.__dict__:
             cheddar = getattr(self, attr)
@@ -57,7 +55,7 @@ class Settings(JumpinObject):
 @dataclass
 class User(JumpinObject):
     userIcon: None
-    assignedBy : None
+    assignedBy: None
     operator_id: str = None
     handle: str = None
     user_id: str = None
@@ -108,6 +106,7 @@ class Message:
     timestamp: str = time.time()
     id: str = 00000
 
+
 @dataclass
 class PlaylistUpdate:
     startTime: str = None
@@ -124,6 +123,7 @@ class PlaylistUpdate:
     mediaType: str = None
     startedBy: str = None
     createdAt: str = None
+
 
 @dataclass
 class PlayVideo(JumpinObject):
@@ -142,23 +142,28 @@ class PlayVideo(JumpinObject):
     startedBy: dict = None
     createdAt: str = None
 
+
 @dataclass
 class BanListItem:
     _id: str
     handle: str
     timestamp: str
 
+
 @dataclass
 class Banlist:
     list: List[BanListItem]
+
 
 @dataclass
 class HandleChange:
     handle: str
 
+
 @dataclass()
 class UpdateUserList(JumpinObject):
     user: User
+
 
 @dataclass
 class Attrs(JumpinObject):
@@ -167,10 +172,12 @@ class Attrs(JumpinObject):
     fresh: bool
     ageRestricted: bool
 
+
 @dataclass
 class UpdatedBy(JumpinObject):
     _id: str
     username: str
+
 
 @dataclass
 class Topic(JumpinObject):
@@ -189,6 +196,7 @@ class Settings(JumpinObject):
     display: str
     requiresPassword: bool
     topic: Topic = None
+
 
 @dataclass
 class UserList(JumpinObject):

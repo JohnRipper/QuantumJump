@@ -8,7 +8,7 @@ from types import ModuleType
 from typing import List
 
 from lib.command import Command
-from lib.objects import Status, User, HandleChange, Message, UpdateUserList
+from lib.objects import HandleChange, Message, Status, UpdateUserList, User
 
 
 def event(event: str, **attrs):
@@ -27,7 +27,6 @@ class Cog():
         self.__cog__ = True
         self.settings = bot.settings
 
-
         self.events = [getattr(self, name)  # what gets stored.
                        for name in dir(self)  # loop
                        if "__" not in name  # ignore builtins
@@ -36,11 +35,11 @@ class Cog():
                        ]
 
         self.commands = [getattr(self, name)  # what gets stored.
-                       for name in dir(self)  # loop
-                       if "__" not in name  # ignore builtins
-                       and callable(getattr(self, name))  # is callable
-                       and hasattr(getattr(self, name), "__command__")
-                       ]
+                         for name in dir(self)  # loop
+                         if "__" not in name  # ignore builtins
+                         and callable(getattr(self, name))  # is callable
+                         and hasattr(getattr(self, name), "__command__")
+                         ]
 
     #####
     # client control
@@ -67,7 +66,6 @@ class Cog():
     async def remove_yt(self, id):
         data = ["youtube::remove", {"id": id}]
         await self.ws_send(data=data)
-
 
     async def checkisplaying(self, notify: bool = True):
         data = [
@@ -223,6 +221,7 @@ class Cog():
         print(message)
         pass
 
+
 @dataclass
 class CogManager:
     modules: dict = field(default_factory=dict)
@@ -269,7 +268,7 @@ class CogManager:
                         "room::message": Message,
                     }
                     if choice := routes.get(data[0], False):
-                        await meth( choice(**data[1]))
+                        await meth(choice(**data[1]))
 
     async def do_command(self, command: Command):
         for cog in self.cogs.values():

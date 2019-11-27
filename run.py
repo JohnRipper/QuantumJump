@@ -27,7 +27,6 @@ except FileNotFoundError:
     else:
         sys.exit("Couldn't load the configuration")
 
-
 executor = futures.ThreadPoolExecutor(max_workers=2, )
 bot = QuantumJumpBot(config)
 loop = asyncio.get_event_loop()
