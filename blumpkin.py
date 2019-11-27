@@ -8,7 +8,7 @@ import websockets
 from lib.api import Api
 from lib.cog import CogManager
 from lib.command import Command
-from lib.objects import Message, UpdateUserList, UserList
+from lib.objects import Message, UpdateUserList, UserList, User
 
 
 class QuantumJumpBot:
@@ -33,7 +33,7 @@ class QuantumJumpBot:
         return self._settings
 
     @property
-    async def userlist(self) -> UserList:
+    async def userlist(self) -> [User]:
         data = await self.api.getroominfo(room=str(self.settings["bot"]["room"]))
         ul = UserList(**data)
         return ul.users
@@ -44,7 +44,9 @@ class QuantumJumpBot:
     async def run(self):
         self.cm.load_all(self.settings["modules"].get("enabled"), bot=self)
         await self.connect()
+
     async def disconnect(self):
+        self.is_running = False
         await self._ws.close()
 
     async def connect(self):
@@ -54,8 +56,6 @@ class QuantumJumpBot:
         async with websockets.connect(uri=await self.api.get_wss(),
                                       timeout=600,
                                       origin="https://jumpin.chat") as self._ws:
-            print(await self.userlist)
-
             print("Socket started")
             self.is_running = True
             await self._ws.send("2probe")
@@ -105,7 +105,6 @@ class QuantumJumpBot:
         if self.is_running:
             asyncio.run(asyncio.sleep(1))
             # await self.send_message()
-            print("test")
             asyncio.create_task(self.process_message_queue())
 
     async def GetClasses(self):
