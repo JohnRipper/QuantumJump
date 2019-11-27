@@ -11,7 +11,7 @@ async def start(executor, bot, loop):
     except websockets.WebSocketException as e:
         bot.is_running = False
 
-executor = futures.ThreadPoolExecutor(max_workers=2, )
+executor = futures.ThreadPoolExecutor(max_workers=1, )
 bot = QuantumJumpBot("default")
 loop = asyncio.get_event_loop()
 loop.run_until_complete(start(executor, bot, loop))
