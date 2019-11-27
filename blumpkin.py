@@ -39,8 +39,7 @@ class QuantumJumpBot:
         return ul.users
 
     async def wsend(self, data):
-        data = f"42{data}"
-        await self._ws.send(data)
+        await self._ws.send(f"42{data}")
 
     async def run(self):
         self.cm.load_all(self.settings["modules"].get("enabled"), bot=self)
@@ -64,7 +63,7 @@ class QuantumJumpBot:
                 await self._recv(message=message)
 
     async def _recv(self, message: str):
-                print("Test" + message)
+                print(message)
                 if message.isdigit():
                     return
                 if message == "3probe":
@@ -94,13 +93,12 @@ class QuantumJumpBot:
 
 
     async def pacemaker(self):
+        await asyncio.sleep(25)
         if self.is_running:
-            await asyncio.sleep(25)
             await self._ws.send("2")
             asyncio.create_task(self.pacemaker())
 
     def process_input(self, loop):
-        # would be easier if we could trigger a websocket recieve then let the same manager
         prefix = '.'
         while True:
             if self.is_running:
@@ -122,7 +120,6 @@ class QuantumJumpBot:
                 "room": room
             }
         ]
-        print(data)
         await self.wsend(data=json.dumps(data))
 
     async def process_message_queue(self):
