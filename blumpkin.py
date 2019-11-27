@@ -39,6 +39,7 @@ class QuantumJumpBot:
         return ul.users
 
     async def wsend(self, data):
+        data = f"42{data}"
         await self._ws.send(data)
 
     async def run(self):
@@ -60,18 +61,21 @@ class QuantumJumpBot:
             self.is_running = True
             await self._ws.send("2probe")
             async for message in self._ws:
-                print(message)
+                await self._recv(message=message)
+
+    async def _recv(self, message: str):
+                print("Test" + message)
                 if message.isdigit():
-                    continue
+                    return
                 if message == "3probe":
                     await self._ws.send("5")
                     await self._ws.send("42[\"room::join\",{\"room\":\"johnripper\"}]")
                     asyncio.create_task(self.pacemaker())
-                    continue
+                    return
 
                 data = json.loads(message[2:])
                 await self.cm.do_event(data=data)
-                if data[0] == "room::join":
+                if data[0] == "self::join":
                     await self._ws.send(
                         f"42[\"room::handleChange\",{{\"userId\":\"{self.api.session.user.get('user_id')}\",\"handle\":\"PROFESSOR_X\"}}]")
 
@@ -88,6 +92,7 @@ class QuantumJumpBot:
                         # do cog commands.
                         await self.cm.do_command(c)
 
+
     async def pacemaker(self):
         if self.is_running:
             await asyncio.sleep(25)
@@ -95,11 +100,30 @@ class QuantumJumpBot:
             asyncio.create_task(self.pacemaker())
 
     def process_input(self, loop):
+        # would be easier if we could trigger a websocket recieve then let the same manager
+        prefix = '.'
         while True:
             if self.is_running:
                 f = input()
-                if f == "exit":
-                    asyncio.run_coroutine_threadsafe(self.disconnect(), loop)
+                if f.startswith(prefix):
+                    m = Message(message=f)
+                    data = f"42[\"room::message\", {json.dumps(m.__dict__)}]"
+                    asyncio.run_coroutine_threadsafe(self._recv(message=data), loop)
+                else:
+                    asyncio.run_coroutine_threadsafe(self.send_message(f), loop)
+
+    async def send_message(self, message: str, room=None):
+        if not room:
+            room = self.settings["bot"]["room"]
+        data = [
+            "room::message",
+            {
+                "message": message,
+                "room": room
+            }
+        ]
+        print(data)
+        await self.wsend(data=json.dumps(data))
 
     async def process_message_queue(self):
         if self.is_running:

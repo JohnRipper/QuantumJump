@@ -1,3 +1,4 @@
+import time
 from dataclasses import dataclass, field
 from typing import List
 
@@ -15,14 +16,13 @@ class JumpinObject:
             "videoQuality": VideoQuality,
             "attrs": Attrs,
             "topic": Topic,
-            "updatedBy":UpdatedBy
+            "updatedBy": UpdatedBy
 
 
         }
         for attr in self.__dict__:
             cheddar = getattr(self, attr)
             if type(cheddar) is dict:
-                print(cheddar)
                 setattr(self, attr, _routes.get(attr)(**cheddar))
 
 
@@ -101,12 +101,12 @@ class HandleChange:
 
 @dataclass
 class Message:
-    handle: str
-    color: str
-    userId: str
     message: str
-    timestamp: str
-    id: str
+    handle: str = "ChuckNorris"
+    color: str = "green"
+    userId: str = 8675309
+    timestamp: str = time.time()
+    id: str = 00000
 
 @dataclass
 class PlaylistUpdate:
