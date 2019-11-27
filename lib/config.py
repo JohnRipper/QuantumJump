@@ -1,8 +1,10 @@
 from dataclasses import make_dataclass
 from pathlib import Path
-from util import prompt
-from tomlkit import loads as tomlload
+
 from tomlkit import dumps as tomldump
+from tomlkit import loads as tomlload
+
+from util import prompt
 
 default = {
     "bot": {
@@ -10,7 +12,11 @@ default = {
         "password": str,
         "roomname": str,
         "nickname": str,
+        "prefix": str,
     },
+    "modules": {
+        "enabled": []
+    }
 }
 
 
@@ -19,12 +25,10 @@ class Configuration:
         self.path = Path(path)
         if self.path.exists():
             self.full = self.load()
-            self.Bot = make_dataclass(
-                "Bot_Configuration",
-                [(k, type(v), v)
-                    for k, v in self.full["bot"].items()]
-            )
-            self.Modules = None
+            self.Bot = make_dataclass("Bot_Configuration",
+                                      [(k, type(v), v)
+                                       for k, v in self.full["bot"].items()])
+            self.Modules = self.full["modules"]["enabled"]
         else:
             raise FileNotFoundError(path)
 
@@ -32,12 +36,33 @@ class Configuration:
         config = tomlload(self.path.read_text())
         return config
 
+
+def getmodules() -> list:
+    modules = []
+    module_files = Path("modules/").glob("*.py")
+    for each in module_files:
+        module = each.name.rstrip(".py").capitalize()
+        modules.append(module)
+    return modules
+
+
 def generate_config():
     config = default.copy()
     botsettings = config["bot"]
     for each in botsettings.keys():
         botsettings[each] = input(f"Please enter your {each}: ")
+    modules = getmodules()
+    print(
+        "Enter the number for each module you'd like to enable, separated by commas"
+    )
+    print("Example: 1,5,8")
+    message = ", ".join([f"{i}) {v}" for i, v in enumerate(modules)])
+    to_enable = input(f"{message}\n")
+    for module_index in to_enable.split(","):
+        if module_index.isdigit() and int(module_index) <= len(modules):
+            config["modules"]["enabled"].append(modules[int(module_index)])
     return tomldump(config)
+
 
 def write_config(config: str, path: str) -> bool:
     check = prompt(f"\n{config}\nDoes this look correct? y/N")

@@ -47,7 +47,7 @@ class Cog():
     ######
     async def send_message(self, message: str, room=None):
         if not room:
-            room = self.settings["bot"]["room"]
+            room = self.settings.Bot.roomname
         data = [
             "room::message",
             {
@@ -156,7 +156,7 @@ class Cog():
 
     async def is_still_joined(self, room: str = None):
         if not room:
-            room = self.settings.bot.room
+            room = self.settings.Bot.roomname
         data = [
             "room::isStillJoined",
             {
@@ -168,7 +168,7 @@ class Cog():
 
     async def join(self, room: str = None):
         if not room:
-            room = self.settings.bot.room
+            room = self.settings.Bot.roomname
         data = ["room::join", {"room": room}]
         await self.ws_send(data=data)
 
