@@ -63,6 +63,10 @@ class Cog():
     #####
     # Jumpin Commands
     #####
+    async def remove_yt(self, id):
+        data = ["youtube::remove", {"id": id}]
+        await self.ws_send(data=data)
+
 
     async def checkisplaying(self, notify: bool = True):
         data = [
@@ -206,7 +210,6 @@ class Cog():
 
     @event(event="room::message")
     async def message(self, message: Message):
-
         pass
 
     @event(event="room::error")
@@ -255,17 +258,14 @@ class CogManager:
         # trigger event for all cogs
         for cog in self.cogs.values():
             for meth in cog.events:
-                print(f"{meth.__event__} {data[0]}")
                 if meth.__event__ == data[0]:
-                    print("in here")
-                    # this
+                    # todo this
                     routes = {
                         "room::updateUserList": UpdateUserList,
+                        "room::message": Message,
                     }
-
-                    if choice := routes.get(data[0]):
+                    if choice := routes.get(data[0], False):
                         await meth( choice(**data[1]))
-                    # or this.  hardcoded
 
     async def do_command(self, command: Command):
         for cog in self.cogs.values():
