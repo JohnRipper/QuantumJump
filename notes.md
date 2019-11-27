@@ -30,12 +30,15 @@ The `user_id` is the ID for account
 if User.operator_id:
     do_a_thing()
 ```
+Side note: `assignedBy` is treated the same, but for oper. If it's empty, the user is not oper. (half star thing)
 
 There is also a unique id for unbanning, retrieved from `42["room::operation::banlist",{"user_list_id":""}]`
 
-AND youtube videos get an id, not sure if it's unique per playlist or unique like youtube's actual ids are unique TODO
+AND youtube videos get an id which are unique per item in playlist, no matter if duplicated.
 
 ### More notes on things
+
+
 If/when jumpin sorts out cloudflare, port [cfscrape](https://github.com/Anorov/cloudflare-scrape/blob/master/cfscrape/__init__.py) to aiohttp, maybe use pyjs to exec the javascript challenge instead of node.
 
 Text formatting: \***bold**\* \__italic_\_
@@ -161,8 +164,9 @@ Initial connection is sending `2probe` and receiving `3probe` then sending `5`. 
 7.  `room::operation::ban`
 
     Response: `room::status`, `room:userbanned`, `room::disconnect`
-    
-    Duration is in hours, "permanent" ban is `duration: "4464"`
+     
+    Duration is in hours? "permanent" ban is `duration: "4464"`
+
     
     ```json
     42[
@@ -527,12 +531,10 @@ Initial connection is sending `2probe` and receiving `3probe` then sending `5`. 
 
 ## Self Events<a id="sec-1-4"></a>
 
-Again, this probably doesn't matter
-
 ### Receive<a id="sec-1-4-1"></a>
 
 1.  `self::join`
-
+    Received after `room::join`
     ```json
     42[
       "self::join",
