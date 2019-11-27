@@ -1,15 +1,14 @@
 import asyncio
 import sys
 from pathlib import Path
-
 import json
 import time
-from concurrent import futures
-
 import tomlkit
 import websockets
 from lib.api import Api
 from lib.cog import CogManager
+from lib.command import Command
+from lib.objects import Message
 
 
 class QuantumJumpBot:
@@ -33,6 +32,13 @@ class QuantumJumpBot:
                 sys.exit("Configuration not found, exiting.")
         return self._settings
 
+    async def wsend(self, data):
+        print(data)
+        await self._ws.send(
+            f"42[\"room::handleChange\",{{\"userId\":\"{self.api.session.user.get('user_id')}\",\"handle\":\"PROFESSOR_y\"}}]")
+
+        await self._ws.send(data)
+
     async def run(self):
         self.cm.load_all(self.settings["modules"].get("enabled"), bot=self)
         await self.connect()
@@ -41,31 +47,32 @@ class QuantumJumpBot:
         await self.api.login(self.settings["bot"].get("username", None),
                                    self.settings["bot"].get("password", None))
 
-        async with websockets.connect(
-                uri=await self.api.get_wss(),
-                timeout=600,
-                origin="https://jumpin.chat"
-        ) as self._ws:
+        async with websockets.connect(uri=await self.api.get_wss(),
+                                      timeout=600,
+                                      origin="https://jumpin.chat") as self._ws:
             print("Socket started")
             self.is_running = True
             await self._ws.send("2probe")
-
             async for message in self._ws:
                 print(message)
                 if message == "3probe":
                     await self._ws.send("5")
-                    await self._ws.send("42[\"room::join\",{\"room\":\"johnripper\"}]")
+                    await self._ws.send("42[\"room::join\",{\"room\":\"tech\"}]")
                     continue
                 if message.isdigit():
                     if message == "40":
                         await self._ws.send(f"42[\"room::handleChange\",{{\"userId\":\"{self.api.session.user.get('user_id')}\",\"handle\":\"PROFESSOR_X\"}}]")
                     continue
 
+
                 data = json.loads(message[2:])
 
                 await self.cm.do_event(data=data)
-                # todo run bot commands
-                # todo run sever events
+
+                if data[0] == "room::message":
+                    prefix = '.'
+                    if data[1].get("message").startswith(prefix):
+                        await self.cm.do_command(Command(prefix=prefix, data=Message(**data[1])))
 
     def pacemaker(self):
         while True:

@@ -1,10 +1,13 @@
+import asyncio
 import importlib
+import json
 from asyncio import Protocol
 from dataclasses import dataclass, field
 from imp import reload
 from types import ModuleType
 from typing import List
 
+from lib.command import Command
 from lib.objects import Status, User, HandleChange, Message, UpdateUserList
 
 
@@ -23,7 +26,7 @@ class Cog():
         self.name = self.__class__.__name__
         self.__cog__ = True
         self.settings = bot.settings
-        self.registered_events = []
+
         self.events = [getattr(self, name)  # what gets stored.
                        for name in dir(self)  # loop
                        if "__" not in name  # ignore builtins
@@ -41,9 +44,9 @@ class Cog():
     #####
     # client control
     ######
-    def send_message(self, message: str, room=None):
+    async def send_message(self, message: str, room=None):
         if not room:
-            room = self.settings.bot.room
+            room = self.settings["bot"]["room"]
         data = [
             "room::message",
             {
@@ -51,26 +54,26 @@ class Cog():
                 "room": room
             }
         ]
-        self.ws_send(data=data)
+        await self.ws_send(data=json.dumps(data))
 
-    def ws_send(self, data: list):
+    async def ws_send(self, data: list):
         data = f"42{data}"
-        pass
+        await self.bot.wsend(data)
 
     #####
     # Jumpin Commands
     #####
 
-    def checkisplaying(self, notify: bool = True):
+    async def checkisplaying(self, notify: bool = True):
         data = [
             "youtube::checkisplaying",
             {
                 "notify": notify
             }
         ]
-        self.ws_send(data=data)
+        await self.ws_send(data=data)
 
-    def play(self, video_id: str, title: str):
+    async def play(self, video_id: str, title: str):
         data = [
             "youtube::play",
             {
@@ -78,45 +81,45 @@ class Cog():
                 "title": title
             }
         ]
-        self.ws_send(data=data)
+        await self.ws_send(data=data)
 
-    def remove(self, id: str):
+    async def remove(self, id: str):
         data = [
             "youtube::remove",
             {
                 "id": id
             }
         ]
-        self.ws_send(data=data)
+        await self.ws_send(data=data)
 
-    def get_ignore_list(self, room: str):
+    async def get_ignore_list(self, room: str):
         data = [
             "room::getIgnoreList",
             {
                 "roomName": room
             }
         ]
-        self.ws_send(data=data)
+        await self.ws_send(data=data)
 
-    def kick(self, user_id: str):
+    async def kick(self, user_id: str):
         data = [
             "room::operation::kick",
             {
                 "user_list_id": user_id
             }
         ]
-        self.ws_send(data=data)
+        await self.ws_send(data=data)
 
-    def banlist(self):
+    async def banlist(self):
         data = [
             "room::operation::banlist",
             {
                 "user_list_id": self.bot.api.session.user.user_id
             }
         ]
-        self.ws_send(data=data)
+        await self.ws_send(data=data)
 
-    def ban(self, user_id: str, duration: int = 24):
+    async def ban(self, user_id: str, duration: int = 24):
         # perm is 4464
         data = [
             "room::operation::ban",
@@ -125,9 +128,9 @@ class Cog():
                 "duration": duration
             }
         ]
-        self.ws_send(data=data)
+        await self.ws_send(data=data)
 
-    def unban(self, ban_id: str, handle: str):
+    async def unban(self, ban_id: str, handle: str):
         data = [
             "room::operation::unban",
             {
@@ -135,18 +138,18 @@ class Cog():
                 "handle": handle
             }
         ]
-        self.ws_send(data=data)
+        await self.ws_send(data=data)
 
-    def handle_change(self, nick: str):
+    async def handle_change(self, nick: str):
         data = [
             "room::handleChange",
             {
                 "handle": nick
             }
         ]
-        self.ws_send(data=data)
+        await self.ws_send(data=data)
 
-    def is_still_joined(self, room: str = None):
+    async def is_still_joined(self, room: str = None):
         if not room:
             room = self.settings.bot.room
         data = [
@@ -156,24 +159,24 @@ class Cog():
             }
         ]
 
-        self.ws_send(data=data)
+        await self.ws_send(data=data)
 
-    def join(self, room: str = None):
+    async def join(self, room: str = None):
         if not room:
             room = self.settings.bot.room
         data = ["room::join", {"room": room}]
-        self.ws_send(data=data)
+        await self.ws_send(data=data)
 
-    def close_broadcast(self, user_id: str):
+    async def close_broadcast(self, user_id: str):
         data = [
             "room::operation::closeBroadcast",
             {
                 "user_list_id": user_id
             }
         ]
-        self.ws_send(data=data)
+        await self.ws_send(data=data)
 
-    def do_pm(self):
+    async def do_pm(self):
         pass
 
     def __repr__(self) -> str:
@@ -264,6 +267,8 @@ class CogManager:
                         await meth( choice(**data[1]))
                     # or this.  hardcoded
 
-
-    def do_command(self, x: Cog, command: str, data: dict = None):
-        pass
+    async def do_command(self, command: Command):
+        for cog in self.cogs.values():
+            for meth in cog.commands:
+                if meth.__command_name__ == command.name:
+                    await meth(Command)

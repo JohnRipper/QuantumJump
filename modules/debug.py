@@ -1,4 +1,5 @@
 from lib.cog import Cog, event
+from lib.command import makeCommand, Command
 from lib.objects import User, Status, HandleChange, Message, UpdateUserList
 
 
@@ -7,18 +8,14 @@ class Debug(Cog):
     #####
     # Events
     #####
-    def updateUser(self, user: User):
-        pass
 
-    def updateIgnore(self, ignore_list: list):
-        pass
+    @makeCommand(name="test",description= "test")
+    async def vagina(self, c: Command):
+        print("test")
 
-    def status(self, status: Status):
-        pass
+        await self.send_message("titty")
 
-    def handleChange(self, handle_change: HandleChange):
-        pass
-
+    @event(event="room::message")
     def message(self, message: Message):
         print(message.message)
         pass
