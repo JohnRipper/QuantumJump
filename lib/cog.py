@@ -20,7 +20,7 @@ def event(event: str, **attrs):
     return wrap
 
 
-class Cog():
+class Cog:
     def __init__(self, bot):
         self.bot = bot
         self.name = self.__class__.__name__
@@ -260,22 +260,26 @@ class CogManager:
         if module in self.cogs.keys:
             return self.modules.get(module)
 
-    async def do_event(self, data: dict = None):
-        # trigger event for all cogs
+    async def _do(self, func, data):
+        try:
+            await func(data)
+        except Exception as e:
+            print(e)
+
+    async def do_event(self, ree: list):
         for cog in self.cogs.values():
             for meth in cog.events:
-                if meth.__event__ == data[0]:
-                    # todo this
+                if meth.__event__ == ree[0]:
                     routes = {
                         "room::updateUserList": UpdateUserList,
                         "room::message": Message,
                     }
-                    if choice := routes.get(data[0], False):
-                        print(await meth(choice(**data[1])))
-                        await meth(choice(**data[1]))
+                    if my_choice := routes.get(ree[0], False):
+                        await self._do(meth, my_choice(**ree[1]))
 
     async def do_command(self, command: Command):
         for cog in self.cogs.values():
             for meth in cog.commands:
                 if meth.__command_name__ == command.name:
-                    await meth(command)
+                    await self._do(meth, command)
+
