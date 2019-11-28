@@ -76,22 +76,36 @@ async def message(self, message: Message):
 
 ## Commands
 ```
+-----Fun------
 8ball: <query> standard magic 8ball
 rate: <user> rate someones appearance
 roll: <sides> <dice>, default is single 6 sided
+
+-----Autourl------
+
+-----Movie------
 movie: <query> search The Movie Db for Movies
 imdb: <query> search The Movie Db for TV and movies
 tv: <query> search The Movie Db for TV shows
+
+-----Tokes------
 cheers: Cheers!
 420hour: enables/disables call for tokes hourly.
 timer: a seconds timer 
 tokes: <int> calls for tokes
+
+-----Builtins------
 uptime: get the bot's uptime
 version: get the current version
+
+-----Urban------
+urb: Search Urban Dictionary
+
+-----Debug------
 font: 
 t: test
 me: t
 userlist: test
-urb: Search Urban Dictionary
+
 
 ```

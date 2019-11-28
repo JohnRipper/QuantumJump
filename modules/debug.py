@@ -15,10 +15,10 @@ class Debug(Cog):
         command_data = ""
 
         for cog in self.bot.cm.cogs.values():
+            command_data += f"-----{cog.name}------\n"
             for command in cog.commands:
-                print(command)
-                command_data += (f"{getattr(command, '__command_name__')}: {getattr(command, '__description__')}\n")
-                print(command_data)
+                command_data += f"{getattr(command, '__command_name__')}: {getattr(command, '__description__')}\n"
+            command_data += "\n"
         text = text.format(commands=command_data)
         f.close()
         return text
