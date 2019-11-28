@@ -112,6 +112,7 @@ class Message:
         return json.dumps(self.__dict__)
 
     def jumpson(self):
+        # mimics a server side message to recycle the code in _recv as a terminal based command processor
         return f"42[\"room::message\",{self.json()}]"
 
     @staticmethod
