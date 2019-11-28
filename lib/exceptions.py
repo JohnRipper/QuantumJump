@@ -1,3 +1,4 @@
+# subclass for general Exceptions
 class Error(Exception):
     def __init__(self, message: str = None):
         if message:
@@ -11,6 +12,14 @@ class InvalidLogin(Error):
 
 
 class HttpStatus(Exception):
+    def __init__(self, code: int, message: str = None):
+        if message:
+            print(f"{self.__class__.__name__}: {code}:{message}")
+        else:
+            print(f"{self.__class__.__name__}: {code}")
+
+
+class CogException(Exception):
     def __init__(self, code: int, message: str = None):
         if message:
             print(f"{self.__class__.__name__}: {code}:{message}")
