@@ -5,7 +5,7 @@ from asyncio import Protocol
 from dataclasses import dataclass, field, asdict
 from imp import reload
 from types import ModuleType
-from typing import List
+from typing import List, Union
 
 from lib.command import Command
 from lib.objects import HandleChange, Message, Status, UpdateUserList, User
@@ -262,11 +262,15 @@ class Cog:
 class CogManager:
     modules: dict = field(default_factory=dict)
     cogs: dict = field(default_factory=dict)
+    tasks = []
 
-    def import_module(self, module: str) -> ModuleType:
+    def import_module(self, module: str, bot) -> ModuleType:
         # attempt to reload if already loaded
         if mod := self.modules.get(module, False):
-            return reload(mod)
+            self.unload(module)
+            if m := reload(mod):
+                print(m)
+                self.add_cog(mod=m, name=module, bot=bot)
         # not loaded? try loading.
         try:
             m = importlib.import_module(f"modules.{module}".lower())
@@ -277,7 +281,7 @@ class CogManager:
 
     def load_all(self, module_list: [str], bot):
         for module in module_list:
-            m = self.import_module(module)
+            m = self.import_module(module, bot)
             self.add_cog(m, module, bot)
 
     def add_cog(self, mod: ModuleType, name: str, bot):
@@ -298,26 +302,20 @@ class CogManager:
         if module in self.cogs.keys:
             return self.modules.get(module)
 
-    async def _do(self, func, data):
-        try:
-            await func(data)
-        except Exception as e:
-            print(e)
-
-    async def do_event(self, ree: list):
+    async def do_event(self, data: list):
         for cog in self.cogs.values():
             for meth in cog.events:
-                if meth.__event__ == ree[0]:
+                if meth.__event__ == data[0]:
                     routes = {
                         "room::updateUserList": UpdateUserList,
                         "room::message": Message,
                     }
-                    if my_choice := routes.get(ree[0], False):
-                        await self._do(meth, my_choice(**ree[1]))
+                    if choice := routes.get(data[0], False):
+                        asyncio.create_task(meth(choice(**data[1])))
 
     async def do_command(self, command: Command):
         for cog in self.cogs.values():
             for meth in cog.commands:
                 if meth.__command_name__ == command.name:
-                    await self._do(meth, command)
+                    asyncio.create_task(meth(command))
 
