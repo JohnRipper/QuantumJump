@@ -87,11 +87,10 @@ class QuantumJumpBot:
             prefix = self.settings.Bot.prefix
             if data[1].get("message").startswith(prefix):
                 c = Command(prefix=prefix, data=Message(**data[1]))
-                await self.cm.do_command(c)
-
                 if c.name == "reload" or c.name == "load":
-                    if m := self.cm.import_module(c.message):
+                    if m := self.cm.import_module(c.message, self):
                         self.cm.add_cog(m, c.message, self)
+                        await self.wsend(Message.makeMsg(message=f"loaded|reloaded {c.message}", room=self.room))
                     else:
                         await self.wsend(Message.makeMsg(message=f"failed to load|reload {c.message}", room=self.room))
                 if c.name == "unload":
@@ -99,6 +98,8 @@ class QuantumJumpBot:
                         await self.wsend(Message.makeMsg(message=f"unloaded {c.message}", room=self.room))
                     else:
                         await self.wsend(Message.makeMsg(message=f"Could not unload {c.message}", room=self.room))
+                await self.cm.do_command(c)
+
 
     async def pacemaker(self):
         if self.state == BotState.RUNNING:
