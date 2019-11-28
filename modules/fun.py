@@ -9,14 +9,14 @@ class Fun(Cog):
         super().__init__(bot)
         # self.settings = self.bot.settings["module"]["fun"]
 
-    @makeCommand(name="roll", description="<sides> <dice>, default is single 6 sided")
+    @makeCommand(name="roll",
+                 description="<sides> <dice>, default is single 6 sided")
     async def roll(self, c: Command):
         parts = c.message.split(" ")
         if len(c.message) == 0:
             await self.send_message(self.rolldice())
-        elif len(parts) == 1:
-            await self.send_message(self.rolldice(dice=int(c.message.strip()))
-                                    )
+        elif len(parts) == 1 and c.message.isdigit():
+            await self.send_message(self.rolldice(dice=int(c.message.strip())))
         elif parts[0].isdigit() and parts[1].isdigit():
             await self.send_message(
                 self.rolldice(sides=int(parts[0]), dice=int(parts[1])))
@@ -25,7 +25,7 @@ class Fun(Cog):
 
     def rolldice(self, sides=6, dice=1):
         if sides > 20 or dice > 15:
-            msg = "D&D dice only has 20 sides, wtf m8"
+            msg = f"D&D dice only has 20 sides, wtf m8 and {dice} is way too many dice"
             return msg
         else:
             rolled = []

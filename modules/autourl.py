@@ -20,7 +20,7 @@ class Autourl(Cog):
         msg = message.message
         match = re.findall(r"http.*\S", msg)
         # workaround for youtube playing
-        if re.match(r"\A.?yt", msg):
+        if re.match(r"\A.?yt", msg) or message.handle == self.bot.settings.Bot.nickname:
             pass
         elif msg.startswith(self.exclusion_char) or len(match) == 0:
             pass
