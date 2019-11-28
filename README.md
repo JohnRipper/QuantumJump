@@ -75,6 +75,7 @@ async def message(self, message: Message):
 ```
 
 ## Commands
+```
 8ball: <query> standard magic 8ball
 rate: <user> rate someones appearance
 roll: <sides> <dice>, default is single 6 sided
@@ -92,3 +93,5 @@ t: test
 me: t
 userlist: test
 urb: Search Urban Dictionary
+
+```
