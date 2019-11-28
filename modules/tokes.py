@@ -2,6 +2,7 @@ import asyncio
 import datetime
 import random
 
+from lib.objects import BotState
 from lib.cog import Cog
 from lib.command import Command, makeCommand
 
@@ -24,7 +25,7 @@ class Tokes(Cog):
         asyncio.create_task(self.it_is_420())
 
     async def it_is_420(self):
-        while self.bot.is_running & self.is_running_hourly:
+        while self.bot.state is BotState.RUNNING and self.is_running_hourly:
             minute = datetime.datetime.now().minute
             if minute == 20:
                 await self.send_message("it is 420 somewhere")
