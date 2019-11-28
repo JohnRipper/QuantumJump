@@ -1,3 +1,4 @@
+import json
 import time
 from dataclasses import dataclass, field
 from typing import List
@@ -100,12 +101,29 @@ class HandleChange:
 @dataclass
 class Message:
     message: str
-    handle: str = "ChuckNorris"
+    handle: str = ""
     color: str = "green"
     userId: str = 8675309
-    timestamp: str = time.time()
+    timestamp: str = None
     id: str = 00000
 
+    def json(self):
+        return json.dumps(self.__dict__)
+
+    def jumpson(self):
+        return f"42[{self.json()}]"
+
+    @staticmethod
+    def makeMsg(message: str, room: str) -> str:
+        # use this for making messages to use for wsend
+        data = [
+            "room::message",
+            {
+                "message": message,
+                "room": room
+            }
+        ]
+        return f"42{json.dumps(data)}"
 
 @dataclass
 class PlaylistUpdate:

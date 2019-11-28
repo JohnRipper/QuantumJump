@@ -28,8 +28,14 @@ class QuantumJumpBot:
     async def wsend(self, data):
         if type(data) is list:
             data = "42{}".format(json.dumps(data))
-        print(f"SEND {data}")
+            await self._ws.send(data)
+        elif type(data) is str:
+            if not data.startswith("42") and not data == "2probe" and not data == "5" and not data == "2":
+                data = f"42{data}"
+        else:
+            print("invalid data type for wsend")
         await self._ws.send(data)
+        print(f"SEND {data}")
 
     async def run(self):
         self.cm.load_all(self.settings.Modules, bot=self)
@@ -65,7 +71,6 @@ class QuantumJumpBot:
                 }])
             asyncio.create_task(self.pacemaker())
             return
-
         data = json.loads(message[2:])
         await self.cm.do_event(data=data)
         if data[0] == "self::join":
@@ -80,14 +85,23 @@ class QuantumJumpBot:
             prefix = self.settings.Bot.prefix
             if data[1].get("message").startswith(prefix):
                 c = Command(prefix=prefix, data=Message(**data[1]))
-                if c.name == "reload" or c.name == "load":
-                    m = self.cm.import_module(c.message)
-                    self.cm.add_cog(m, c.message, self)
-                    print("reloaded")
-                if c.name == "unload":
-                    m = self.cm.unload(c.message)
-                # do cog commands.
                 await self.cm.do_command(c)
+
+                if c.name == "reload" or c.name == "load":
+                    if m := self.cm.import_module(c.message):
+                        self.cm.add_cog(m, c.message, self)
+
+                    else:
+                        await self.wsend(Message.makeMsg(message=f"failed to load|reload {c.message}",
+                                                         room=self.settings.Bot.roomname))
+                if c.name == "unload":
+                    if m := self.cm.unload(c.message):
+                        await self.wsend(Message.makeMsg(message=f"unloaded {c.message}",
+                                                         room=self.settings.Bot.roomname))
+                    else:
+                        await self.wsend(Message.makeMsg(message=f"Could not unload {c.message}",
+                                                         room=self.settings.Bot.roomname))
+
 
     async def pacemaker(self):
         if self.is_running:
@@ -96,23 +110,16 @@ class QuantumJumpBot:
             asyncio.create_task(self.pacemaker())
 
     def process_input(self, loop):
-        basemsg = '42["room::message", {}]'
         prefix = self.settings.Bot.prefix
         while True:
             if self.is_running:
                 stdin = input()
                 if stdin.startswith(prefix):
-                    msg = Message(message=stdin).__dict__
-                    formatted_msg = basemsg.format(json.dumps(msg))
                     asyncio.run_coroutine_threadsafe(
-                        self._recv(message=formatted_msg), loop=loop)
+                        self._recv(message=Message(message=stdin).jumpson()), loop=loop)
                 else:
-                    msg = basemsg.format(
-                        json.dumps({
-                            "message": stdin,
-                            "room:": self.settings.Bot.roomname
-                        }))
-                    asyncio.run_coroutine_threadsafe(self.wsend(msg),
+                    asyncio.run_coroutine_threadsafe(self.wsend(Message.makeMsg(message=stdin,
+                                                                                room=self.settings.Bot.roomname)),
                                                      loop=loop)
 
     async def process_message_queue(self):

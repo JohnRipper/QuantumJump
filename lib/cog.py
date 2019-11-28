@@ -230,9 +230,12 @@ class CogManager:
         if mod := self.modules.get(module, False):
             return reload(mod)
         # not loaded? try loading.
-        m = importlib.import_module(f"modules.{module}".lower())
-        self.modules.update({module: m})
-        return m
+        try:
+            m = importlib.import_module(f"modules.{module}".lower())
+            self.modules.update({module: m})
+            return m
+        except ModuleNotFoundError as e:
+            print(e)
 
     def load_all(self, module_list: [str], bot):
         for module in module_list:
@@ -243,9 +246,11 @@ class CogManager:
         cog = getattr(mod, name)
         self.cogs.update({name: cog(bot)})
 
-    def unload(self, module: str):
+    def unload(self, module: str) -> bool:
         if module in self.cogs.keys():
             self.cogs.pop(module)
+            return True
+        return False
 
     def get_cog(self, module: str) -> Cog:
         if module in self.cogs.keys:
@@ -253,7 +258,7 @@ class CogManager:
 
     def get_module(self, module: str) -> Cog:
         if module in self.cogs.keys:
-            return self.module.get(module)
+            return self.modules.get(module)
 
     async def do_event(self, data: dict = None):
         # trigger event for all cogs
@@ -266,6 +271,7 @@ class CogManager:
                         "room::message": Message,
                     }
                     if choice := routes.get(data[0], False):
+                        print(await meth(choice(**data[1])))
                         await meth(choice(**data[1]))
 
     async def do_command(self, command: Command):
