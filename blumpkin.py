@@ -74,7 +74,7 @@ class QuantumJumpBot:
             asyncio.create_task(self.pacemaker())
             return
         data = json.loads(message[2:])
-        await self.cm.do_event(ree=data)
+        await self.cm.do_event(data=data)
         if data[0] == "self::join":
             await self.wsend([
                 "room::handleChange", {
