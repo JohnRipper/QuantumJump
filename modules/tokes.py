@@ -25,8 +25,8 @@ class Tokes(Cog):
 
     async def it_is_420(self):
         while self.bot.is_running & self.is_running_hourly:
-            minutes = datetime.datetime.now().strftime("%M")
-            if minutes == ("20"):
+            minute = datetime.datetime.now().minute
+            if minute == 20:
                 await self.send_message("it is 420 somewhere")
             await asyncio.sleep(60)
             pass
