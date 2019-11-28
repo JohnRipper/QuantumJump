@@ -30,7 +30,6 @@ class QuantumJumpBot:
     async def wsend(self, data):
         if type(data) is list:
             data = "42{}".format(json.dumps(data))
-            await self._ws.send(data)
         elif type(data) is str:
             type_exceptions = ["2probe", "5", "2"]
             if not data.startswith("42") and data not in type_exceptions:

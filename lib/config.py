@@ -13,6 +13,7 @@ default = {
         "roomname": str,
         "nickname": str,
         "prefix": str,
+        "rainbow": bool
     },
     "modules": {
         "enabled": []
@@ -50,7 +51,10 @@ def generate_config():
     config = default.copy()
     botsettings = config["bot"]
     for each in botsettings.keys():
-        botsettings[each] = input(f"Please enter your {each}: ")
+        if botsettings[each] == bool:
+            botsettings[each] = prompt(f"Would you like to enable {each}? y/N ")
+        else:
+            botsettings[each] = input(f"Please enter your {each}: ")
     modules = getmodules()
     print(
         "Enter the number for each module you'd like to enable, separated by commas"
