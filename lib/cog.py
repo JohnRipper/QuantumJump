@@ -9,7 +9,7 @@ from typing import List, Union
 
 from lib.command import Command
 from lib.objects import HandleChange, Message, Status, UpdateUserList, User
-from lib.styling import Colors, Styles
+from lib.styling import Colors, Styles, encodetxt
 
 
 def event(event: str, **attrs):
@@ -55,7 +55,8 @@ class Cog:
         elif color is not None:
             await self.change_color(color)
         if style is not None:
-            message = style.format(message)
+            # TODO check if valid style
+            message = encodetxt(message, style)
         if not room:
             room = self.settings.Bot.roomname
         data = [

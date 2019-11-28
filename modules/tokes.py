@@ -5,7 +5,7 @@ import random
 from lib.objects import BotState
 from lib.cog import Cog
 from lib.command import Command, makeCommand
-from lib.styling import Colors, Styles
+from lib.styling import Colors, Styles, encodetxt
 
 CHEERS = ["▂▅▇ 🔥 CHEERS 🔥 ▇▅▂"]
 ACTIONS = []
@@ -49,7 +49,7 @@ class Tokes(Cog):
 
     @makeCommand(name="cheers", description="Cheers!")
     async def cheers(self, c: Command):
-        await self.send_message(random.choice(CHEERS), style=Styles.italic)
+        await self.send_message(random.choice(CHEERS), style=Styles.script)
 
     @makeCommand(name="tokes", description="<int> calls for tokes")
     async def tokes(self, c: Command):
