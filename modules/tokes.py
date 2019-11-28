@@ -5,6 +5,7 @@ import random
 from lib.objects import BotState
 from lib.cog import Cog
 from lib.command import Command, makeCommand
+from lib.styling import Colors, Styles
 
 CHEERS = ["▂▅▇ 🔥 CHEERS 🔥 ▇▅▂"]
 ACTIONS = []
@@ -48,7 +49,7 @@ class Tokes(Cog):
 
     @makeCommand(name="cheers", description="Cheers!")
     async def cheers(self, c: Command):
-        await self.send_message(random.choice(CHEERS))
+        await self.send_message(random.choice(CHEERS), style=Styles.italic)
 
     @makeCommand(name="tokes", description="<int> calls for tokes")
     async def tokes(self, c: Command):
@@ -69,6 +70,6 @@ class Tokes(Cog):
                 if minutes - i <= 5 & minutes - i != 0:
                     await self.send_message(f"{minutes} left before tokes.")
             await asyncio.sleep(seconds)
-            await self.send_message(f"Time for tokes!")
+            await self.send_message("Time for tokes!", color=Colors.green, style=Styles.bold)
         else:
-            await self.send_message(f"Time for tokes!")
+            await self.send_message("Time for tokes!", color=Colors.green, style=Styles.bold)
