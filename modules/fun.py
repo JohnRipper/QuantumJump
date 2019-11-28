@@ -9,8 +9,7 @@ class Fun(Cog):
         super().__init__(bot)
         # self.settings = self.bot.settings["module"]["fun"]
 
-    @makeCommand(name="roll",
-                 description="<sides> <dice>, default is single 6 sided")
+    @makeCommand(name="roll", description="<sides> <dice>, default is single 6 sided")
     async def roll(self, c: Command):
         parts = c.message.split(" ")
         if len(c.message) == 0:
