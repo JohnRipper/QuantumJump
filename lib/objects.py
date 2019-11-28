@@ -127,6 +127,13 @@ class Message:
         ]
         return f"42{json.dumps(data)}"
 
+
+@dataclass
+class JumpinError:
+    timestamp: str
+    context: str
+    message: str
+
 @dataclass
 class PlaylistUpdate:
     startTime: str = None

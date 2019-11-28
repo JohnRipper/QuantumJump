@@ -8,7 +8,7 @@ from types import ModuleType
 from typing import List, Union
 
 from lib.command import Command
-from lib.objects import HandleChange, Message, Status, UpdateUserList, User
+from lib.objects import HandleChange, Message, Status, UpdateUserList, User, JumpinError
 from lib.styling import Colors, Styles, encodetxt
 
 
@@ -310,6 +310,7 @@ class CogManager:
                     routes = {
                         "room::updateUserList": UpdateUserList,
                         "room::message": Message,
+                        "client::error": JumpinError,
                     }
                     if choice := routes.get(data[0], False):
                         asyncio.create_task(meth(choice(**data[1])))
