@@ -1,6 +1,7 @@
 import json
 import time
 from dataclasses import dataclass, field
+from enum import Enum
 from typing import List
 
 
@@ -103,15 +104,15 @@ class Message:
     message: str
     handle: str = ""
     color: str = "green"
-    userId: str = 8675309
-    timestamp: str = None
-    id: str = 00000
+    userId: str = "8675309"
+    timestamp: str = time.time().__str__()
+    id: str = "00000"
 
     def json(self):
         return json.dumps(self.__dict__)
 
     def jumpson(self):
-        return f"42[{self.json()}]"
+        return f"42[\"room::message\",{self.json()}]"
 
     @staticmethod
     def makeMsg(message: str, room: str) -> str:
@@ -223,3 +224,10 @@ class UserList(JumpinObject):
     attrs: Attrs = None
     settings: Settings = None
     users: List[User] = field(default_factory=User)
+
+
+class BotState(Enum):
+    INITIALIZED = 0
+    RUNNING = 1
+    DISCONNECT = 2
+    EXCEPTION = 3
