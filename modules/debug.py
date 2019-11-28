@@ -3,7 +3,7 @@ import json
 from lib.cog import Cog, event
 from lib.command import makeCommand, Command
 from lib.objects import User, Status, HandleChange, Message, UpdateUserList
-from lib.styling import Colors
+from lib.styling import Colors, Styles, encodetxt
 
 
 class Debug(Cog):
@@ -19,6 +19,17 @@ class Debug(Cog):
     @makeCommand(name="me", description="t")
     async def thirdperson(self, c: Command):
         await self.send_action(c.message)
+
+    @makeCommand(name="font", description="")
+    async def demofonts(self, c: Command):
+        parts = c.message.split(" ")
+        type_ = parts[0]
+        message = " ".join(parts[1:])
+        if type_ in Styles.__dict__.keys():
+            formated = encodetxt(message, Styles.__dict__[type_])
+        else:
+            formated = encodetxt(c.message, Styles.script)
+        await self.send_message(formated)
 
     @event(event="room::message")
     async def message(self, message: Message):

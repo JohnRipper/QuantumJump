@@ -10,6 +10,7 @@ websockets = "*"
 tomlkit = "*"
 aiohttp = "*"
 beautifulsoup4 = "*"
+unidecode = "*"
 
 [requires]
 python_version = "3.8"

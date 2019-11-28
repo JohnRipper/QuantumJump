@@ -1,6 +1,9 @@
 import random
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 from typing import Callable
+
+import unidecode
+from lib import fonts
 
 
 @dataclass
@@ -25,8 +28,25 @@ class Colors:
     random: Callable = lambda: random.choice(Colors._all)
 
 
-@dataclass
 class Styles:
-    # format(str)
-    bold: str = "*{}*"
-    italic: str = "_{}_"
+    bold: dict = fonts.BOLD
+    italic: dict = fonts.ITALIC
+    bold_italic: dict = fonts.BOLD_ITALIC
+    bubble: dict = fonts.BUBBLE
+    bubble_invert: dict = fonts.BUBBLE_NEG
+    square: dict = fonts.SQUARE
+    square_invert: dict = fonts.SQUARE_NEG
+    script: dict = fonts.SCRIPT
+
+
+def decodetxt(text: str) -> str:
+    decoded_text = unidecode(text)
+    return decoded_text
+
+
+def encodetxt(text: str, style=None) -> str:
+    characters = list(text)
+    for position, char in enumerate(characters):
+        if char in style.keys():
+            characters[position] = style[char]
+    return ''.join(characters)
