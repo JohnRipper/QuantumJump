@@ -22,7 +22,7 @@ class Youtube(Cog):
     @makeCommand(name="yt", description="<query | url> play youtube")
     async def playyt(self, c: Command):
         print(c.message)
-        if "youtub" in c.message:
+        if re.match("youtube(.be\/|.com\/watch\?)", c.message):
             ytid = re.search("(?:v=|\.be\/)(.{11})", c.message)[1]
             lazylook = await self.ytsearch(ytid)
             await self.play(video_id=ytid, title=lazylook["title"])
