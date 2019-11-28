@@ -45,6 +45,9 @@ class Cog:
     #####
     # client control
     ######
+    async def ws_send(self, data):
+        await self.bot.wsend(data=data)
+
     async def send_message(self, message: str, room: str = None, color=None, style=None):
         if color is None and self.settings.Bot.rainbow:
             color = Colors.random()
@@ -64,8 +67,26 @@ class Cog:
         ]
         await self.ws_send(data=data)
 
-    async def ws_send(self, data):
-        await self.bot.wsend(data=data)
+    async def send_action(self, message: str, room: str = None, color=None):
+        """/me messages, styling doesn't work"""
+        if color is None and self.settings.Bot.rainbow:
+            color = Colors.random()
+            await self.change_color(color)
+        elif color is not None:
+            await self.change_color(color)
+        if not room:
+            room = self.settings.Bot.roomname
+        data = [
+            "room::command",
+            {
+                "message": {
+                    "command": "me",
+                    "value": message
+                },
+                "room": room
+            }
+        ]
+        await self.ws_send(data=data)
 
     #####
     # Jumpin Commands
