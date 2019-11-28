@@ -9,6 +9,7 @@ verify_ssl = true
 websockets = "*"
 tomlkit = "*"
 aiohttp = "*"
+beautifulsoup4 = "*"
 
 [requires]
 python_version = "3.8"
