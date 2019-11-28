@@ -191,7 +191,6 @@ class Cog():
 
     @event(event="room::updateUserList")
     async def updateUserList(self, userlist: UpdateUserList):
-        print("this" + userlist.user.username)
         pass
 
     @event(event="room::updateIgnore")
