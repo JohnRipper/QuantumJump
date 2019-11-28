@@ -12,7 +12,7 @@ async def start(executor, bot, loop, count=0):
         await bot.run()
     except websockets.WebSocketException as e:
         bot.state = BotState.EXCEPTION
-        if config.Bot["restart_on_error"] and count < config.Bot["restart_attemps"]:
+        if config.Bot["restart_on_error"] and count <= config.Bot["restart_attemps"]:
             count += 1
             await start(executor, bot, loop, count)
 
@@ -28,8 +28,14 @@ except FileNotFoundError:
     else:
         sys.exit("Couldn't load the configuration")
 
+
+def exception_handler(loop, context):
+    msg = context.get("exception", context["message"])
+    print(f"Exception caught: {msg}")
+
 executor = futures.ThreadPoolExecutor(max_workers=2, )
 bot = QuantumJumpBot(config)
 loop = asyncio.get_event_loop()
+loop.set_exception_handler(exception_handler)
 loop.run_until_complete(start(executor, bot, loop))
 
