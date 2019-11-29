@@ -5,5 +5,8 @@ prefix = ""
 roomname = ""
 username = ""
 
+restart_on_error = true
+restart_attempts = 2
+
 [modules]
 enabled = []
