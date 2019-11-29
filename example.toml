@@ -18,6 +18,8 @@ test = "Test Good"
 # escape regex cause tomlkit
 pattern = "http.*\\S"
 exclusion_char = "!"
+use_tor = false
+tor_addr = "socks5://127.0.0.1:9050"
 ignores = [
         "jumpin.chat",
         "tinychat.com\\/room\\/"

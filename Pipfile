@@ -12,6 +12,7 @@ aiohttp = "*"
 beautifulsoup4 = "*"
 unidecode = "*"
 wikipedia = "*"
+aiohttp-socks = "*"
 
 [requires]
 python_version = "3.8"

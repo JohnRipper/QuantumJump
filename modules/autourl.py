@@ -1,6 +1,7 @@
 import re
 
 import aiohttp
+from aiohttp_socks import SocksConnector
 from bs4 import BeautifulSoup as bs4
 
 from lib.cog import Cog, event
@@ -8,6 +9,12 @@ from lib.objects import Message
 
 
 class Autourl(Cog):
+    def __init__(self, bot):
+        super().__init__(bot)
+        self.connector = None
+        if self.settings["use_tor"]:
+            self.connector = SocksConnector.from_url(self.settings["tor_addr"])
+
     @event("room::message")
     async def message(self, message: Message):
         msg = message.message
@@ -32,7 +39,7 @@ class Autourl(Cog):
 
     async def get_title(self, url):
         url = url.strip()
-        async with aiohttp.ClientSession() as session:
+        async with aiohttp.ClientSession(connector=self.connector) as session:
             async with session.get(url) as response:
                 if response.status == 200:
                     text = await response.text()
