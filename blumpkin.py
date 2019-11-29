@@ -16,10 +16,11 @@ class QuantumJumpBot:
         self._ws = None
         self.state = BotState(BotState.INITIALIZED)
         self.start_time = time.time()
-        self.settings = settings
         self.api = Api()
         self.cm = CogManager()
-        self.room = self.settings.Bot.roomname
+        self.settings = settings
+        self.botconfig = self.settings.Bot
+        self.room = self.botconfig.roomname
 
     @property
     async def userlist(self) -> [User]:
@@ -40,7 +41,8 @@ class QuantumJumpBot:
         print(f"SEND {data}")
 
     async def run(self):
-        self.cm.load_all(self.settings.Modules, bot=self)
+        enabled_modules = self.settings.Modules["enabled"]
+        self.cm.load_all(enabled_modules, bot=self)
         await self.connect()
 
     async def disconnect(self):
@@ -48,8 +50,8 @@ class QuantumJumpBot:
         await self._ws.close()
 
     async def connect(self):
-        await self.api.login(self.settings.Bot.username,
-                             self.settings.Bot.password)
+        await self.api.login(self.botconfig.username,
+                             self.botconfig.password)
 
         async with websockets.connect(
                 uri=await self.api.get_wss(),
@@ -79,12 +81,12 @@ class QuantumJumpBot:
             await self.wsend([
                 "room::handleChange", {
                     "userId": self.api.session.user.get("user_id"),
-                    "handle": self.settings.Bot.nickname
+                    "handle": self.botconfig.nickname
                 }
             ])
 
         if data[0] == "room::message":
-            prefix = self.settings.Bot.prefix
+            prefix = self.botconfig.prefix
             if data[1].get("message").startswith(prefix):
                 c = Command(prefix=prefix, data=Message(**data[1]))
                 if c.name == "reload" or c.name == "load":
@@ -108,7 +110,7 @@ class QuantumJumpBot:
             asyncio.create_task(self.pacemaker())
 
     def process_input(self, loop):
-        prefix = self.settings.Bot.prefix
+        prefix = self.botconfig.prefix
         while True:
             if self.state == BotState.RUNNING:
                 stdin = input()

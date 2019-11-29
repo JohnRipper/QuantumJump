@@ -1,12 +1,68 @@
-[bot]
+[Bot]
 nickname = ""
 password = ""
-prefix = ""
+prefix = "!"
 roomname = ""
 username = ""
+rainbow = true
 
-restart_on_error = true
-restart_attempts = 2
+[Modules]
+enabled = ["Debug", "Builtins", "Autourl", "Fun", "Movie", "Tokes", "Urban", "Youtube"]
 
-[modules]
-enabled = []
+[Modules.Debug]
+test = "Test Good"
+
+[Modules.Builtins]
+
+[Modules.Autourl]
+# escape regex cause tomlkit
+pattern = "http.*\\S"
+exclusion_char = "!"
+ignores = [
+        "jumpin.chat",
+        "tinychat.com\\/room\\/"
+        ]
+whitelist_mode = false
+whitelist = [
+          "youtu(.be|.com)",
+          "wikipedia.org"
+          ]
+
+[Modules.Fun]
+8ballcustom = []
+fancy_dice = true
+allow_rate = true
+
+[Modules.Movie]
+api_key = ""
+
+[Modules.Tokes]
+hourly_420 = true
+# these support the :emoji: things
+cheers = ["▂▅▇ 🔥 CHEERS 🔥 ▇▅▂"]
+pre = [
+    "packs their bowl",
+    "is getting ready to toke",
+    "wants to smoke some green",
+    "is down to toke"
+    ]
+post = [
+    "torches", "lights up", "blazes", "bakes",
+    "hotboxes your nan's bathroom", "puffs",
+    "sparks their blunt", "lights their blunt",
+    "sparks their joint", "lights their joint",
+    "tokes", "sits this one out",
+    "gets a shotgun from your mom"
+    ]
+
+
+[Modules.Urban]
+blacklist = ["spam"]
+
+[Modules.Wikipedia]
+language = "en"
+include_url = true
+sentences = 2
+
+[Modules.Youtube]
+api_key = ""

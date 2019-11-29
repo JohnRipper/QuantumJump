@@ -7,13 +7,10 @@ from lib.command import Command, makeCommand
 class Movie(Cog):
     def __init__(self, bot):
         super().__init__(bot)
-        # self.settings = self.bot.settings["module"]["movie"]
-        # set base url for each query for brevity
-        self.apikey = ""
+        self.apikey = self.settings["api_key"]
         self.search_url = "https://api.themoviedb.org/3/search/multi?api_key={}&query={}"
-        self.movie_url = ""
-        self.tv_url = ""
-        # works abit like youtube, general search then another request using an ID
+        # self.movie_url = ""
+        # self.tv_url = ""
         self.id_url = "https://api.themoviedb.org/3/{media_type}/{id}?api_key="
 
     @makeCommand(name="imdb",

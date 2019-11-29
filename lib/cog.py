@@ -8,7 +8,7 @@ from types import ModuleType
 from typing import List, Union
 
 from lib.command import Command
-from lib.objects import HandleChange, Message, Status, UpdateUserList, User
+from lib.objects import HandleChange, Message, Status, UpdateUserList, User, JumpinError
 from lib.styling import Colors, Styles, encodetxt
 
 
@@ -26,7 +26,8 @@ class Cog:
         self.bot = bot
         self.name = self.__class__.__name__
         self.__cog__ = True
-        self.settings = bot.settings
+        self.bot_settings = bot.botconfig
+        self.settings = bot.settings.Modules[self.__class__.__name__]
 
         self.events = [getattr(self, name)  # what gets stored.
                        for name in dir(self)  # loop
@@ -49,7 +50,7 @@ class Cog:
         await self.bot.wsend(data=data)
 
     async def send_message(self, message: str, room: str = None, color=None, style=None):
-        if color is None and self.settings.Bot.rainbow:
+        if color is None and self.bot_settings.rainbow:
             color = Colors.random()
             await self.change_color(color)
         elif color is not None:
@@ -58,7 +59,7 @@ class Cog:
             # TODO check if valid style
             message = encodetxt(message, style)
         if not room:
-            room = self.settings.Bot.roomname
+            room = self.bot_settings.roomname
         data = [
             "room::message",
             {
@@ -68,15 +69,18 @@ class Cog:
         ]
         await self.ws_send(data=data)
 
-    async def send_action(self, message: str, room: str = None, color=None):
+    async def send_action(self, message: str, room: str = None, color=None, style=None):
         """/me messages, styling doesn't work"""
-        if color is None and self.settings.Bot.rainbow:
+        if color is None and self.bot_settings.rainbow:
             color = Colors.random()
             await self.change_color(color)
         elif color is not None:
             await self.change_color(color)
+        if style is not None:
+            # TODO check if valid style
+            message = encodetxt(message, style)
         if not room:
-            room = self.settings.Bot.roomname
+            room = self.bot_settings.roomname
         data = [
             "room::command",
             {
@@ -192,7 +196,7 @@ class Cog:
 
     async def is_still_joined(self, room: str = None):
         if not room:
-            room = self.settings.Bot.roomname
+            room = self.bot_settings.roomname
         data = [
             "room::isStillJoined",
             {
@@ -204,7 +208,7 @@ class Cog:
 
     async def join(self, room: str = None):
         if not room:
-            room = self.settings.Bot.roomname
+            room = self.bot_settings.roomname
         data = ["room::join", {"room": room}]
         await self.ws_send(data=data)
 
@@ -310,6 +314,7 @@ class CogManager:
                     routes = {
                         "room::updateUserList": UpdateUserList,
                         "room::message": Message,
+                        "client::error": JumpinError,
                     }
                     if choice := routes.get(data[0], False):
                         asyncio.create_task(meth(choice(**data[1])))

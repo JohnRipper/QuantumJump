@@ -12,6 +12,7 @@ A few Python modules are required:
 - [tomlkit](https://github.com/sdispater/tomlkit)
 - [aiohttp](https://github.com/aio-libs/aiohttp/)
 - [beautifulsoup4](https://code.launchpad.net/beautifulsoup)
+- [wikipedia](https://github.com/goldsmith/Wikipedia)
 
 QuantumJump is confirmed working on GNU/Linux, the status of operation on other operating systems is currently unknown.
 Feel free to give it a go and report back.
@@ -23,7 +24,7 @@ pipenv install
 ```
 With `pip`
 ```
-pip3.8 install --user websockets tomlkit aiohttp beautifulsoup4
+pip3.8 install --user websockets tomlkit aiohttp beautifulsoup4 wikipedia
 ```
 
 ## Running
@@ -75,37 +76,39 @@ async def message(self, message: Message):
 ```
 
 ## Commands
-```
------Fun------
-8ball: <query> standard magic 8ball
-rate: <user> rate someones appearance
-roll: <sides> <dice>, default is single 6 sided
+### Builitins
+| Command | Argument | Description                        |
+|---------|----------|------------------------------------|
+| uptime  | N/A      | current uptime                     |
+| version | N/A      | current version and latest version |
+| timer   | seconds  | count down                         |
 
------Autourl------
+### Fun
+| Command | Argument   | Description            |
+|---------|------------|------------------------|
+| roll    | sides dice | roll dice, default is 1 die, 6 sides |
+| rate    | things     | rate a thing out of 10 |
+| 8ball   | question   | standard magic 8ball   |
 
------Movie------
-movie: <query> search The Movie Db for Movies
-imdb: <query> search The Movie Db for TV and movies
-tv: <query> search The Movie Db for TV shows
+### Movie
+| Command | Argument | Description |
+|---------|----------|-------------|
+| imdb    | query    | search The Movie Db for TV and movies |
 
------Tokes------
-cheers: Cheers!
-420hour: enables/disables call for tokes hourly.
-timer: a seconds timer 
-tokes: <int> calls for tokes
+### Tokes
+| Command | Argument | Description                     |
+|---------|----------|---------------------------------|
+| 420hour | N/A      | toggle hourly 420 notifications |
+| tokes   | seconds  | call tokes in a bit             |
+| cheers  | N/A      | Cheers!                         |
 
------Builtins------
-uptime: get the bot's uptime
-version: get the current version
+### Youtube
+| Command | Argument | Description |
+|---------|----------|-------------|
+| yt      | title or url |      play a video |
 
------Urban------
-urb: Search Urban Dictionary
-
------Debug------
-font: 
-t: test
-me: t
-userlist: test
-
-
+### Urban
+| Command | Argument | Description |
+|---------|----------|-------------|
+| urb     | query    | search Urban Dictionary |
 ```

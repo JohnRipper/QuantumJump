@@ -72,6 +72,19 @@ class User(JumpinObject):
     isBroadcasting: bool = False
     isGold: bool = False
 
+    @property
+    def ismod(self):
+        if self.operator_id is not None and self.assignedBy is None:
+            return True
+        else:
+            return False
+
+    @property
+    def isop(self):
+        if self.operator_id is not None and self.assignedBy is not None:
+            return True
+        else:
+            return False
 
 @dataclass
 class Session:
@@ -126,6 +139,13 @@ class Message:
             }
         ]
         return f"42{json.dumps(data)}"
+
+
+@dataclass
+class JumpinError:
+    timestamp: str
+    context: str
+    message: str
 
 @dataclass
 class PlaylistUpdate:

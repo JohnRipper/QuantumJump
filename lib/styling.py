@@ -1,8 +1,9 @@
 import random
+import re
 from dataclasses import dataclass
 from typing import Callable
 
-import unidecode
+# import unidecode
 from lib import fonts
 
 
@@ -38,15 +39,18 @@ class Styles:
     square_invert: dict = fonts.SQUARE_NEG
     script: dict = fonts.SCRIPT
 
-
-def decodetxt(text: str) -> str:
-    decoded_text = unidecode(text)
-    return decoded_text
+# TODO
+# def decodetxt(text: str) -> str:
+#     decoded_text = unidecode(text)
+#     return decoded_text
 
 
 def encodetxt(text: str, style=None) -> str:
+    emoji = re.findall(":\w*:", text)
+    for each in emoji:
+        text = re.sub(each, "{}", text)
     characters = list(text)
     for position, char in enumerate(characters):
         if char in style.keys():
             characters[position] = style[char]
-    return ''.join(characters)
+    return ''.join(characters).format(*emoji)
