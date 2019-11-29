@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "7c1d3bd206e1bc93e4bee19266d46e4a81eb30d611ac5a3a578488f74e47583f"
+            "sha256": "025c455de1deffd49872eb778e27ca6e349e6ed32d135f1ce3689ede9bd395cf"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -33,14 +33,6 @@
             ],
             "index": "pypi",
             "version": "==3.6.2"
-        },
-        "aiohttp-socks": {
-            "hashes": [
-                "sha256:e473ee222b001fe33798957b9ce3352b32c187cf41684f8e2259427925914993",
-                "sha256:eebd8939a7c3c1e3e7e1b2552c60039b4c65ef6b8b2351efcbdd98290538e310"
-            ],
-            "index": "pypi",
-            "version": "==0.2.2"
         },
         "async-timeout": {
             "hashes": [
@@ -129,14 +121,6 @@
             ],
             "index": "pypi",
             "version": "==0.5.8"
-        },
-        "unidecode": {
-            "hashes": [
-                "sha256:1d7a042116536098d05d599ef2b8616759f02985c85b4fef50c78a5aaf10822a",
-                "sha256:2b6aab710c2a1647e928e36d69c21e76b453cd455f4e2621000e54b2a9b8cce8"
-            ],
-            "index": "pypi",
-            "version": "==1.1.1"
         },
         "urllib3": {
             "hashes": [

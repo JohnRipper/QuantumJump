@@ -1,7 +1,6 @@
 import re
 
 import aiohttp
-from aiohttp_socks import SocksConnector
 from bs4 import BeautifulSoup as bs4
 
 from lib.cog import Cog, event
@@ -13,7 +12,12 @@ class Autourl(Cog):
         super().__init__(bot)
         self.connector = None
         if self.settings["use_tor"]:
-            self.connector = SocksConnector.from_url(self.settings["tor_addr"])
+            try:
+                from aiohttp_socks import SocksConnector
+                self.connector = SocksConnector.from_url(
+                    self.settings["tor_addr"])
+            except ImportError:
+                raise ImportError
 
     @event("room::message")
     async def message(self, message: Message):

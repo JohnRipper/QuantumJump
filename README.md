@@ -14,6 +14,9 @@ A few Python modules are required:
 - [beautifulsoup4](https://code.launchpad.net/beautifulsoup)
 - [wikipedia](https://github.com/goldsmith/Wikipedia)
 
+Optional:
+[aiohttp_socks](https://github.com/romis2012/aiohttp-socks) for Tor support in Autourl
+
 QuantumJump is confirmed working on GNU/Linux, the status of operation on other operating systems is currently unknown.
 Feel free to give it a go and report back.
 
@@ -37,21 +40,6 @@ With `python`
 python3.8 run.py
 ```
 Upon first run the bot will search for `config.toml`, if it doesn't exist it will walk you through configuration.
-
-
-### Example Configuration
-```toml
-[bot]
-nickname = "quantum"
-password = "topsecret"
-prefix = "!"
-rainbow = true
-roomname = "topsecret"
-username = "notabot"
-
-[modules]
-enabled = ["Debug", "Urban", "Builtins", "Autourl", "Movie", "Fun", "Tokes"]
-```
 
 ## Porting To QuantumJump
 `makeCommand`
