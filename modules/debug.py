@@ -7,9 +7,7 @@ from lib.styling import Colors, Styles, encodetxt
 
 
 class Debug(Cog):
-
     async def get_template(self):
-
         f = open('./docs/help_template.md', 'r')
         text = f.read()
         command_data = ""
@@ -23,14 +21,13 @@ class Debug(Cog):
         f.close()
         return text
 
-    @makeCommand(name="t", description="test")
-    async def generate_readme(self, c: Command):
-        generated = await self.get_template()
-        f = open('./README.md', 'w')
-        f.write(generated)
-        f.flush()
-        f.close()
-
+    # @makeCommand(name="t", description="test")
+    # async def generate_readme(self, c: Command):
+    #     generated = await self.get_template()
+    #     f = open('./README.md', 'w')
+    #     f.write(generated)
+    #     f.flush()
+    #     f.close()
 
     @makeCommand(name="userlist", description="test")
     async def vagina(self, c: Command):
@@ -52,14 +49,10 @@ class Debug(Cog):
             formated = encodetxt(c.message, Styles.script)
         await self.send_message(formated)
 
-    @makeCommand(name="whoami", description="")
-    async def whoami(self, c: Command):
-        users = await self.bot.userlist
-        print(a)
-
     @makeCommand(name="test", description="")
     async def testit(self, c: Command):
         await self.send_message(self.settings["test"])
+
     #####
     # Events
     #####
