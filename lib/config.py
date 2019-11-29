@@ -6,31 +6,15 @@ from tomlkit import loads as tomlload
 
 from util import prompt
 
-default = {
-    "bot": {
-        "username": str,
-        "password": str,
-        "roomname": str,
-        "nickname": str,
-        "prefix": str,
-        "rainbow": bool
-    },
-    "Modules": {
-        "enabled": []
-    }
-}
-
 
 class Configuration:
     def __init__(self, path: str):
         self.path = Path(path)
         if self.path.exists():
             self.full = self.load()
-            print(self.full)
             self.Bot = make_dataclass("Bot_Configuration",
                                       [(k, type(v), v)
                                        for k, v in self.full["Bot"].items()])
-            print(self.Bot)
             self.Modules = self.full["Modules"]
         else:
             raise FileNotFoundError(path)
@@ -50,10 +34,10 @@ def getmodules() -> list:
 
 
 def generate_config():
-    config = default.copy()
-    botsettings = config["bot"]
+    config = tomlload(Path("example.toml").read_text())
+    botsettings = config["Bot"]
     for each in botsettings.keys():
-        if botsettings[each] == bool:
+        if type(botsettings[each]) == bool:
             botsettings[each] = prompt(f"Would you like to enable {each}? y/N ")
         else:
             botsettings[each] = input(f"Please enter your {each}: ")
@@ -64,9 +48,11 @@ def generate_config():
     print("Example: 1,5,8")
     message = ", ".join([f"{i}) {v}" for i, v in enumerate(modules)])
     to_enable = input(f"{message}\n")
+    # clear existing list
+    config["Modules"]["enabled"] = []
     for module_index in to_enable.split(","):
         if module_index.isdigit() and int(module_index) <= len(modules):
-            config["modules"]["enabled"].append(modules[int(module_index)])
+            config["Modules"]["enabled"].append(modules[int(module_index)])
     return tomldump(config)
 
 
