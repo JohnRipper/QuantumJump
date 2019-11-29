@@ -15,16 +15,17 @@ test = "Test Good"
 [Modules.Builtins]
 
 [Modules.Autourl]
+# escape regex cause tomlkit
 pattern = "http.*\\S"
 exclusion_char = "!"
 ignores = [
         "jumpin.chat",
-        "tinychat\\.com\\/room\\/"
+        "tinychat.com\\/room\\/"
         ]
 whitelist_mode = false
 whitelist = [
-          "youtu(\\.be|\\.com)",
-          "wikipedia\\.org"
+          "youtu(.be|.com)",
+          "wikipedia.org"
           ]
 
 [Modules.Fun]
@@ -37,6 +38,23 @@ api_key = ""
 
 [Modules.Tokes]
 hourly_420 = true
+# these support the :emoji: things
+cheers = ["▂▅▇ 🔥 CHEERS 🔥 ▇▅▂"]
+pre = [
+    "packs their bowl",
+    "is getting ready to toke",
+    "wants to smoke some green",
+    "is down to toke"
+    ]
+post = [
+    "torches", "lights up", "blazes", "bakes",
+    "hotboxes your nan's bathroom", "puffs",
+    "sparks their blunt", "lights their blunt",
+    "sparks their joint", "lights their joint",
+    "tokes", "sits this one out",
+    "gets a shotgun from your mom"
+    ]
+
 
 [Modules.Urban]
 blacklist = ["spam"]

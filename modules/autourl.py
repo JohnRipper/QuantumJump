@@ -21,7 +21,7 @@ class Autourl(Cog):
             if self.ignore_msg(match[0]) is False:
                 title = await self.get_title(match[0])
                 if title:
-                    await self.send_message(title)
+                    await self.send_message(f"[ {title} ]")
 
     def ignore_msg(self, msg):
         for each in self.settings["ignores"]:
