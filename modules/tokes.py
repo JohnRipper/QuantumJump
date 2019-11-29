@@ -45,19 +45,37 @@ class Tokes(Cog):
 
     @makeCommand(name="tokes", description="<int> calls for tokes")
     async def tokes(self, c: Command):
-        if c.message.isdigit():
-            total_seconds = int(c.message)
+        await self.do("tokes", c.message)
+
+    @makeCommand(name="chugs", description="<int> calls for chugs")
+    async def chugs(self, c: Command):
+        await self.do("chugs", c.message)
+
+    @makeCommand(name="call", description="<str> <int> calls for chugs")
+    async def call_thing(self, c: Command):
+        thing, seconds = c.message.split(" ", 1)
+        if type(thing) is str and type(seconds) is int:
+            await self.do(thing, seconds)
+
+    async def do(self, thing: str, total_seconds: int):
+        if total_seconds == 0:
+            await self.send_message(f"Time for {thing}!",
+                                    color=Colors.greenalt,
+                                    style=Styles.bold)
+            await self.send_action(random.choice(self.post_timer),
+                                   color=Colors.greenalt)
+        else:
             minutes = int(total_seconds / 60)
             seconds = int(total_seconds % 60)
             # starting message
             if minutes != 0:
                 await self.send_message(
-                    f"Calling for tokes in {minutes} minutes {seconds} seconds!",
+                    f"Calling for {thing} in {minutes} minutes {seconds} seconds!",
                     color=Colors.greenalt)
                 await self.send_action(random.choice(self.prepares),
                                        color=Colors.greenalt)
             else:
-                await self.send_message(f"Calling for tokes in {seconds}!",
+                await self.send_message(f"Calling for {thing} in {seconds}!",
                                         color=Colors.greenalt)
                 await self.send_action(random.choice(self.prepares),
                                        color=Colors.greenalt)
@@ -67,14 +85,9 @@ class Tokes(Cog):
                 if minutes - i <= 5 & minutes - i != 0:
                     await self.send_message(f"{minutes} left before tokes.")
             await asyncio.sleep(seconds)
-            await self.send_message("Time for tokes!",
+            await self.send_message(f"Time for {thing}!",
                                     color=Colors.greenalt,
                                     style=Styles.bold)
             await self.send_action(random.choice(self.post_timer),
                                    color=Colors.greenalt)
-        else:
-            await self.send_message("Time for tokes!",
-                                    color=Colors.greenalt,
-                                    style=Styles.bold)
-            await self.send_action(random.choice(self.post_timer),
-                                   color=Colors.greenalt)
+
