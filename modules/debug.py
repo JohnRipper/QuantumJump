@@ -10,7 +10,7 @@ class Debug(Cog):
 
     async def get_template(self):
 
-        f = open('./data/help_template.md', 'r')
+        f = open('./docs/help_template.md', 'r')
         text = f.read()
         command_data = ""
 
