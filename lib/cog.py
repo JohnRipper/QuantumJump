@@ -69,13 +69,16 @@ class Cog:
         ]
         await self.ws_send(data=data)
 
-    async def send_action(self, message: str, room: str = None, color=None):
+    async def send_action(self, message: str, room: str = None, color=None, style=None):
         """/me messages, styling doesn't work"""
         if color is None and self.bot_settings.rainbow:
             color = Colors.random()
             await self.change_color(color)
         elif color is not None:
             await self.change_color(color)
+        if style is not None:
+            # TODO check if valid style
+            message = encodetxt(message, style)
         if not room:
             room = self.bot_settings.roomname
         data = [

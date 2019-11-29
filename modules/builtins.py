@@ -3,6 +3,7 @@ from datetime import datetime
 
 from lib.cog import Cog
 from lib.command import Command, makeCommand
+from lib.styling import Styles
 from util import get_current_sha1  # , get_latest_sha1
 
 
@@ -24,9 +25,10 @@ class Builtins(Cog):
         print(difference)
         print(difference[:-7])
         # strip after the decimal
-        message = ":stopwatch: current uptime is {}".format(
+        message = "has been alive for {} :stopwatch:".format(
             str(difference)[:7].replace(":", ";"))
-        await self.send_message(message)
+        await self.send_action(message, style=Styles.bold)
+        # await self.send_message(message)
 
     @makeCommand(name="timer", description="a seconds timer ")
     async def timer(self, c: Command):
