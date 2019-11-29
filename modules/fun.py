@@ -33,8 +33,7 @@ class Fun(Cog):
             for die in range(dice):
                 r = random.randint(1, sides)
                 total += r
-                # if sides == 6 and self.settings["fancydice"] is True:
-                if sides == 6:
+                if sides == 6 and self.settings["fancy_dice"]:
                     rolled.append(faces[r - 1])
                 else:
                     rolled.append(str(r))
@@ -48,9 +47,6 @@ class Fun(Cog):
         query = c.message
         if len(query) < 3:
             await self.send_message("You must ask a question.")
-        elif "?" not in query:
-            await self.send_message(
-                "....questions should have question marks, no?")
         else:
             # https://en.wikipedia.org/wiki/Magic_8-Ball#Possible_answers
             replies = [
@@ -63,8 +59,7 @@ class Fun(Cog):
                 "Don't count on it.", "My reply is no.", "My sources say no.",
                 "Outlook not so good.", "Very doubtful"
             ]
-            # custom = self.settings["8ballcustom"]
-            custom = []
+            custom = self.settings["8ballcustom"]
             # append custom replies if they exist
             if len(custom) > 0:
                 replies.append([c for c in custom])
@@ -77,7 +72,7 @@ class Fun(Cog):
             "1/10", "2/10", "3/10", "4/10", "5/10", "6/10", "7/10", "8/10",
             "9/10", "10/10"
         ]
-        if len(c.message) == 0:
+        if len(c.message) == 0 or self.settings["allow_rate"]:
             msg = "I am the earth."
         else:
             msg = "I'd rate {} a {}".format(c.message, random.choice(rates))

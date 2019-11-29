@@ -11,9 +11,8 @@ class Youtube(Cog):
         searchurl = "https://www.googleapis.com/youtube/v3/search?"\
             "part=snippet&type=video&q={query}&maxResults=1&"\
             "videoSyndicated=true&key={key}"
-        aidasapikey = "AIzaSyCSQcdyy4T-QVLlelJBIW_572kBtHi2ams"
         response = await self.bot.api.get(
-            searchurl.format(query=query, key=aidasapikey))
+            searchurl.format(query=query, key=self.settings["api_key"]))
         ytjson = await response.json()
         videoid = ytjson["items"][0]["id"]["videoId"]
         title = ytjson["items"][0]["snippet"]["title"]

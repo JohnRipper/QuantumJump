@@ -1,9 +1,45 @@
-[bot]
+[Bot]
 nickname = ""
 password = ""
-prefix = ""
+prefix = "!"
 roomname = ""
 username = ""
+rainbow = true
 
-[modules]
-enabled = []
+[Modules]
+enabled = ["Debug", "Builtins", "Autourl", "Fun", "Movie", "Tokes", "Urban", "Youtube"]
+
+[Modules.Debug]
+test = "Test Good"
+
+[Modules.Builtins]
+
+[Modules.Autourl]
+pattern = "http.*\\S"
+exclusion_char = "!"
+ignores = [
+        "jumpin.chat",
+        "tinychat\\.com\\/room\\/"
+        ]
+whitelist_mode = false
+whitelist = [
+          "youtu(\\.be|\\.com)",
+          "wikipedia\\.org"
+          ]
+
+[Modules.Fun]
+8ballcustom = []
+fancy_dice = true
+allow_rate = true
+
+[Modules.Movie]
+api_key = ""
+
+[Modules.Tokes]
+hourly_420 = true
+
+[Modules.Urban]
+blacklist = ["spam"]
+
+[Modules.Youtube]
+api_key = ""

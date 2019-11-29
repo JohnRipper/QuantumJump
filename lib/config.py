@@ -15,7 +15,7 @@ default = {
         "prefix": str,
         "rainbow": bool
     },
-    "modules": {
+    "Modules": {
         "enabled": []
     }
 }
@@ -26,10 +26,12 @@ class Configuration:
         self.path = Path(path)
         if self.path.exists():
             self.full = self.load()
+            print(self.full)
             self.Bot = make_dataclass("Bot_Configuration",
                                       [(k, type(v), v)
-                                       for k, v in self.full["bot"].items()])
-            self.Modules = self.full["modules"]["enabled"]
+                                       for k, v in self.full["Bot"].items()])
+            print(self.Bot)
+            self.Modules = self.full["Modules"]
         else:
             raise FileNotFoundError(path)
 

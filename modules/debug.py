@@ -52,6 +52,14 @@ class Debug(Cog):
             formated = encodetxt(c.message, Styles.script)
         await self.send_message(formated)
 
+    @makeCommand(name="whoami", description="")
+    async def whoami(self, c: Command):
+        users = await self.bot.userlist
+        print(a)
+
+    @makeCommand(name="test", description="")
+    async def testit(self, c: Command):
+        await self.send_message(self.settings["test"])
     #####
     # Events
     #####

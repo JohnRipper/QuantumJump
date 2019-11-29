@@ -21,9 +21,9 @@ class Tokes(Cog):
     def __init__(self, bot):
         super().__init__(bot)
         # self.settings = self.bot.settings["module"]["tokes"]
-        # self.is_running_hourly = self.bot.settings["module"]["tokes"]["hourly_420"]
-        self.is_running_hourly = True
-        asyncio.create_task(self.it_is_420())
+        self.is_running_hourly = self.settings["hourly_420"]
+        if self.is_running_hourly:
+            asyncio.create_task(self.it_is_420())
 
     async def it_is_420(self):
         while self.bot.state is BotState.RUNNING and self.is_running_hourly:
