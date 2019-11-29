@@ -42,6 +42,9 @@ class Tokes(Cog):
     async def cheers(self, c: Command):
         await self.send_message(random.choice(self.cheers_replies),
                                 style=Styles.script)
+        await asyncio.sleep(0.6)
+        await self.send_action(random.choice(self.post_timer),
+                               color=Colors.greenalt)
 
     @makeCommand(name="tokes", description="<int> calls for tokes")
     async def tokes(self, c: Command):
@@ -70,11 +73,13 @@ class Tokes(Cog):
             await self.send_message("Time for tokes!",
                                     color=Colors.greenalt,
                                     style=Styles.bold)
+            await asyncio.sleep(0.6)
             await self.send_action(random.choice(self.post_timer),
                                    color=Colors.greenalt)
         else:
             await self.send_message("Time for tokes!",
                                     color=Colors.greenalt,
                                     style=Styles.bold)
+            await asyncio.sleep(0.6)
             await self.send_action(random.choice(self.post_timer),
                                    color=Colors.greenalt)
