@@ -48,17 +48,17 @@ class Tokes(Cog):
 
     @makeCommand(name="tokes", description="<int> calls for tokes")
     async def tokes(self, c: Command):
-        total_seconds = 0
-        if type(c.message) is int:
-            total_seconds = c.message
-        await self.do(thing="tokes", total_seconds=total_seconds)
+        await self.do_wrap(c)
 
     @makeCommand(name="chugs", description="<int> calls for chugs")
     async def chugs(self, c: Command):
+        await self.do_wrap(c)
+
+    async def do_wrap(self, c: Command):
         total_seconds = 0
         if type(c.message) is int:
             total_seconds = c.message
-        await self.do(thing="chugs", total_seconds=total_seconds)
+        await self.do(thing=c.name, total_seconds=total_seconds)
 
     @makeCommand(name="call", description="<str> <int> calls for chugs")
     async def call_thing(self, c: Command):
@@ -73,10 +73,9 @@ class Tokes(Cog):
             if type(thing) is str and type(seconds) is int:
                 await self.do(thing=thing, total_seconds=seconds)
         else:
-            await self.send_message("call who? you sister?")
+            await self.send_message("call who? your sister?")
 
     async def do(self, thing: str, total_seconds: int = 0):
-        print(total_seconds)
         total_seconds = int(total_seconds)
         if total_seconds == 0:
             await self.send_message(f"Time for {thing}!",
