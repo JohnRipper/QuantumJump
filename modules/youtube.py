@@ -1,22 +1,33 @@
 import re
 
+import aiohttp
+
 from lib.cog import Cog, event
-from lib.command import makeCommand, Command
+from lib.command import Command, makeCommand
+from lib.objects import JumpinError
 from lib.styling import Colors, Styles
-from lib.objects import JumpinError, PlaylistUpdate, PlayVideo
 
 
 class Youtube(Cog):
+    def __init__(self, bot):
+        super().__init__(bot)
+        self.headers = None
+
+        if len(self.settings["api_key"]) == 0:
+            self.settings["api_key"] = "AIzaSyCPQe4gGZuyVQ78zdqf9O5iEyfVLPaRwZg"
+            self.headers = {"referer": "https://tinychat.com"}
+
     async def ytsearch(self, query: str) -> dict:
         searchurl = "https://www.googleapis.com/youtube/v3/search?"\
             "part=snippet&type=video&q={query}&maxResults=1&"\
             "videoSyndicated=true&key={key}"
-        response = await self.bot.api.get(
-            searchurl.format(query=query, key=self.settings["api_key"]))
-        ytjson = await response.json()
-        videoid = ytjson["items"][0]["id"]["videoId"]
-        title = ytjson["items"][0]["snippet"]["title"]
-        return {"title": title, "video_id": videoid}
+        url = searchurl.format(query=query, key=self.settings["api_key"])
+        async with aiohttp.ClientSession(headers=self.headers) as session:
+            async with session.get(url) as response:
+                ytjson = await response.json()
+                videoid = ytjson["items"][0]["id"]["videoId"]
+                title = ytjson["items"][0]["snippet"]["title"]
+                return {"title": title, "video_id": videoid}
 
     @makeCommand(name="yt", description="<query | url> play youtube")
     async def playyt(self, c: Command):
@@ -28,8 +39,7 @@ class Youtube(Cog):
         else:
             ytinfo = await self.ytsearch(c.message)
             print(ytinfo)
-            await self.play(video_id=ytinfo["video_id"],
-                            title=ytinfo["title"])
+            await self.play(video_id=ytinfo["video_id"], title=ytinfo["title"])
 
     @makeCommand(name="rm", description="")
     async def removeyt(self, c: Command):
@@ -52,7 +62,6 @@ class Youtube(Cog):
     @event(event="client::error")
     async def error(self, err: JumpinError):
         if err.message == "Error starting Youtube video":
-            await self.send_message(
-                "Jumpin's quota has been reached :sob:",
-                color=Colors.red, style=Styles.bold
-            )
+            await self.send_message("Jumpin's quota has been reached :sob:",
+                                    color=Colors.red,
+                                    style=Styles.bold)
