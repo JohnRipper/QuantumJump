@@ -48,19 +48,36 @@ class Tokes(Cog):
 
     @makeCommand(name="tokes", description="<int> calls for tokes")
     async def tokes(self, c: Command):
-        await self.do("tokes", c.message)
+        total_seconds = 0
+        if type(c.message) is int:
+            total_seconds = c.message
+        await self.do(thing="tokes", total_seconds=total_seconds)
 
     @makeCommand(name="chugs", description="<int> calls for chugs")
     async def chugs(self, c: Command):
-        await self.do("chugs", c.message)
+        total_seconds = 0
+        if type(c.message) is int:
+            total_seconds = c.message
+        await self.do(thing="chugs", total_seconds=total_seconds)
 
     @makeCommand(name="call", description="<str> <int> calls for chugs")
     async def call_thing(self, c: Command):
-        thing, seconds = c.message.split(" ", 1)
-        if type(thing) is str and type(seconds) is int:
-            await self.do(thing, seconds)
+        if c.message:
+            try:
+                thing, seconds = c.message.split(" ", 1)
+            except (ValueError):
+                thing = c.message
+                seconds = 0
 
-    async def do(self, thing: str, total_seconds: int):
+            seconds = int(seconds)
+            if type(thing) is str and type(seconds) is int:
+                await self.do(thing=thing, total_seconds=seconds)
+        else:
+            await self.send_message("call who? you sister?")
+
+    async def do(self, thing: str, total_seconds: int = 0):
+        print(total_seconds)
+        total_seconds = int(total_seconds)
         if total_seconds == 0:
             await self.send_message(f"Time for {thing}!",
                                     color=Colors.greenalt,
@@ -86,17 +103,9 @@ class Tokes(Cog):
             for i in range(0, minutes):
                 await asyncio.sleep(60)
                 if minutes - i <= 5 & minutes - i != 0:
-                    await self.send_message(f"{minutes} left before tokes.")
+                    await self.send_message(f"{minutes} left before {thing}.")
             await asyncio.sleep(seconds)
             await self.send_message(f"Time for {thing}!",
-            await self.send_message("Time for tokes!",
-                                    color=Colors.greenalt,
-                                    style=Styles.bold)
-            await asyncio.sleep(0.6)
-            await self.send_action(random.choice(self.post_timer),
-                                   color=Colors.greenalt)
-        else:
-            await self.send_message("Time for tokes!",
                                     color=Colors.greenalt,
                                     style=Styles.bold)
             await asyncio.sleep(0.6)
