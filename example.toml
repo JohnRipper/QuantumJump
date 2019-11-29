@@ -59,5 +59,10 @@ post = [
 [Modules.Urban]
 blacklist = ["spam"]
 
+[Modules.Wikipedia]
+language = "en"
+include_url = true
+sentences = 2
+
 [Modules.Youtube]
 api_key = ""
