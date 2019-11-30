@@ -146,6 +146,8 @@ class JumpinError:
     timestamp: str
     context: str
     message: str
+    modal: str = None
+    id: str = None
 
 @dataclass
 class PlaylistUpdate:
