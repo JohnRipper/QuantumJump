@@ -70,11 +70,13 @@ class Tokes(Cog):
         if action := self.actions.get('tokes', False):
             if action.active:
                 if c.data.handle in action.joined:
-                    await self.send_message(f"{c.data.handle} already joined {action.joined} for {c.name}!!!",
+                    homies = str(action.joined)[1:-1]
+                    await self.send_message(f"{c.data.handle} already joined {homies}!!!",
                                             color=Colors.greenalt,
                                             style=Styles.bold)
                 else:
-                    await self.send_message(f"{c.data.handle} has joined {action.joined} joined for {c.name}!!!",
+                    homies = str(action.joined)[1:-1]
+                    await self.send_message(f"{c.data.handle} has joined {homies}!!!",
                                             color=Colors.greenalt,
                                             style=Styles.bold)
                     action.joined.append(c.data.handle)
@@ -149,10 +151,15 @@ class Tokes(Cog):
                                     style=Styles.bold)
 
             if action := self.actions.get(thing, False):
-
-                await self.send_message(f"{action.joined} joined for {thing}!!!",
-                                        color=Colors.greenalt,
-                                        style=Styles.bold)
+                homies = str(action.joined)[1:-1]
+                if len(action.joined) == 1:
+                    await self.send_message(f"{homies} called for {thing}, and noone joined! Oh well, fuck it!!!",
+                                            color=Colors.greenalt,
+                                            style=Styles.bold)
+                else:
+                    await self.send_message(f"{homies} joined for {thing}!!!",
+                                            color=Colors.greenalt,
+                                            style=Styles.bold)
                 await self.send_message(f"Time for {thing}!",
                                         color=Colors.greenalt,
                                         style=Styles.bold)
