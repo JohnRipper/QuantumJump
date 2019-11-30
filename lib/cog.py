@@ -1,15 +1,13 @@
 import asyncio
 import importlib
-import json
-from asyncio import Protocol
 from dataclasses import dataclass, field, asdict
 from imp import reload
 from types import ModuleType
-from typing import List, Union
 
 from lib.command import Command
 from lib.objects import HandleChange, Message, Status, UpdateUserList, User, JumpinError
 from lib.styling import Colors, Styles, encodetxt
+import modules
 
 
 def event(event: str, **attrs):
@@ -17,7 +15,6 @@ def event(event: str, **attrs):
         f.__jumpin_event__ = True
         f.__event__ = event
         return f
-
     return wrap
 
 
@@ -274,7 +271,6 @@ class CogManager:
         if mod := self.modules.get(module, False):
             self.unload(module)
             if m := reload(mod):
-                print(m)
                 self.add_cog(mod=m, name=module, bot=bot)
         # not loaded? try loading.
         try:

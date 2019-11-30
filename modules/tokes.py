@@ -1,11 +1,21 @@
 import asyncio
 import datetime
 import random
+from dataclasses import field
+from enum import Enum
+
+from attr import dataclass
 
 from lib.cog import Cog
 from lib.command import Command, makeCommand
 from lib.objects import BotState
 from lib.styling import Colors, Styles
+
+@dataclass
+class Action:
+    action: str
+    joined: [str] = field(default_factory=str)
+    active: bool = False
 
 
 class Tokes(Cog):
@@ -13,21 +23,30 @@ class Tokes(Cog):
         super().__init__(bot)
         print(self.settings)
         self.cheers_replies = self.settings["cheers"]
+        self.actions = {}
+
         self.prepares = self.settings["pre"]
         self.post_timer = self.settings["post"]
         self.is_running_hourly = self.settings["hourly_420"]
+
         if self.is_running_hourly:
             asyncio.create_task(self.it_is_420())
 
     async def it_is_420(self):
+        last_hr = 0
         while self.bot.state is BotState.RUNNING and self.is_running_hourly:
             minute = datetime.datetime.now().minute
-            if minute == 20:
+            hour = datetime.datetime.now().hour
+            # prevent message repeats.
+            if minute == 20 and (last_hr < hour or hour == 0):
                 await self.send_message("It's 420 somewhere",
                                         color=Colors.greenalt,
                                         style=Styles.bold)
+                last_hr = hour
+                # let the internal timer sleep for 50 minutes checking the clock again.
+                await asyncio.sleep(int(60 * 50))
+            # todo a count down?
             await asyncio.sleep(60)
-            pass
 
     @makeCommand(name="420hour",
                  description="enables/disables call for tokes hourly.")
@@ -46,6 +65,21 @@ class Tokes(Cog):
         await self.send_action(random.choice(self.post_timer),
                                color=Colors.greenalt)
 
+    @makeCommand(name="join", description="joins tokes")
+    async def join(self, c: Command):
+        if action := self.actions.get('tokes', False):
+            if action.active:
+                if c.data.handle in action.joined:
+                    await self.send_message(f"{c.data.handle} already joined {action.joined} for {c.name}!!!",
+                                            color=Colors.greenalt,
+                                            style=Styles.bold)
+                else:
+                    await self.send_message(f"{c.data.handle} has joined {action.joined} joined for {c.name}!!!",
+                                            color=Colors.greenalt,
+                                            style=Styles.bold)
+                    action.joined.append(c.data.handle)
+                    self.actions.update({c.name: action})
+
     @makeCommand(name="tokes", description="<int> calls for tokes")
     async def tokes(self, c: Command):
         await self.do_wrap(c)
@@ -55,9 +89,14 @@ class Tokes(Cog):
         await self.do_wrap(c)
 
     async def do_wrap(self, c: Command):
+        if action := self.actions.get(c.name, False):
+            if action.active:
+                await self.join(c)
+                return
         total_seconds = 0
         if c.message.isdigit():
             total_seconds = c.message
+            self.actions.update({c.name: Action(active=True, action=c.name, joined=[c.data.handle])})
         await self.do(thing=c.name, total_seconds=total_seconds)
 
     @makeCommand(name="call", description="<str> <int> calls for chugs")
@@ -100,13 +139,26 @@ class Tokes(Cog):
                                        color=Colors.greenalt)
             # start counting down.
             for i in range(0, minutes):
-                await asyncio.sleep(60)
                 if minutes - i <= 5 & minutes - i != 0:
                     await self.send_message(f"{minutes} left before {thing}.")
+                    await asyncio.sleep(60)
+
             await asyncio.sleep(seconds)
             await self.send_message(f"Time for {thing}!",
                                     color=Colors.greenalt,
                                     style=Styles.bold)
+
+            if action := self.actions.get(thing, False):
+
+                await self.send_message(f"{action.joined} joined for {thing}!!!",
+                                        color=Colors.greenalt,
+                                        style=Styles.bold)
+                await self.send_message(f"Time for {thing}!",
+                                        color=Colors.greenalt,
+                                        style=Styles.bold)
+                action.active = False
+                action.joined = []
+                self.actions.update({action.action: action})
             await asyncio.sleep(0.6)
             await self.send_action(random.choice(self.post_timer),
                                    color=Colors.greenalt)
