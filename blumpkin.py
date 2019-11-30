@@ -100,6 +100,9 @@ class QuantumJumpBot:
                         await self.wsend(Message.makeMsg(message=f"unloaded {c.message}", room=self.room))
                     else:
                         await self.wsend(Message.makeMsg(message=f"Could not unload {c.message}", room=self.room))
+                if c.name == "loaded":
+                    await self.wsend(Message.makeMsg(message=f"modules: {self.cm.modules}, cogs:{self.cm.cogs}", room=self.room))
+
                 await self.cm.do_command(c)
 
 
