@@ -69,14 +69,13 @@ class Tokes(Cog):
     async def join(self, c: Command):
         if action := self.actions.get('tokes', False):
             if action.active:
+                homies = str(action.joined)[1:-1]
                 if c.data.handle in action.joined:
-                    homies = str(action.joined)[1:-1]
-                    await self.send_message(f"{c.data.handle} already joined {homies}!!!",
+                    await self.send_message(f"{c.data.handle} already joined {homies} for {c.name}!!!",
                                             color=Colors.greenalt,
                                             style=Styles.bold)
                 else:
-                    homies = str(action.joined)[1:-1]
-                    await self.send_message(f"{c.data.handle} has joined {homies}!!!",
+                    await self.send_message(f"{c.data.handle} has joined {homies} for {c.name}!!!",
                                             color=Colors.greenalt,
                                             style=Styles.bold)
                     action.joined.append(c.data.handle)
@@ -169,4 +168,3 @@ class Tokes(Cog):
             await asyncio.sleep(0.6)
             await self.send_action(random.choice(self.post_timer),
                                    color=Colors.greenalt)
-
