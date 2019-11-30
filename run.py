@@ -12,7 +12,7 @@ async def start(executor, bot, loop, count=0):
         await bot.run()
     except websockets.WebSocketException as e:
         bot.state = BotState.EXCEPTION
-        if config.Bot["restart_on_error"] and count <= config.Bot["restart_attemps"]:
+        if config.Bot["restart_on_error"] and count <= config.Bot["restart_attempts"]:
             count += 1
             await start(executor, bot, loop, count)
 
