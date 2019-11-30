@@ -56,7 +56,7 @@ class Tokes(Cog):
 
     async def do_wrap(self, c: Command):
         total_seconds = 0
-        if type(c.message) is int:
+        if c.message.isdigit():
             total_seconds = c.message
         await self.do(thing=c.name, total_seconds=total_seconds)
 
