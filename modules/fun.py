@@ -72,7 +72,8 @@ class Fun(Cog):
             "1/10", "2/10", "3/10", "4/10", "5/10", "6/10", "7/10", "8/10",
             "9/10", "10/10"
         ]
-        if len(c.message) == 0 or self.settings["allow_rate"]:
+        print(self.settings)
+        if len(c.message) == 0 or not self.settings["allow_rate"]:
             msg = "I am the earth."
         else:
             msg = "I'd rate {} a {}".format(c.message, random.choice(rates))
