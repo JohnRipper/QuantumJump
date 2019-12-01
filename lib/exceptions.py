@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 # subclass for general Exceptions
 class Error(Exception):
     def __init__(self, message: str = None):

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import asyncio
 import importlib
 from dataclasses import dataclass, field, asdict

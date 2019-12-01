@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 # BOLD
 BOLD = {
     'a': '𝗮',

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from dataclasses import make_dataclass
 from pathlib import Path
 
