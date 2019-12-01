@@ -4,14 +4,14 @@ from datetime import datetime
 from lib.cog import Cog
 from lib.command import Command, makeCommand
 from lib.styling import Styles
-from util import get_current_sha1  # , get_latest_sha1
+from util import get_current_sha1, get_latest_sha1
 
 
 class Builtins(Cog):
     @makeCommand(name="version", description="get the current version")
     async def version(self, c: Command):
         message = ":crystal_ball: currently using: *{}* | Latest is: *{}*".format(
-            get_current_sha1(), "N/A"
+            get_current_sha1(),
             await get_latest_sha1()
         )
         await self.send_message(message)
