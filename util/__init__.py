@@ -24,5 +24,7 @@ async def get_latest_sha1():
 def get_current_sha1():
     cwd = Path.cwd()
     headfile = Path(cwd / ".git/refs/heads/master")
-    sha1 = headfile.read_text()[:7]
+    sha1 = "-Not in a git repository-"
+    if headfile.exists():
+        sha1 = headfile.read_text()[:7]
     return sha1

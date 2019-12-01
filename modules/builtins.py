@@ -12,8 +12,7 @@ class Builtins(Cog):
     async def version(self, c: Command):
         message = ":crystal_ball: currently using: *{}* | Latest is: *{}*".format(
             get_current_sha1(), "N/A"
-            # cant hit API till repo is public
-            # await get_latest_sha1()
+            await get_latest_sha1()
         )
         await self.send_message(message)
 
