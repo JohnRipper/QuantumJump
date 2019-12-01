@@ -7,7 +7,7 @@ username = ""
 rainbow = true
 
 [Modules]
-enabled = ["Debug", "Builtins", "Autourl", "Fun", "Movie", "Tokes", "Urban", "Youtube"]
+enabled = []
 
 [Modules.Debug]
 test = "Test Good"
