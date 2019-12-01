@@ -32,11 +32,11 @@ class Colors:
 class Styles:
     bold: dict = fonts.BOLD
     italic: dict = fonts.ITALIC
-    bold_italic: dict = fonts.BOLD_ITALIC
+    bolditalic: dict = fonts.BOLD_ITALIC
     bubble: dict = fonts.BUBBLE
-    bubble_invert: dict = fonts.BUBBLE_NEG
+    bubbleinvert: dict = fonts.BUBBLE_NEG
     square: dict = fonts.SQUARE
-    square_invert: dict = fonts.SQUARE_NEG
+    squareinvert: dict = fonts.SQUARE_NEG
     script: dict = fonts.SCRIPT
 
 # TODO

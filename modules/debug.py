@@ -40,14 +40,30 @@ class Debug(Cog):
 
     @makeCommand(name="font", description="")
     async def demofonts(self, c: Command):
-        parts = c.message.split(" ")
-        type_ = parts[0]
-        message = " ".join(parts[1:])
-        if type_ in Styles.__dict__.keys():
-            formated = encodetxt(message, Styles.__dict__[type_])
+        fontstyles = {
+            "bold": encodetxt("bold", Styles.bold),
+            "italic": encodetxt("italic", Styles.italic),
+            "bolditalic": encodetxt("bolditalic", Styles.bolditalic),
+            "bubble": encodetxt("bubble", Styles.bubble),
+            "bubbleinvert": encodetxt("bubbleinvert", Styles.bubbleinvert),
+            "square": encodetxt("square", Styles.square),
+            "squareinvert": encodetxt("squareinvert", Styles.squareinvert),
+            "script": encodetxt("script", Styles.script)
+        }
+        if len(c.message) < 2:
+            a_ = []
+            for each in fontstyles.keys():
+                a_.append(fontstyles[each])
+            await self.send_message(", ".join(a_))
         else:
-            formated = encodetxt(c.message, Styles.script)
-        await self.send_message(formated)
+            parts = c.message.split(" ")
+            type_ = parts[0]
+            message = " ".join(parts[1:])
+            if type_ in Styles.__dict__.keys():
+                formated = encodetxt(message, Styles.__dict__[type_])
+            else:
+                formated = encodetxt(c.message, Styles.script)
+            await self.send_message(formated)
 
     @makeCommand(name="test", description="")
     async def testit(self, c: Command):
