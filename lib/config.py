@@ -28,8 +28,9 @@ def getmodules() -> list:
     modules = []
     module_files = Path("modules/").glob("*.py")
     for each in module_files:
-        module = each.name.rstrip(".py").capitalize()
-        modules.append(module)
+        if each.name.startswith("__") is False:
+            module = each.name.rstrip(".py").capitalize()
+            modules.append(module)
     return modules
 
 
