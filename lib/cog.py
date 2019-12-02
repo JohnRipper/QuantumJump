@@ -318,6 +318,6 @@ class CogManager:
     async def do_command(self, command: Command):
         for cog in self.cogs.values():
             for meth in cog.commands:
-                if meth.__command_name__ == command.name:
+                if command.name in meth.__command_name__:
                     asyncio.create_task(meth(command))
 

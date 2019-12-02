@@ -148,6 +148,7 @@ class JumpinError:
     message: str
     modal: str = None
     id: str = None
+    error: str = None
 
 @dataclass
 class PlaylistUpdate:

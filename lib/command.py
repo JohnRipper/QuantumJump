@@ -3,10 +3,10 @@ import re
 from lib.objects import Message
 
 
-def makeCommand(name: str, description: str, **attrs):
+def makeCommand(aliases: [], description: str, **attrs):
     def wrap(f):
         f.__command__ = True
-        f.__command_name__ = name
+        f.__command_name__ = aliases
         f.__description__ = description
         return f
     return wrap
