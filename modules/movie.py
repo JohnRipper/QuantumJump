@@ -13,7 +13,7 @@ class Movie(Cog):
         # self.tv_url = ""
         self.id_url = "https://api.themoviedb.org/3/{media_type}/{id}?api_key="
 
-    @makeCommand(name="imdb",
+    @makeCommand(aliases=["imdb"],
                  description="<query> search The Movie Db for TV and movies")
     async def search(self, c: Command):
         query = c.message
@@ -37,13 +37,13 @@ class Movie(Cog):
                     self.formatresponse(info, is_movie=False))
 
     # TODO
-    @makeCommand(name="movie",
+    @makeCommand(aliases=["movie"],
                  description="<query> search The Movie Db for Movies")
     async def movie_search(self, query):
         pass
 
     # TODO
-    @makeCommand(name="tv",
+    @makeCommand(aliases=["tv"],
                  description="<query> search The Movie Db for TV shows")
     async def tv_search(self, query):
         pass

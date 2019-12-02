@@ -29,7 +29,7 @@ class Youtube(Cog):
                 title = ytjson["items"][0]["snippet"]["title"]
                 return {"title": title, "video_id": videoid}
 
-    @makeCommand(name="yt", description="<query | url> play youtube")
+    @makeCommand(aliases=["yt"], description="<query | url> play youtube")
     async def playyt(self, c: Command):
         print(c.message)
         if re.match("youtube(.be\/|.com\/watch\?)", c.message):
@@ -41,7 +41,7 @@ class Youtube(Cog):
             print(ytinfo)
             await self.play(video_id=ytinfo["video_id"], title=ytinfo["title"])
 
-    @makeCommand(name="rm", description="")
+    @makeCommand(aliases=["rm"], description="")
     async def removeyt(self, c: Command):
         # TODO
         message = c.message.strip()
@@ -55,7 +55,7 @@ class Youtube(Cog):
             # attempt to match to title?
             pass
 
-    @makeCommand(name="pl", description="append a youtube to play to jumpin's")
+    @makeCommand(aliases=["pl"], description="append a youtube to play to jumpin's")
     async def addplaylist(self, c: Command):
         pass
 

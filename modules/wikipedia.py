@@ -11,7 +11,7 @@ class Wikipedia(Cog):
         super().__init__(bot)
         self.searches = []
 
-    @makeCommand(name="wikilang", description="Set Wikipedia's language")
+    @makeCommand(aliases=["wikilang"], description="Set Wikipedia's language")
     async def wiki_lang(self, c: Command):
         if len(c.message) == 2:
             await self.send_action(f"sets Wikipedia's language to {c.message}")
@@ -19,7 +19,7 @@ class Wikipedia(Cog):
         else:
             await self.send_message("Need the 2 letter code, get it from http://dpaste.com/2WC4YXT.txt")
 
-    @makeCommand(name="wiki", description="query|none return a wikipedia summary")
+    @makeCommand(aliases=["wiki"], description="query|none return a wikipedia summary")
     async def wiki_lookup(self, c: Command):
         wikipedia.set_lang(self.settings["language"])
         # sentences = self.settings["sentences"]

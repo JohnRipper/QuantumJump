@@ -9,7 +9,7 @@ class Fun(Cog):
         super().__init__(bot)
         # self.settings = self.bot.settings["module"]["fun"]
 
-    @makeCommand(name="roll", description="<sides> <dice>, default is single 6 sided")
+    @makeCommand(aliases=["roll"], description="<sides> <dice>, default is single 6 sided")
     async def roll(self, c: Command):
         parts = c.message.split(" ")
         if len(c.message) == 0:
@@ -42,7 +42,7 @@ class Fun(Cog):
             return msg
 
     # TODO
-    @makeCommand(name="8ball", description="<query> standard magic 8ball")
+    @makeCommand(aliases=["8ball"], description="<query> standard magic 8ball")
     async def eightball(self, c: Command):
         query = c.message
         if len(query) < 3:
@@ -66,7 +66,7 @@ class Fun(Cog):
             msg = "{}".format(random.choice(replies))
             await self.send_message(msg)
 
-    @makeCommand(name="rate", description="<user> rate someones appearance")
+    @makeCommand(aliases=["rate"], description="<user> rate someones appearance")
     async def rate(self, c: Command):
         rates = [
             "1/10", "2/10", "3/10", "4/10", "5/10", "6/10", "7/10", "8/10",

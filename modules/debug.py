@@ -21,7 +21,7 @@ class Debug(Cog):
         f.close()
         return text
 
-    # @makeCommand(name="t", description="test")
+    # @makeCommand(aliases=["t", description="test")
     # async def generate_readme(self, c: Command):
     #     generated = await self.get_template()
     #     f = open('./README.md', 'w')
@@ -29,16 +29,15 @@ class Debug(Cog):
     #     f.flush()
     #     f.close()
 
-    @makeCommand(name="userlist", description="test")
-    async def vagina(self, c: Command):
+    @makeCommand(aliases=["userlist"], description="test")
+    async def uselist(self, c: Command):
         await self.send_message(json.dumps(await self.bot.userlist))
-        #await self.send_message("Test")
 
-    @makeCommand(name="me", description="t")
+    @makeCommand(aliases=["me", "you"], description="t")
     async def thirdperson(self, c: Command):
         await self.send_action(c.message)
 
-    @makeCommand(name="font", description="")
+    @makeCommand(aliases=["font"], description="")
     async def demofonts(self, c: Command):
         fontstyles = {
             "bold": encodetxt("bold", Styles.bold),
@@ -65,9 +64,9 @@ class Debug(Cog):
                 formated = encodetxt(c.message, Styles.script)
             await self.send_message(formated)
 
-    @makeCommand(name="test", description="")
+    @makeCommand(aliases=["test"], description="")
     async def testit(self, c: Command):
-        await self.send_message(self.settings["test"])
+        await self.send_message("test\nit")
 
     #####
     # Events

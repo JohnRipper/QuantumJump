@@ -43,12 +43,12 @@ class Tokes(Cog):
                                         color=Colors.greenalt,
                                         style=Styles.bold)
                 last_hr = hour
-                # let the internal timer sleep for 50 minutes checking the clock again.
+                # let the internal timer sleep for 50 minutes before checking the clock again.
                 await asyncio.sleep(int(60 * 50))
             # todo a count down?
             await asyncio.sleep(60)
 
-    @makeCommand(name="420hour",
+    @makeCommand(aliases=["420hour"],
                  description="enables/disables call for tokes hourly.")
     async def hour420(self, c: Command):
         self.is_running_hourly = not self.is_running_hourly
@@ -57,7 +57,7 @@ class Tokes(Cog):
                                 color=Colors.greenalt,
                                 style=Styles.bold)
 
-    @makeCommand(name="cheers", description="Cheers!")
+    @makeCommand(aliases=["cheers"], description="Cheers!")
     async def cheers(self, c: Command):
         await self.send_message(random.choice(self.cheers_replies),
                                 style=Styles.script)
@@ -65,7 +65,7 @@ class Tokes(Cog):
         await self.send_action(random.choice(self.post_timer),
                                color=Colors.greenalt)
 
-    @makeCommand(name="join", description="joins tokes")
+    @makeCommand(aliases=["join"], description="joins tokes")
     async def join(self, c: Command):
         if action := self.actions.get('tokes', False):
             if action.active:
@@ -81,11 +81,11 @@ class Tokes(Cog):
                     action.joined.append(c.data.handle)
                     self.actions.update({c.name: action})
 
-    @makeCommand(name="tokes", description="<int> calls for tokes")
+    @makeCommand(aliases=["tokes"], description="<int> calls for tokes")
     async def tokes(self, c: Command):
         await self.do_wrap(c)
 
-    @makeCommand(name="chugs", description="<int> calls for chugs")
+    @makeCommand(aliases=["chugs"], description="<int> calls for chugs")
     async def chugs(self, c: Command):
         await self.do_wrap(c)
 
@@ -100,7 +100,7 @@ class Tokes(Cog):
             self.actions.update({c.name: Action(active=True, action=c.name, joined=[c.data.handle])})
         await self.do(thing=c.name, total_seconds=total_seconds)
 
-    @makeCommand(name="call", description="<str> <int> calls for chugs")
+    @makeCommand(aliases=["call"], description="<str> <int> calls for chugs")
     async def call_thing(self, c: Command):
         if c.message:
             try:

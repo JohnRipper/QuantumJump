@@ -8,7 +8,7 @@ from util import get_current_sha1, get_latest_sha1
 
 
 class Builtins(Cog):
-    @makeCommand(name="version", description="get the current version")
+    @makeCommand(aliases=["version"], description="get the current version")
     async def version(self, c: Command):
         message = ":crystal_ball: currently using: *{}* | Latest is: *{}*".format(
             get_current_sha1(),
@@ -16,7 +16,7 @@ class Builtins(Cog):
         )
         await self.send_message(message)
 
-    @makeCommand(name="uptime", description="get the bot's uptime")
+    @makeCommand(aliases=["uptime"], description="get the bot's uptime")
     async def uptime(self, c: Command):
         current = datetime.now()
         start = datetime.fromtimestamp(self.bot.start_time)
@@ -29,7 +29,7 @@ class Builtins(Cog):
         await self.send_action(message, style=Styles.bold)
         # await self.send_message(message)
 
-    @makeCommand(name="timer", description="a seconds timer ")
+    @makeCommand(aliases=["timer"], description="a seconds timer ")
     async def timer(self, c: Command):
         if c.message.isdigit():
             await self.send_message(f"Set a timer set for {c.message}")

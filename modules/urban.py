@@ -24,7 +24,7 @@ class Urban(Cog):
                         definition = f"Couldn't find anything for {query}"
                 return definition
 
-    @makeCommand(name="urb", description="Search Urban Dictionary")
+    @makeCommand(aliases=["urb"], description="Search Urban Dictionary")
     async def do_urban(self, c: Command):
         if len(c.message) == 0:
             response = "Need a term to lookup"
