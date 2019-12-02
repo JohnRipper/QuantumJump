@@ -8,17 +8,6 @@ from lib.objects import Message
 
 
 class Autourl(Cog):
-    def __init__(self, bot):
-        super().__init__(bot)
-        self.connector = None
-        if self.settings["use_tor"]:
-            try:
-                from aiohttp_socks import SocksConnector
-                self.connector = SocksConnector.from_url(
-                    self.settings["tor_addr"])
-            except ImportError:
-                raise ImportError
-
     @event("room::message")
     async def message(self, message: Message):
         msg = message.message
@@ -43,7 +32,15 @@ class Autourl(Cog):
 
     async def get_title(self, url):
         url = url.strip()
-        async with aiohttp.ClientSession(connector=self.connector) as session:
+        connector = None
+        if self.settings["use_tor"]:
+            try:
+                from aiohttp_socks import SocksConnector
+                connector = SocksConnector.from_url(
+                    self.settings["tor_addr"])
+            except ImportError:
+                raise ImportError
+        async with aiohttp.ClientSession(connector=connector) as session:
             async with session.get(url) as response:
                 if response.status == 200:
                     text = await response.text()

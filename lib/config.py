@@ -28,8 +28,9 @@ def getmodules() -> list:
     modules = []
     module_files = Path("modules/").glob("*.py")
     for each in module_files:
-        module = each.name.rstrip(".py").capitalize()
-        modules.append(module)
+        if each.name.startswith("__") is False:
+            module = each.name.rstrip(".py").capitalize()
+            modules.append(module)
     return modules
 
 
@@ -48,8 +49,6 @@ def generate_config():
     print("Example: 1,5,8")
     message = ", ".join([f"{i}) {v}" for i, v in enumerate(modules)])
     to_enable = input(f"{message}\n")
-    # clear existing list
-    config["Modules"]["enabled"] = []
     for module_index in to_enable.split(","):
         if module_index.isdigit() and int(module_index) <= len(modules):
             config["Modules"]["enabled"].append(modules[int(module_index)])
