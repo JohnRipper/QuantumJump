@@ -3,6 +3,7 @@ from pathlib import Path
 
 from tomlkit import dumps as tomldump
 from tomlkit import loads as tomlload
+from tomlkit import items as tomltypes
 
 from util import prompt
 
@@ -40,6 +41,10 @@ def generate_config():
     for each in botsettings.keys():
         if type(botsettings[each]) == bool:
             botsettings[each] = prompt(f"Would you like to enable {each}? y/N ")
+        elif type(botsettings[each]) == tomltypes.Integer:
+            numerical_option = input(f"Please enter a number for {each}: ")
+            assert numerical_option.isdigit() is True, "Must be a number!"
+            botsettings[each] = int(numerical_option)
         else:
             botsettings[each] = input(f"Please enter your {each}: ")
     modules = getmodules()

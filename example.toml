@@ -5,6 +5,8 @@ prefix = "!"
 roomname = ""
 username = ""
 rainbow = true
+restart_on_error = true
+restart_attempts = 5
 
 [Modules]
 enabled = []
