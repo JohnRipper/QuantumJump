@@ -240,6 +240,33 @@ class Settings(JumpinObject):
     requiresPassword: bool
     topic: Topic = None
 
+@dataclass
+class PlaylistUpdateItem(JumpinObject):
+    startTime:str = None
+    endTime: str = None
+    description: str = None
+    channelId:str = None
+    pausedAt:str = None
+    _id:str = None
+    mediaId:str = None
+    title:str = None
+    duration:str = None
+    thumb:str = None
+    mediaType: str = None
+    startedBy: str = None
+    createdAt: str = None
+
+
+
+@dataclass
+class PlaylistUpdate(List[PlaylistUpdateItem]):
+    objects: List[PlaylistUpdateItem] = field(default_factory=PlaylistUpdateItem)
+    def __init___(self, data: list):
+        for object in data:
+            self.objects.append(PlaylistUpdateItem(**object))
+
+
+
 
 @dataclass
 class UserList(JumpinObject):

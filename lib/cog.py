@@ -225,6 +225,7 @@ class Cog:
         return self.name
 
     # these dont actually need to be here anymore.
+    # left for reference
     @event(event="room::updateUser")
     async def updateUser(self, user: User):
         pass
@@ -257,6 +258,16 @@ class Cog:
     @event(event="room::alert")
     async def alert(self, message):
         print(message)
+        pass
+
+    @event(event="room::alert")
+    async def alert(self, message):
+        print(message)
+        pass
+
+    @event(event="youtube::playlistUpdate")
+    # 42["youtube::playlistUpdate",[{"startTime":null,"endTime":null,"description":null,"channelId":"UCqukXrA3L_B0EVHiM14EU7g","pausedAt":null,"_id":"5dea8a123533d70008b01aa9","mediaId":"jesc3yvZSws","title":"DANZIG - Mother Lyrics","link":"https://youtu.be/jesc3yvZSws","duration":226,"thumb":"https://i.ytimg.com/vi/jesc3yvZSws/default.jpg","mediaType":"TYPE_YOUTUBE","startedBy":"5c4b7b6746bb1a000712c13c","createdAt":"2019-12-06T17:04:18.334Z"}]]
+    async def playlistUpdate(self, playlistUpdate: list):
         pass
 
 
@@ -311,9 +322,14 @@ class CogManager:
                         "room::updateUserList": UpdateUserList,
                         "room::message": Message,
                         "client::error": JumpinError,
+                        "youtube::playlistUpdate": UpdateUserList,
                     }
                     if choice := routes.get(data[0], False):
-                        asyncio.create_task(meth(choice(**data[1])))
+                        if type(data[1]) is dict:
+                            asyncio.create_task(meth(choice(**data[1])))
+                        elif type(data[1]) is list:
+                            asyncio.create_task(meth(choice(data[1])))
+
 
     async def do_command(self, command: Command):
         for cog in self.cogs.values():
