@@ -21,7 +21,6 @@ class Action:
 class Tokes(Cog):
     def __init__(self, bot):
         super().__init__(bot)
-        print(self.settings)
         self.cheers_replies = self.settings["cheers"]
         self.actions = {}
 

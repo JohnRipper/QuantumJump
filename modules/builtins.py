@@ -21,13 +21,10 @@ class Builtins(Cog):
         current = datetime.now()
         start = datetime.fromtimestamp(self.bot.start_time)
         difference = str(current - start)
-        print(difference)
-        print(difference[:-7])
         # strip after the decimal
         message = "has been alive for {} :stopwatch:".format(
             str(difference)[:7].replace(":", ";"))
         await self.send_action(message, style=Styles.bold)
-        # await self.send_message(message)
 
     @makeCommand(aliases=["timer"], description="a seconds timer ")
     async def timer(self, c: Command):

@@ -33,7 +33,7 @@ class Wikipedia(Cog):
             page = wikipedia.page(query)
             summary = wikipedia.summary(query,
                                         sentences=self.settings["sentences"])
-        except wikipedia.exceptions.PageError as err:
+        except wikipedia.exceptions.PageError:
             await self.send_message("PageError, FIXME")
         except wikipedia.exceptions.DisambiguationError as err:
             self.searches = err.options[:4]
