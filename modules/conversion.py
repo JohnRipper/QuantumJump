@@ -8,7 +8,7 @@ class Conversion(Cog):
         units = ["f", "c"]
         from_unit = c.message[-1].lower()
         if from_unit in units and from_unit == "f":
-            toconvert = from_unit.rstrip("f")
+            toconvert = c.message.rstrip("f")
             # strip '-' for negative numbers before checking if its a digit
             if toconvert.lstrip("-").isdigit():
                 converted = (int(toconvert) - 32) * 5 / 9
@@ -17,7 +17,7 @@ class Conversion(Cog):
                 await self.send_message(fmt)
             pass
         elif from_unit in units and from_unit == "c":
-            toconvert = from_unit.rstrip("c")
+            toconvert = c.message.rstrip("c")
             if toconvert.lstrip("-").isdigit():
                 converted = int(toconvert) * 1.8 + 32
                 fmt = ":thermometer: {}°C is {}°F".format(
