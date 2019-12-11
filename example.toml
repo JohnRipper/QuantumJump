@@ -14,7 +14,9 @@ enabled = []
 [Modules.Debug]
 test = "Test Good"
 
+# TODO add a check in settings load so these dont exist
 [Modules.Builtins]
+[Modules.Conversion]
 
 [Modules.Autourl]
 # escape regex cause tomlkit
