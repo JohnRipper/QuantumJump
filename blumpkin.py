@@ -86,8 +86,6 @@ class QuantumJumpBot:
             user_list_data = await self.api.getroominfo(room=str(self.room))
 
             self.ul = UserList(**user_list_data)
-            for user in self.ul.users:
-                print(type(user))
 
         if data[0] == "room::message":
             prefix = self.botconfig.prefix
