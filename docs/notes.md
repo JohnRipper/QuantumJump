@@ -232,7 +232,7 @@ Initial connection is sending `2probe` and receiving `3probe` then sending `5`. 
     ```
 
 12. `room::command`
-    Some of the commands: `me`, `topic`, `shrug`
+    Some of the commands: `me`, `topic`, `shrug`, `clear`
     Responses depend on command sent. 
     ```json
     42[
