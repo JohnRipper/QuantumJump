@@ -75,10 +75,10 @@ class Fun(Cog):
         if not self.settings["allow_rate"]:
             msg = "I am the earth."
         elif len(c.message.strip()) == 0:
-            msg = "I'd rate {} a {}".format(c.data["handle"], random.choice(rates))
+            msg = "I'd rate {} a {}".format(c.data.handle, random.choice(rates))
         elif c.message.startswith("my "):
             torate = c.message.lstrip("my ")
-            msg = "I'd rate {}'s {} {}".format(c.data["handle"], torate, random.choice(rates))
+            msg = "I'd rate {}'s {} {}".format(c.data.handle, torate, random.choice(rates))
         else:
             msg = "I'd rate {} a {}".format(c.message, random.choice(rates))
         await self.send_message(msg)
