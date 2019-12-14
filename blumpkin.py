@@ -21,19 +21,14 @@ class QuantumJumpBot:
         self.settings = settings
         self.botconfig = self.settings.Bot
         self.room = self.botconfig.roomname
-
-    @property
-    async def userlist(self) -> [User]:
-        data = await self.api.getroominfo(room=str(self.room))
-        ul = UserList(**data)
-        return ul.users
+        self.ul: UserList
 
     async def wsend(self, data):
         if type(data) is list:
             data = "42{}".format(json.dumps(data))
         elif type(data) is str:
-            type_exceptions = ["2probe", "5", "2"]
-            if not data.startswith("42") and data not in type_exceptions:
+            type_exemptions = ["2probe", "5", "2"]
+            if not data.startswith("42") and data not in type_exemptions:
                 data = f"42{data}"
         else:
             print("invalid data type for wsend")
@@ -43,6 +38,7 @@ class QuantumJumpBot:
     async def run(self):
         enabled_modules = self.settings.Modules["enabled"]
         self.cm.load_all(enabled_modules, bot=self)
+
         await self.connect()
 
     async def disconnect(self):
@@ -87,11 +83,17 @@ class QuantumJumpBot:
                 }
             ]
             await self.wsend(nickmsg)
+            user_list_data = await self.api.getroominfo(room=str(self.room))
+
+            self.ul = UserList(**user_list_data)
+            for user in self.ul.users:
+                print(type(user))
 
         if data[0] == "room::message":
             prefix = self.botconfig.prefix
             if data[1].get("message").startswith(prefix):
-                c = Command(prefix=prefix, data=Message(**data[1]))
+                data = data[1].update("sender", self.ul.get(handle=data[1].get("handle")))
+                c = Command(prefix=prefix, data=Message(**data))
                 if c.name == "reload" or c.name == "load":
                     if m := self.cm.import_module(c.message, self):
                         self.cm.add_cog(m, c.message, self)
@@ -115,7 +117,7 @@ class QuantumJumpBot:
                     await self.wsend(
                         Message.makeMsg(message=f"modules: {self.cm.modules}, cogs:{self.cm.cogs}",
                                         room=self.room))
-
+                
                 await self.cm.do_command(c)
 
     async def pacemaker(self):

@@ -2,7 +2,7 @@ import json
 import time
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import List
+from typing import List, Dict
 
 
 @dataclass
@@ -24,7 +24,10 @@ class JumpinObject:
             cheddar = getattr(self, attr)
             if type(cheddar) is dict:
                 setattr(self, attr, _routes.get(attr)(**cheddar))
+        self.post_init()
 
+    def post_init(self):
+        pass
 
 @dataclass
 class Dimensions(JumpinObject):
@@ -54,6 +57,15 @@ class Settings(JumpinObject):
     ignoreList: dict
 
 
+class Role(Enum):
+    ROOM_OWNER = 100
+    MOD = 75
+    OP = 50
+    LOGGED_IN = 25
+    GUEST = 10
+    SITE_OWNER = 0
+
+
 @dataclass
 class User(JumpinObject):
     userIcon: None
@@ -71,20 +83,44 @@ class User(JumpinObject):
     isSupporter: bool = False
     isBroadcasting: bool = False
     isGold: bool = False
+    timestamp: str = None
 
     @property
-    def ismod(self):
+    def is_mod(self):
         if self.operator_id is not None and self.assignedBy is None:
             return True
         else:
             return False
 
     @property
-    def isop(self):
+    def is_op(self):
+        # TODO ROOM OPS
         if self.operator_id is not None and self.assignedBy is not None:
             return True
         else:
             return False
+
+    @property
+    def role(self) -> Role:
+        role: Role = Role.GUEST
+
+        if self.isAdmin:
+            role = Role.SITE_OWNER
+
+        if self.isSiteMod:
+            role = Role.SITE_MOD
+
+        if self.is_mod:
+            role = Role.MOD
+
+        if self.is_op:
+            role = Role.OP
+
+        if self.isSupporter or self.isGold:
+            role = Role.SUPPORTER
+
+        return role
+
 
 @dataclass
 class Session:
@@ -120,6 +156,7 @@ class Message:
     userId: str = "8675309"
     timestamp: str = time.time().__str__()
     id: str = "00000"
+    sender: User = None
 
     def json(self):
         return json.dumps(self.__dict__)
@@ -266,15 +303,18 @@ class PlaylistUpdate(List[PlaylistUpdateItem]):
             self.objects.append(PlaylistUpdateItem(**object))
 
 
-
-
 @dataclass
 class UserList(JumpinObject):
-    _id: str
-    name: str
+    _id: str = None
+    name: str = None
     attrs: Attrs = None
     settings: Settings = None
     users: List[User] = field(default_factory=User)
+
+    def get(self, handle: str) -> User:
+        for user in self.users:
+            if user.handle == handle:
+                return user
 
 
 class BotState(Enum):

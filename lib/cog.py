@@ -335,5 +335,9 @@ class CogManager:
         for cog in self.cogs.values():
             for meth in cog.commands:
                 if command.name in meth.__command_name__:
-                    asyncio.create_task(meth(command))
+                    if meth.__restricted__:
+                        if command.sender.role >= meth.__role__:
+                            asyncio.create_task(meth(command))
+                    else:
+                        asyncio.create_task(meth(command))
 
