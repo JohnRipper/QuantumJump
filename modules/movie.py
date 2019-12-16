@@ -18,23 +18,25 @@ class Movie(Cog):
     async def search(self, c: Command):
         query = c.message
         # TODO handle years in query
-        response = await self.apiget(self.search_url.format(
-            self.apikey, query))
-        print(response)
-        if response is None or "results" not in response:
-            await self.send_message("Couldn't find that m8")
-        elif len(response["results"]) == 0:
-            await self.send_message("Couldn't find that m8")
+        if len(self.apikey) == 0:
+            await self.send_message("Requires an API key, see: https://developers.themoviedb.org/3/getting-started/introduction")
         else:
-            info = await self.apiget(
-                self.id_url.format(**response["results"][0]) + self.apikey)
-            if response["results"][0]["media_type"] == "movie":
-                await self.send_message(
-                    self.formatresponse(info, is_movie=True))
-                await self.send_message(response["results"][0]["overview"])
+            response = await self.apiget(self.search_url.format(
+                self.apikey, query))
+            if response is None or "results" not in response:
+                await self.send_message("Couldn't find that m8")
+            elif len(response["results"]) == 0:
+                await self.send_message("Couldn't find that m8")
             else:
-                await self.send_message(
-                    self.formatresponse(info, is_movie=False))
+                info = await self.apiget(
+                    self.id_url.format(**response["results"][0]) + self.apikey)
+                if response["results"][0]["media_type"] == "movie":
+                    await self.send_message(
+                        self.formatresponse(info, is_movie=True))
+                    await self.send_message(response["results"][0]["overview"])
+                else:
+                    await self.send_message(
+                        self.formatresponse(info, is_movie=False))
 
     # TODO
     @makeCommand(aliases=["movie"],
