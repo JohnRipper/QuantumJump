@@ -18,7 +18,7 @@ def makeCommand(aliases: [], description: str, role: Role = None, **attrs):
     return wrap
 
 
-command_pattern = r"{}(\w+)(\\b.*)"
+command_pattern = "{}(\w+)(\\b.*)"
 
 
 class Command:
@@ -31,6 +31,7 @@ class Command:
         parsed = re.search(
             command_pattern.format(self.prefix),
             data.message)
+
         if parsed is not None:
             self.name, self.message = parsed.groups()
             self.message = self.message.lstrip()
