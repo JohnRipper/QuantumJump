@@ -24,10 +24,7 @@ class JumpinObject:
             cheddar = getattr(self, attr)
             if type(cheddar) is dict:
                 setattr(self, attr, _routes.get(attr)(**cheddar))
-        self.post_init()
 
-    def post_init(self):
-        pass
 
 @dataclass
 class Dimensions(JumpinObject):
@@ -311,10 +308,13 @@ class UserList(JumpinObject):
     settings: Settings = None
     users: List[User] = field(default_factory=User)
 
-    def get(self, handle: str) -> User:
+    def get(self, handle: str) -> dict:
         for user in self.users:
-            if user.handle == handle:
-                return user
+            # Should have been an object. spooky.
+            if type(user) is dict:
+                if user.get("handle", None) == handle:
+                    return user
+
 
 
 class BotState(Enum):
