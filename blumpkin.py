@@ -90,8 +90,8 @@ class QuantumJumpBot:
         if data[0] == "room::message":
             prefix = self.botconfig.prefix
             if data[1].get("message").startswith(prefix):
-                data = data[1].update("sender", self.ul.get(handle=data[1].get("handle")))
-                c = Command(prefix=prefix, data=Message(**data))
+                data[1].update({"sender": self.ul.get(handle=data[1].get("handle"))})
+                c = Command(prefix=prefix, data=Message(**data[1]))
                 if c.name == "reload" or c.name == "load":
                     if m := self.cm.import_module(c.message, self):
                         self.cm.add_cog(m, c.message, self)
