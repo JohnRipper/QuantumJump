@@ -13,9 +13,7 @@ A few Python modules are required:
 - [aiohttp](https://github.com/aio-libs/aiohttp/)
 - [beautifulsoup4](https://code.launchpad.net/beautifulsoup)
 - [wikipedia](https://github.com/goldsmith/Wikipedia)
-
-Optional:
-[aiohttp_socks](https://github.com/romis2012/aiohttp-socks) for Tor support in Autourl
+- [aiohttp_socks](https://github.com/romis2012/aiohttp-socks) (Tor support)
 
 QuantumJump is confirmed working on GNU/Linux, the status of operation on other operating systems is currently unknown.
 Feel free to give it a go and report back.
@@ -27,7 +25,7 @@ pipenv install
 ```
 With `pip`
 ```
-pip3.8 install --user websockets tomlkit aiohttp beautifulsoup4 wikipedia
+pip3.8 install --user websockets tomlkit aiohttp beautifulsoup4 wikipedia aiohttp_socks
 ```
 
 ## Running

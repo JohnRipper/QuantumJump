@@ -30,8 +30,10 @@ ignores = [
         ]
 whitelist_mode = false
 whitelist = [
-          "youtu(.be|.com)",
-          "wikipedia.org"
+          "youtu(.be|be.com)",
+          "wikipedia.org",
+          "github.com",
+          "amazon.com"
           ]
 
 [Modules.Fun]

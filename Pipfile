@@ -11,6 +11,7 @@ tomlkit = "*"
 aiohttp = "*"
 beautifulsoup4 = "*"
 wikipedia = "*"
+aiohttp-socks = "*"
 
 [requires]
 python_version = "3.8"
