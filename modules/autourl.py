@@ -23,17 +23,24 @@ class Autourl(Cog):
                 if title:
                     await self.send_message(f"[ {title} ]")
 
-    def ignore_msg(self, msg):
+    def ignore_msg(self, msg: str):
         for each in self.settings["ignores"]:
             if re.search(each, msg):
                 return True
             else:
                 return False
 
-    async def get_title(self, url):
+    def iswhitelisted(self, url: str) -> bool:
+        if self.settings["whitelist_mode"]:
+            for possible in self.settings["whitelist"]:
+                if re.search(possible, url):
+                    return True
+
+    async def get_title(self, url: str):
         url = url.strip()
         connector = None
-        if self.settings["use_tor"]:
+        # TODO allow exclusive whitelist mode
+        if self.settings["use_tor"] and not self.iswhitelisted(url):
             try:
                 from aiohttp_socks import SocksConnector
                 connector = SocksConnector.from_url(
