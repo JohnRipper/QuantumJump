@@ -32,7 +32,7 @@ SOFTWARE.
 # https://github.com/jotham/sopel-wundertime/blob/master/wundertime.py
 
 
-class WunderTime(Cog):
+class Wundertime(Cog):
     def __init__(self, bot):
         super().__init__(bot)
         self.base_url = "http://autocomplete.wunderground.com/aq?query={}"
