@@ -30,17 +30,29 @@ class Youtube(Cog):
                 title = ytjson["items"][0]["snippet"]["title"]
                 return {"title": title, "video_id": videoid}
 
+    async def ytidsearch(self, videoid: str) -> str:
+        idurl = "https://www.googleapis.com/youtube/v3/videos?"\
+            "part=contentDetails,snippet&id={videoid}&fields="\
+            "items(contentDetails%2Fduration%2Csnippet(channelTitle%2Ctitle))"\
+            "&key={key}"
+        url = idurl.format(videoid=videoid, key=self.api_key)
+        async with aiohttp.ClientSession(headers=self.headers) as session:
+            async with session.get(url) as response:
+                ytjson = await response.json()
+                title = ["snippet"]["title"]
+                return title
+
     @makeCommand(aliases=["yt"], description="<query | url> play youtube")
     async def playyt(self, c: Command):
         if re.match("youtube(.be\/|.com\/watch\?)", c.message):
             ytid = re.search("(?:v=|\.be\/)(.{11})", c.message)[1]
-            lazylook = await self.ytsearch(ytid)
-            await self.play(video_id=ytid, title=lazylook["title"])
+            title = await self.ytidsearch(ytid)
+            await self.play(video_id=ytid, title=title)
         else:
             ytinfo = await self.ytsearch(c.message)
             await self.play(video_id=ytinfo["video_id"], title=ytinfo["title"])
 
-    @makeCommand(aliases=["rm"], description="")
+    @makeCommand(aliases=["rm"], description="remove a video from the playlist")
     async def removeyt(self, c: Command):
         # TODO
         message = c.message.strip()
@@ -54,7 +66,7 @@ class Youtube(Cog):
             # attempt to match to title?
             pass
 
-    @makeCommand(aliases=["pl"], description="append a youtube to play to jumpin's")
+    @makeCommand(aliases=["pl"], description="append a playlist to jumpin's playlist")
     async def addplaylist(self, c: Command):
         pass
 
