@@ -39,7 +39,7 @@ class Youtube(Cog):
         async with aiohttp.ClientSession(headers=self.headers) as session:
             async with session.get(url) as response:
                 ytjson = await response.json()
-                title = ["snippet"]["title"]
+                title = ytjson["snippet"]["title"]
                 return title
 
     @makeCommand(aliases=["yt"], description="<query | url> play youtube")
