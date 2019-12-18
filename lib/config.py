@@ -5,7 +5,7 @@ from tomlkit import dumps as tomldump
 from tomlkit import loads as tomlload
 from tomlkit import items as tomltypes
 
-from util import prompt
+from lib.util import prompt
 
 
 class Configuration:
