@@ -37,7 +37,7 @@ class WunderTime(Cog):
         super().__init__(bot)
         self.base_url = "http://autocomplete.wunderground.com/aq?query={}"
 
-    @makeCommand(name="time", description="<location> show local time for search")
+    @makeCommand(aliases=["time"], description="<location> show local time for search")
     async def time(self, c: Command):
         if len(c.message) >= 3:
             results = await self.find_time(c.message.strip())
