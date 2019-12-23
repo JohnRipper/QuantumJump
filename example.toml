@@ -75,3 +75,8 @@ sentences = 2
 
 [Modules.Youtube]
 api_key = ""
+
+[Modules.DeathBattle]
+[Modules.Chuck]
+[Modules.Man]
+[Modules.Wundertime]
