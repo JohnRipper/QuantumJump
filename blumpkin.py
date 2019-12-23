@@ -5,7 +5,7 @@ from enum import Enum
 
 import websockets
 
-from lib.api import Api
+from lib.http import Http
 from lib.cog import CogManager
 from lib.command import Command
 from lib.objects import Message, User, UserList, BotState
@@ -16,7 +16,7 @@ class QuantumJumpBot:
         self._ws = None
         self.state = BotState(BotState.INITIALIZED)
         self.start_time = time.time()
-        self.api = Api()
+        self.api = Http()
         self.cm = CogManager()
         self.settings = settings
         self.botconfig = self.settings.Bot
@@ -38,7 +38,6 @@ class QuantumJumpBot:
     async def run(self):
         enabled_modules = self.settings.Modules["enabled"]
         self.cm.load_all(enabled_modules, bot=self)
-
         await self.connect()
 
     async def disconnect(self):
@@ -78,7 +77,7 @@ class QuantumJumpBot:
         if data[0] == "self::join":
             nickmsg = [
                 "room::handleChange", {
-                    "userId": self.api.session.user.get("user_id"),
+                    "userId": self.api.login_data.user.get("user_id"),
                     "handle": self.botconfig.nickname
                 }
             ]
@@ -96,11 +95,11 @@ class QuantumJumpBot:
                     if m := self.cm.import_module(c.message, self):
                         self.cm.add_cog(m, c.message, self)
                         await self.wsend(
-                            Message.makeMsg(message=f"loaded|reloaded {c.message}",
+                            Message.makeMsg(message=f"{c.name}ed {c.message}",
                                             room=self.room))
                     else:
                         await self.wsend(
-                            Message.makeMsg(message=f"failed to load|reload {c.message}",
+                            Message.makeMsg(message=f"failed to {c.name} {c.message}",
                                             room=self.room))
                 if c.name == "unload":
                     if self.cm.unload(c.message):
@@ -115,7 +114,6 @@ class QuantumJumpBot:
                     await self.wsend(
                         Message.makeMsg(message=f"modules: {self.cm.modules}, cogs:{self.cm.cogs}",
                                         room=self.room))
-                
                 await self.cm.do_command(c)
 
     async def pacemaker(self):
@@ -141,8 +139,3 @@ class QuantumJumpBot:
                 if self.state == BotState.DISCONNECT or self.state == BotState.EXCEPTION:
                     break
 
-    async def process_message_queue(self):
-        if self.state is BotState.RUNNING:
-            asyncio.run(asyncio.sleep(1))
-            # await self.send_message()
-            asyncio.create_task(self.process_message_queue())
