@@ -1,40 +1,35 @@
 [Bot]
-nickname = ""
-password = ""
-prefix = "!"
-roomname = ""
 username = ""
+password = ""
+prefix = ""
+nickname = ''
+roomname = ""
+
 rainbow = true
-restart_on_error = true
-restart_attempts = 5
 
 [Modules]
-enabled = []
+enabled = ["Debug", "Youtube", "DeathBattle", "Chuck", "Man", "Wundertime", "Fun"]
 
 [Modules.Debug]
 test = "Test Good"
 
-# TODO add a check in settings load so these dont exist
 [Modules.Builtins]
-[Modules.Conversion]
-[Modules.Wundertime]
 
 [Modules.Autourl]
 # escape regex cause tomlkit
+use_tor = true
+tor_addr = "socks5://127.0.0.1:9050"
+
 pattern = "http.*\\S"
 exclusion_char = "!"
-use_tor = false
-tor_addr = "socks5://127.0.0.1:9050"
 ignores = [
         "jumpin.chat",
         "tinychat.com\\/room\\/"
         ]
 whitelist_mode = false
 whitelist = [
-          "youtu(.be|be.com)",
-          "wikipedia.org",
-          "github.com",
-          "amazon.com"
+          "youtu(.be|.com)",
+          "wikipedia.org"
           ]
 
 [Modules.Fun]
@@ -75,6 +70,8 @@ sentences = 2
 
 [Modules.Youtube]
 api_key = ""
+
+
 
 [Modules.DeathBattle]
 [Modules.Chuck]
