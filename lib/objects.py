@@ -14,6 +14,7 @@ class JumpinObject:
         _routes = {
             "dimensions": Dimensions,
             "user": User,
+            "sender": User,
             "settings": Settings,
             "videoQuality": VideoQuality,
             "attrs": Attrs,
@@ -146,7 +147,7 @@ class HandleChange:
 
 
 @dataclass
-class Message:
+class Message(JumpinObject):
     message: str
     handle: str = ""
     color: str = "green"
