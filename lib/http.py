@@ -25,52 +25,57 @@ class UrlBuilder:
         return self._room.format(room=room)
 
 
-class Api:
+class Http:
     def __init__(self):
-        self.client = ClientSession()
         self._session = None
+        self.login_data = None
         self.urls = UrlBuilder()
 
+    @property
+    def session(self) -> ClientSession:
+        if self._session is None:
+            self._session = ClientSession()
+        # Todo check if session is valid or reset
+        if self._session.closed:
+            self._session = ClientSession()
+        return self._session
+
+    # wrapped methods
     async def post(self, url: str = None, data: dict = None):
-        result = await self.client.post(url=url, data=data)
+        result = await self.session.post(url=url, data=data)
         if result.status != 200:
             raise HttpStatus(code=result.status)
         else:
             return result
 
     async def get(self, url: str = None):
-        result = await self.client.get(url=url)
+        result = await self.session.get(url=url)
         if result.status != 200:
             raise HttpStatus(code=result.status)
         else:
             return result
 
-    @property
-    def session(self):
-        if self._session:
-            return self._session
-        # todo return a guest session  by default if the session object is None.
-
+    # jumpin api stuff.
     async def logout(self):
         await self.post(url=self.urls.LOGOUT)
 
-    async def get_login_session(self):
+    async def get_login_session(self) -> Session:
         resp = await self.post(self.urls.SESSION)
-        self._session = Session(**json.loads(await resp.text()))
-        return self._session
+        self.login_data = Session(**json.loads(await resp.text()))
+        return self.login_data
 
     async def get_sio_sid(self):
-        r = await self.get(self.urls.sio(token=self._session.token))
+        r = await self.get(self.urls.sio(token=self.login_data.token))
         pattern = r"(?<=\"sid\":\")(.*?)(?=\",)"
         io = regex.search(pattern, await r.text())
         return io[0]
 
     async def print_cookies(self):
-        print(self.client.cookie_jar.__dict__)
+        print(self.session.cookie_jar.__dict__)
 
     async def get_wss(self):
         await self.get_login_session()
-        return self.urls.wss(token=self._session.token,
+        return self.urls.wss(token=self.login_data.token,
                              io=await self.get_sio_sid())
 
     async def login(self, username: str, password: str):
