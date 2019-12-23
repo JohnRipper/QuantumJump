@@ -5,7 +5,7 @@ from imp import reload
 from types import ModuleType
 
 from lib.command import Command
-from lib.objects import HandleChange, Message, Status, UpdateUserList, User, JumpinError
+from lib.objects import HandleChange, Message, Status, UpdateUserList, User, JumpinError, Banlist
 from lib.styling import Colors, Styles, encodetxt
 import modules
 
@@ -24,7 +24,7 @@ class Cog:
         self.name = self.__class__.__name__
         self.__cog__ = True
         self.bot_settings = bot.botconfig
-        self.settings = bot.settings.Modules[self.__class__.__name__]
+        self.settings = bot.settings.Modules.get(self.__class__.__name__, None)
 
         self.events = [getattr(self, name)  # what gets stored.
                        for name in dir(self)  # loop
@@ -275,7 +275,6 @@ class Cog:
 class CogManager:
     modules: dict = field(default_factory=dict)
     cogs: dict = field(default_factory=dict)
-    tasks = []
 
     def import_module(self, module: str, bot) -> ModuleType:
         # attempt to reload if already loaded
@@ -323,6 +322,7 @@ class CogManager:
                         "room::message": Message,
                         "client::error": JumpinError,
                         "youtube::playlistUpdate": UpdateUserList,
+                        "room::operation::ban": Banlist
                     }
                     if choice := routes.get(data[0], False):
                         if type(data[1]) is dict:
