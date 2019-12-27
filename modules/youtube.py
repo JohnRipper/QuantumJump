@@ -44,7 +44,7 @@ class Youtube(Cog):
 
     @makeCommand(aliases=["yt"], description="<query | url> play youtube")
     async def playyt(self, c: Command):
-        if re.match("youtu(be\.com|\.be)", c.message):
+        if re.search("youtu(be\.com|\.be)", c.message):
             ytid = re.search("(?:v=|\.be\/)(.{11})", c.message)[1]
             title = await self.ytidsearch(ytid)
             await self.play(video_id=ytid, title=title)
