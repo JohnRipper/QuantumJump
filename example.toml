@@ -1,9 +1,9 @@
 [Bot]
-username = "johnripper"
-password = "vJG2xA8ehcxGQj8"
-prefix = "#"
-nickname = '_prefbot_'
-roomname = "tech"
+username = ""
+password = ""
+prefix = ""
+nickname = ""
+roomname = ""
 
 rainbow = true
 restart_on_error = true
