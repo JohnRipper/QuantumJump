@@ -39,12 +39,12 @@ class Youtube(Cog):
         async with aiohttp.ClientSession(headers=self.headers) as session:
             async with session.get(url) as response:
                 ytjson = await response.json()
-                title = ytjson["snippet"]["title"]
+                title = ytjson["items"][0]["snippet"]["title"]
                 return title
 
     @makeCommand(aliases=["yt"], description="<query | url> play youtube")
     async def playyt(self, c: Command):
-        if re.match("youtu(.be\/|be.com\/watch\?)", c.message):
+        if re.search("youtu(be\.com|\.be)", c.message):
             ytid = re.search("(?:v=|\.be\/)(.{11})", c.message)[1]
             title = await self.ytidsearch(ytid)
             await self.play(video_id=ytid, title=title)
