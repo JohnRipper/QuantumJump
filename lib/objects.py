@@ -7,9 +7,6 @@ from typing import List, Dict
 
 @dataclass
 class JumpinObject:
-    def __init__(self):
-        self.__jumpin_object__ = True
-
     def __post_init__(self):
         _routes = {
             "dimensions": Dimensions,
@@ -123,7 +120,7 @@ class User(JumpinObject):
 @dataclass
 class Session:
     token: str
-    user: User
+    user: User = None
 
 
 @dataclass
@@ -178,9 +175,9 @@ class Message(JumpinObject):
 
 @dataclass
 class JumpinError:
-    timestamp: str
     context: str
-    message: str
+    message: str = None
+    timestamp: str = None
     modal: str = None
     id: str = None
     error: str = None

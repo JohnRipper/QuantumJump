@@ -10,15 +10,18 @@ async def start(executor, bot, loop, count=0):
     loop.run_in_executor(executor, bot.process_input, loop)
     try:
         await bot.run()
-    except websockets.WebSocketException as e:
+    except Exception as e:
+        # print the caught exception so it doesnt get lost in narnia
+        print(e.__repr__())
         bot.state = BotState.EXCEPTION
+        await asyncio.sleep(5)
         if bot.botconfig.restart_on_error and count <= bot.botconfig.restart_attempts:
             count += 1
             await start(executor, bot, loop, count)
 
 
 try:
-    config = Configuration("config.toml")
+    config = Configuration("example.toml")
 except FileNotFoundError:
     from lib.config import generate_config, write_config
     generated = generate_config()

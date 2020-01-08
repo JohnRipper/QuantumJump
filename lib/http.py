@@ -61,7 +61,14 @@ class Http:
 
     async def get_login_session(self) -> Session:
         resp = await self.post(self.urls.SESSION)
-        self.login_data = Session(**json.loads(await resp.text()))
+        data = json.loads(await resp.text())
+        if data.get("user", False):
+            print("Logged in successfully.")
+        else:
+            # guest does not have a user object associated with the token.
+            print("Logged  not successful. Attempting guest mode.")
+        self.login_data = Session(**data)
+
         return self.login_data
 
     async def get_sio_sid(self):

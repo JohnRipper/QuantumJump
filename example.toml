@@ -1,11 +1,14 @@
 [Bot]
-username = ""
-password = ""
-prefix = ""
-nickname = ''
-roomname = ""
+username = "johnripper"
+password = "vJG2xA8ehcxGQj8"
+prefix = "#"
+nickname = '_prefbot_'
+roomname = "tech"
 
 rainbow = true
+restart_on_error = true
+restart_attempts = 10
+
 
 [Modules]
 enabled = ["Debug", "Youtube", "DeathBattle", "Chuck", "Man", "Wundertime", "Fun"]

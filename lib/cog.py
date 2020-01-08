@@ -313,6 +313,7 @@ class CogManager:
         if module in self.cogs.keys:
             return self.modules.get(module)
 
+
     async def do_event(self, data: list):
         for cog in self.cogs.values():
             for meth in cog.events:

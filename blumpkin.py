@@ -8,7 +8,7 @@ import websockets
 from lib.http import Http
 from lib.cog import CogManager
 from lib.command import Command
-from lib.objects import Message, User, UserList, BotState
+from lib.objects import Message, User, UserList, BotState, Join
 
 
 class QuantumJumpBot:
@@ -20,8 +20,8 @@ class QuantumJumpBot:
         self.cm = CogManager()
         self.settings = settings
         self.botconfig = self.settings.Bot
-        self.room = self.botconfig.roomname
         self.ul: UserList
+        self.room = self.botconfig.roomname
 
     async def wsend(self, data):
         if type(data) is list:
@@ -67,7 +67,7 @@ class QuantumJumpBot:
             await self.wsend("5")
             roommsg = [
                 "room::join",
-                {"room": self.room}
+                {"room": self.botconfig.roomname}
             ]
             await self.wsend(roommsg)
             asyncio.create_task(self.pacemaker())
@@ -85,6 +85,15 @@ class QuantumJumpBot:
             user_list_data = await self.api.getroominfo(room=str(self.room))
 
             self.ul = UserList(**user_list_data)
+        if data[0] == "client::error":
+            if error := data[1].get("error", False):
+                # todo logger
+                # todo create an enum for different error codes.
+                if error == 'ERR_ACCOUNT_REQUIRED':
+                    print("Account must be signed in to join this room.")
+                    # if we do not disconnect, spy mode becomes possible.
+                    # await self.disconnect()
+                    raise Exception("suck a dick")
 
         if data[0] == "room::message":
             prefix = self.botconfig.prefix
