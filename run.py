@@ -1,7 +1,6 @@
 import asyncio
 import sys
 from concurrent import futures
-import websockets
 from blumpkin import QuantumJumpBot, BotState
 from lib.config import Configuration
 
@@ -18,6 +17,7 @@ async def start(executor, bot, loop, count=0):
         if bot.botconfig.restart_on_error and count <= bot.botconfig.restart_attempts:
             count += 1
             await start(executor, bot, loop, count)
+
 
 
 try:
