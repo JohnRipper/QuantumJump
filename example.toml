@@ -51,15 +51,17 @@ pre = [
     "packs their bowl",
     "is getting ready to toke",
     "wants to smoke some green",
-    "is down to toke"
+    "is down to toke",
+    "torches up"
     ]
 post = [
-    "torches", "lights up", "blazes", "bakes",
+    "lights up", "blazes", "bakes",
     "hotboxes your nan's bathroom", "puffs",
     "sparks their blunt", "lights their blunt",
     "sparks their joint", "lights their joint",
     "tokes", "sits this one out",
-    "gets a shotgun from your mom"
+    "gets a shotgun from your mom",
+    "rips their bong"
     ]
 
 
