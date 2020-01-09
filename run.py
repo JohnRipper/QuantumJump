@@ -21,7 +21,7 @@ async def start(executor, bot, loop, count=0):
 
 
 try:
-    config = Configuration("example.toml")
+    config = Configuration("config.toml")
 except FileNotFoundError:
     from lib.config import generate_config, write_config
     generated = generate_config()
