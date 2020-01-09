@@ -276,6 +276,11 @@ class CogManager:
     modules: dict = field(default_factory=dict)
     cogs: dict = field(default_factory=dict)
 
+    def igetattr(self, obj, attr):
+        for a in dir(obj):
+            if a.lower() == attr.lower():
+                return getattr(obj, a)
+
     def import_module(self, module: str, bot) -> ModuleType:
         # attempt to reload if already loaded
         if mod := self.modules.get(module, False):
@@ -296,7 +301,7 @@ class CogManager:
             self.add_cog(m, module, bot)
 
     def add_cog(self, mod: ModuleType, name: str, bot):
-        cog = getattr(mod, name)
+        cog = self.igetattr(mod, name)
         self.cogs.update({name: cog(bot)})
 
     def unload(self, module: str) -> bool:
