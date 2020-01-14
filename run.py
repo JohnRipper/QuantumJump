@@ -19,20 +19,20 @@ async def start(executor, bot, loop, count=0):
             await start(executor, bot, loop, count)
 
 
-
-try:
-    config = Configuration("config.toml")
-except FileNotFoundError:
-    from lib.config import generate_config, write_config
-    generated = generate_config()
-    towrite = write_config(generated, "config.toml")
-    if towrite:
-        config = Configuration("config.toml")
-    else:
-        sys.exit("Couldn't load the configuration")
+def load_config():
+    try:
+        return Configuration("example.toml")
+    except FileNotFoundError:
+        from lib.config import generate_config, write_config
+        generated = generate_config()
+        towrite = write_config(generated, "config.toml")
+        if towrite:
+            return Configuration("config.toml")
+        else:
+            sys.exit("Couldn't load the configuration")
 
 
 executor = futures.ThreadPoolExecutor(max_workers=2, )
-bot = QuantumJumpBot(config)
+bot = QuantumJumpBot(load_config())
 loop = asyncio.get_event_loop()
 loop.run_until_complete(start(executor, bot, loop))
