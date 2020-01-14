@@ -72,6 +72,7 @@ class QuantumJumpBot:
             await self.wsend(roommsg)
             asyncio.create_task(self.pacemaker())
             return
+
         data = json.loads(message[2:])
         await self.cm.do_event(data=data)
         if data[0] == "self::join":
@@ -89,11 +90,15 @@ class QuantumJumpBot:
             if error := data[1].get("error", False):
                 # todo logger
                 # todo create an enum for different error codes.
+
                 if error == 'ERR_ACCOUNT_REQUIRED':
-                    print("Account must be signed in to join this room.")
                     # if we do not disconnect, spy mode becomes possible.
-                    # await self.disconnect()
-                    raise Exception("suck a dick")
+                    await self.disconnect()
+                    raise Exception("Account must be signed in to join this room.")
+                if error == 'ENOSESSION':
+                    # if we do not disconnect, spy mode becomes possible.
+                    await self.disconnect()
+                    raise Exception("Session was invalidated.")
 
         if data[0] == "room::message":
             prefix = self.botconfig.prefix
@@ -133,18 +138,13 @@ class QuantumJumpBot:
 
     def process_input(self, loop):
         prefix = self.botconfig.prefix
-        while True:
-            if self.state == BotState.RUNNING:
-                stdin = input()
-                if stdin.startswith(prefix):
-                    asyncio.run_coroutine_threadsafe(
-                        self._recv(message=Message(message=stdin).jumpson()),
-                        loop=loop)
-                else:
-                    asyncio.run_coroutine_threadsafe(
-                        self.wsend(Message.makeMsg(message=stdin, room=self.room)),
-                        loop=loop)
+        while self.state == BotState.RUNNING:
+            stdin = input()
+            if stdin.startswith(prefix):
+                asyncio.run_coroutine_threadsafe(
+                    self._recv(message=Message(message=stdin).jumpson()),
+                    loop=loop)
             else:
-                if self.state == BotState.DISCONNECT or self.state == BotState.EXCEPTION:
-                    break
-
+                asyncio.run_coroutine_threadsafe(
+                    self.wsend(Message.makeMsg(message=stdin, room=self.room)),
+                    loop=loop)
