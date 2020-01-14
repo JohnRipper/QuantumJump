@@ -277,6 +277,7 @@ class CogManager:
     cogs: dict = field(default_factory=dict)
 
     def igetattr(self, obj, attr):
+        # just don't have modules with same spelling and different capitalization.
         for a in dir(obj):
             if a.lower() == attr.lower():
                 return getattr(obj, a)
