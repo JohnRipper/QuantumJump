@@ -44,6 +44,7 @@ class Http:
     async def post(self, url: str = None, data: dict = None):
         result = await self.session.post(url=url, data=data)
         if result.status != 200:
+            print(await result.text())
             raise HttpStatus(code=result.status)
         else:
             return result
@@ -66,7 +67,7 @@ class Http:
             print("Logged in successfully.")
         else:
             # guest does not have a user object associated with the token.
-            print("Logged  not successful. Attempting guest mode.")
+            print("Login  not successful. Attempting guest mode.")
         self.login_data = Session(**data)
 
         return self.login_data
