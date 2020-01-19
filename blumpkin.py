@@ -20,7 +20,7 @@ class QuantumJumpBot:
         self.cm = CogManager()
         self.settings = settings
         self.botconfig = self.settings.Bot
-        self.ul: UserList
+        self.ul = UserList()
         self.room = self.botconfig.roomname
 
     async def wsend(self, data):
@@ -75,6 +75,25 @@ class QuantumJumpBot:
 
         data = json.loads(message[2:])
         await self.cm.do_event(data=data)
+
+        if data[0] == "room::updateUserList":
+            for user in data[1].get("users", []):
+                if user:
+                    self.ul.add(User(**user))
+            if user:=  data[1].get("user", None):
+                if user:
+                    print(user)
+                    self.ul.add(User(**user))
+        if data[0] == "room::updateUser":
+            self.ul.update(User(**data[1].get("user", None)))
+
+        #todo  update userlist when a name changes.
+        if data[0] == "room::handleChange":
+            # ["room::handleChange",{"userId":"5e22c017be8a4900076d3e21","handle":"Tech"}]
+            pass
+        if data[0] == "room::disconnect":
+            self.ul.remove(User(**data[1].get("user", None)))
+
         if data[0] == "self::join":
             nickmsg = [
                 "room::handleChange", {
@@ -83,9 +102,9 @@ class QuantumJumpBot:
                 }
             ]
             await self.wsend(nickmsg)
-            user_list_data = await self.api.getroominfo(room=str(self.room))
-
-            self.ul = UserList(**user_list_data)
+            # deprecated
+            # user_list_data = await self.api.getroominfo(room=str(self.room))
+            # self.ul = UserList(**user_list_data)
         if data[0] == "client::error":
             if error := data[1].get("error", False):
                 # todo logger
@@ -103,7 +122,8 @@ class QuantumJumpBot:
         if data[0] == "room::message":
             prefix = self.botconfig.prefix
             if data[1].get("message").startswith(prefix):
-                data[1].update({"sender": self.ul.get(handle=data[1].get("handle"))})
+                print(type(self.ul))
+                # data[1].update({"sender": self.ul.get_by_handle(handle=data[1].get("handle"))})
                 c = Command(prefix=prefix, data=Message(**data[1]))
                 if c.name == "reload" or c.name == "load":
                     if m := self.cm.import_module(c.message, self):
