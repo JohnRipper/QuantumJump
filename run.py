@@ -1,5 +1,6 @@
 import asyncio
 import sys
+import traceback
 from concurrent import futures
 from blumpkin import QuantumJumpBot, BotState
 from lib.config import Configuration
@@ -11,7 +12,9 @@ async def start(executor, bot, loop, count=0):
         await bot.run()
     except Exception as e:
         # print the caught exception so it doesnt get lost in narnia
-        print(e.__repr__())
+        print(e)
+        traceback.print_exc(file=sys.stdout)
+
         bot.state = BotState.EXCEPTION
         await asyncio.sleep(5)
         if bot.botconfig.restart_on_error and count <= bot.botconfig.restart_attempts:
@@ -21,7 +24,7 @@ async def start(executor, bot, loop, count=0):
 
 def load_config():
     try:
-        return Configuration("config.toml")
+        return Configuration("example.toml")
     except FileNotFoundError:
         from lib.config import generate_config, write_config
         generated = generate_config()
