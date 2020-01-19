@@ -24,7 +24,7 @@ async def start(executor, bot, loop, count=0):
 
 def load_config():
     try:
-        return Configuration("example.toml")
+        return Configuration("config.toml")
     except FileNotFoundError:
         from lib.config import generate_config, write_config
         generated = generate_config()
