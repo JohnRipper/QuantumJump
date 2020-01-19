@@ -1,9 +1,12 @@
 import json
+from getopt import getopt
 
 from lib.cog import Cog, event
 from lib.command import makeCommand, Command
-from lib.objects import User, Status, HandleChange, Message, UpdateUserList
+from lib.objects import User, Status, HandleChange, Message, JumpinError
 from lib.styling import Colors, Styles, encodetxt
+
+
 
 
 class Debug(Cog):
@@ -29,13 +32,16 @@ class Debug(Cog):
     #     f.flush()
     #     f.close()
 
-    @makeCommand(aliases=["userlist"], description="test")
-    async def uselist(self, c: Command):
-        await self.send_message(json.dumps(await self.bot.userlist))
 
     @makeCommand(aliases=["me", "you"], description="t")
     async def thirdperson(self, c: Command):
         await self.send_action(c.message)
+
+    @makeCommand(aliases=["mock"], description="mocks a socket message.")
+    async def mocking_bird(self, c: Command):
+        await self.bot._recv(c.message)
+
+
 
     @makeCommand(aliases=["font"], description="")
     async def demofonts(self, c: Command):
@@ -64,20 +70,29 @@ class Debug(Cog):
                 formated = encodetxt(c.message, Styles.script)
             await self.send_message(formated)
 
-    @makeCommand(aliases=["test"], description="")
+    @makeCommand(aliases=["exception"], description="raises an exception")
     async def testit(self, c: Command):
-        await self.send_message("test\nit")
+        raise Exception("I am a T-Rex")
 
     #####
     # Events
     #####
+    @event(event="client::error")
+    async def error(self, error: JumpinError):
+        print(error.__dict__)
+        # does not work if bot is guest in  a room with authenticated required.
+
+        if error.message:
+            #await self.send_message(f"{error.context}:{error.error}:{error.message}")
+            pass
+        else:
+            #await self.send_message(f"{error.context}:{error.error}")
+            pass
+
 
     @event(event="room::message")
     async def message(self, message: Message):
         print(message.message)
         pass
 
-    @event(event="room::updateUserList")
-    async def updateUserList(self, userlist: UpdateUserList):
-        print("that" + userlist.user.handle)
-        pass
+
