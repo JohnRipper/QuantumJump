@@ -341,7 +341,6 @@ class UserList(JumpinObject):
     def get_by_handle(self, handle: str) -> User:
         if self.users:
             for user in self.users:
-                # Should have been an object. spooky.
                 if user.handle == handle:
                     return user
 
