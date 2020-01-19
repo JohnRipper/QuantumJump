@@ -63,8 +63,8 @@ class Role(Enum):
 
 @dataclass
 class User(JumpinObject):
-    userIcon: None
-    assignedBy: None
+    userIcon: str = None
+    assignedBy: str = None
     operator_id: str = None
     handle: str = None
     user_id: str = None
@@ -235,10 +235,6 @@ class HandleChange:
     handle: str
 
 
-@dataclass()
-class UpdateUserList(JumpinObject):
-    user: User
-
 
 @dataclass
 class Attrs(JumpinObject):
@@ -300,18 +296,55 @@ class PlaylistUpdate(List[PlaylistUpdateItem]):
 
 @dataclass
 class UserList(JumpinObject):
-    _id: str = None
-    name: str = None
-    attrs: Attrs = None
-    settings: Settings = None
+    # _id: str = None
+    # name: str = None
+    # attrs: Attrs = None
+    # settings: Settings = None
+    user: User = None
     users: List[User] = field(default_factory=User)
 
-    def get(self, handle: str) -> dict:
-        for user in self.users:
-            # Should have been an object. spooky.
-            if type(user) is dict:
-                if user.get("handle", None) == handle:
+    def add(self, user: User):
+        #update the list and return, else add to the list
+        print(type(self.users))
+        if not isinstance(self.users, list):
+            self.users = []
+        for pos, item in enumerate(self.users):
+            if user._id == item._id:
+                self.users[pos] = user
+                return
+        self.users.append(user)
+
+    def update(self, user: User) -> bool:
+        if not isinstance(self.users, list):
+            self.users = []
+        if user:
+            for pos, item in enumerate(self.users):
+                if user._id == item._id:
+                    self.users[pos] = user
+                    return True
+            return False
+
+    def handle_name_change(self, user_id: str, handle: str) -> bool:
+        if not isinstance(self.users, list):
+            self.users = []
+        for pos, item in enumerate(self.users):
+            if user_id == item._id:
+                self.users[pos].handle = handle
+                return True
+        return False
+
+    def remove(self, user: User):
+        for pos, item in enumerate(self.users):
+            if user._id == item._id:
+                self.users.pop(pos)
+
+    def get_by_handle(self, handle: str) -> User:
+        if self.users:
+            for user in self.users:
+                # Should have been an object. spooky.
+                if user.handle == handle:
                     return user
+
 
 
 
