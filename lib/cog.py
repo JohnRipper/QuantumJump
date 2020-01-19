@@ -5,7 +5,7 @@ from imp import reload
 from types import ModuleType
 
 from lib.command import Command
-from lib.objects import HandleChange, Message, Status, UpdateUserList, User, JumpinError, Banlist
+from lib.objects import HandleChange, Message, Status, User, JumpinError, Banlist, UserList
 from lib.styling import Colors, Styles, encodetxt
 import modules
 
@@ -231,7 +231,7 @@ class Cog:
         pass
 
     @event(event="room::updateUserList")
-    async def updateUserList(self, userlist: UpdateUserList):
+    async def updateUserList(self, userlist: UserList):
         pass
 
     @event(event="room::updateIgnore")
@@ -325,10 +325,10 @@ class CogManager:
             for meth in cog.events:
                 if meth.__event__ == data[0]:
                     routes = {
-                        "room::updateUserList": UpdateUserList,
+                        "room::updateUserList": UserList,
                         "room::message": Message,
                         "client::error": JumpinError,
-                        "youtube::playlistUpdate": UpdateUserList,
+                        "youtube::playlistUpdate": None,
                         "room::operation::ban": Banlist
                     }
                     if choice := routes.get(data[0], False):
