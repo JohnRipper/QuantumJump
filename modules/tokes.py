@@ -64,17 +64,17 @@ class Tokes(Cog):
         await self.send_action(random.choice(self.post_timer),
                                color=Colors.greenalt)
 
-    @makeCommand(aliases=["join"], description="joins tokes")
+    @makeCommand(aliases=["join"], description="join tokes")
     async def join(self, c: Command):
         if action := self.actions.get('tokes', False):
             if action.active:
                 homies = str(action.joined)[1:-1]
                 if c.data.handle in action.joined:
-                    await self.send_message(f"{c.data.handle} already joined {homies} for {c.name}!!!",
+                    await self.send_message(f"{c.data.handle} already joined {homies}!!!",
                                             color=Colors.greenalt,
                                             style=Styles.bold)
                 else:
-                    await self.send_message(f"{c.data.handle} has joined {homies} for {c.name}!!!",
+                    await self.send_message(f"{c.data.handle} has joined {homies}!!!",
                                             color=Colors.greenalt,
                                             style=Styles.bold)
                     action.joined.append(c.data.handle)
