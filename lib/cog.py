@@ -1,3 +1,23 @@
+# -*- coding: utf-8 -*-
+#
+# Copyright 2019, JohnnyCarcinogen ( https://github.com/JohnRipper/ ), All rights reserved.
+#
+# Created by dev at 2/8/20
+# This file is part of QuantumJump.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, see <http://www.gnu.org/licenses/>.
+
 import asyncio
 import importlib
 from dataclasses import dataclass, field, asdict
@@ -287,11 +307,12 @@ class CogManager:
         if mod := self.modules.get(module, False):
             self.unload(module)
             if m := reload(mod):
+                self.modules.update({module.lower(): m})
                 self.add_cog(mod=m, name=module, bot=bot)
         # not loaded? try loading.
         try:
             m = importlib.import_module(f"modules.{module}".lower())
-            self.modules.update({module: m})
+            self.modules.update({module.lower(): m})
             return m
         except ModuleNotFoundError as e:
             print(e)
@@ -303,21 +324,21 @@ class CogManager:
 
     def add_cog(self, mod: ModuleType, name: str, bot):
         cog = self.igetattr(mod, name)
-        self.cogs.update({name: cog(bot)})
+        self.cogs.update({name.lower(): cog(bot)})
 
     def unload(self, module: str) -> bool:
         if module in self.cogs.keys():
-            self.cogs.pop(module)
+            self.cogs.pop(module.lower())
             return True
         return False
 
     def get_cog(self, module: str) -> Cog:
         if module in self.cogs.keys:
-            return self.cogs.get(module)
+            return self.cogs.get(module.lower())
 
     def get_module(self, module: str) -> Cog:
         if module in self.cogs.keys:
-            return self.modules.get(module)
+            return self.modules.get(module.lower())
 
 
     async def do_event(self, data: list):
