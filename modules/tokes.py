@@ -23,6 +23,7 @@ class Tokes(Cog):
         super().__init__(bot)
         self.cheers_replies = self.settings["cheers"]
         self.actions = {}
+        self.running = ""
 
         self.prepares = self.settings["pre"]
         self.post_timer = self.settings["post"]
@@ -70,11 +71,11 @@ class Tokes(Cog):
             if action.active:
                 homies = str(action.joined)[1:-1]
                 if c.data.handle in action.joined:
-                    await self.send_message(f"{c.data.handle} already joined {homies} for {c.name}!!!",
+                    await self.send_message(f"{c.data.handle} already joined {homies} for {self.running}!!!",
                                             color=Colors.greenalt,
                                             style=Styles.bold)
                 else:
-                    await self.send_message(f"{c.data.handle} has joined {homies} for {c.name}!!!",
+                    await self.send_message(f"{c.data.handle} has joined {homies} for {self.running}!!!",
                                             color=Colors.greenalt,
                                             style=Styles.bold)
                     action.joined.append(c.data.handle)
@@ -137,6 +138,7 @@ class Tokes(Cog):
                                         color=Colors.greenalt)
                 await self.send_action(random.choice(self.prepares),
                                        color=Colors.greenalt)
+            self.running = thing
             # start counting down.
             for i in range(0, minutes):
                 if minutes - i <= 5 & minutes - i != 0:
@@ -164,6 +166,7 @@ class Tokes(Cog):
                 action.active = False
                 action.joined = []
                 self.actions.update({action.action: action})
+                self.running = ""
             await asyncio.sleep(0.6)
             await self.send_action(random.choice(self.post_timer),
                                    color=Colors.greenalt)
