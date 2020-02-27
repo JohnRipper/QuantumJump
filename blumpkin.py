@@ -101,14 +101,12 @@ class QuantumJumpBot:
                     self.ul.add(User(**user))
             if user:=  data[1].get("user", None):
                 if user:
-                    print(user)
                     self.ul.add(User(**user))
         if data[0] == "room::updateUser":
             self.ul.update(User(**data[1].get("user", None)))
 
         if data[0] == "room::updateUsers":
             for user in data[1].get("users", []):
-                print(f"updating user {user}")
                 self.ul.update(User(**user))
 
         #todo  update userlist when a name changes.
@@ -146,7 +144,6 @@ class QuantumJumpBot:
         if data[0] == "room::message":
             prefix = self.botconfig.prefix
             data[1].update({"sender": self.ul.get_by_handle(handle=data[1].get("handle"))})
-            print(f"userlist {self.ul}")
 
             if data[1].get("message").startswith(prefix):
                 c = Command(prefix=prefix, data=Message(**data[1]))
