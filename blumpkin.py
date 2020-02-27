@@ -124,6 +124,8 @@ class QuantumJumpBot:
                 }
             ]
             await self.wsend(nickmsg)
+            await self.wsend('42["room::users", {}]')
+
             # deprecated
             # user_list_data = await self.api.getroominfo(room=str(self.room))
             # self.ul = UserList(**user_list_data)
