@@ -1,3 +1,23 @@
+# -*- coding: utf-8 -*-
+#
+# Copyright 2019, JohnnyCarcinogen ( https://github.com/JohnRipper/ ), All rights reserved.
+#
+# Created by dev at 2/8/20
+# This file is part of QuantumJump.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, see <http://www.gnu.org/licenses/>.
+
 import json
 import time
 from dataclasses import dataclass, field
@@ -10,6 +30,7 @@ class JumpinObject:
     def __post_init__(self):
         _routes = {
             "dimensions": Dimensions,
+            "userlist": UserList,
             "user": User,
             "sender": User,
             "settings": Settings,
@@ -293,7 +314,6 @@ class PlaylistUpdate(List[PlaylistUpdateItem]):
         for object in data:
             self.objects.append(PlaylistUpdateItem(**object))
 
-
 @dataclass
 class UserList(JumpinObject):
     # _id: str = None
@@ -322,6 +342,7 @@ class UserList(JumpinObject):
                 if user._id == item._id:
                     self.users[pos] = user
                     return True
+            self.users.append(user)
             return False
 
     def handle_name_change(self, user_id: str, handle: str) -> bool:
@@ -343,7 +364,6 @@ class UserList(JumpinObject):
             for user in self.users:
                 if user.handle == handle:
                     return user
-
 
 
 
