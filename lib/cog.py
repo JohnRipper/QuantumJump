@@ -22,9 +22,11 @@ import asyncio
 import importlib
 from dataclasses import dataclass, field, asdict
 from imp import reload
+from logging import Filter, LogRecord
 from types import ModuleType
 
 from lib.command import Command
+from lib.logging import QuantumLogger
 from lib.objects import HandleChange, Message, Status, User, JumpinError, Banlist, UserList
 from lib.styling import Colors, Styles, encodetxt
 import modules
@@ -43,6 +45,7 @@ class Cog:
         self.bot = bot
         self.name = self.__class__.__name__
         self.__cog__ = True
+        self.log = QuantumLogger(self.name)
         self.bot_settings = bot.botconfig
         self.settings = bot.settings.Modules.get(self.__class__.__name__, None)
 
@@ -252,6 +255,7 @@ class Cog:
 
     @event(event="room::updateUserList")
     async def updateUserList(self, userlist: UserList):
+        print("durr")
         pass
 
     @event(event="room::updateIgnore")
@@ -280,10 +284,6 @@ class Cog:
         print(message)
         pass
 
-    @event(event="room::alert")
-    async def alert(self, message):
-        print(message)
-        pass
 
     @event(event="youtube::playlistUpdate")
     # 42["youtube::playlistUpdate",[{"startTime":null,"endTime":null,"description":null,"channelId":"UCqukXrA3L_B0EVHiM14EU7g","pausedAt":null,"_id":"5dea8a123533d70008b01aa9","mediaId":"jesc3yvZSws","title":"DANZIG - Mother Lyrics","link":"https://youtu.be/jesc3yvZSws","duration":226,"thumb":"https://i.ytimg.com/vi/jesc3yvZSws/default.jpg","mediaType":"TYPE_YOUTUBE","startedBy":"5c4b7b6746bb1a000712c13c","createdAt":"2019-12-06T17:04:18.334Z"}]]

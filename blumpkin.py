@@ -1,3 +1,23 @@
+# -*- coding: utf-8 -*-
+#
+# Copyright 2019, JohnnyCarcinogen ( https://github.com/JohnRipper/ ), All rights reserved.
+#
+# Created by dev at 2/8/20
+# This file is part of QuantumJump.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, see <http://www.gnu.org/licenses/>.
+
 import asyncio
 import json
 import time
@@ -74,7 +94,6 @@ class QuantumJumpBot:
             return
 
         data = json.loads(message[2:])
-        await self.cm.do_event(data=data)
 
         if data[0] == "room::updateUserList":
             for user in data[1].get("users", []):
@@ -86,6 +105,11 @@ class QuantumJumpBot:
                     self.ul.add(User(**user))
         if data[0] == "room::updateUser":
             self.ul.update(User(**data[1].get("user", None)))
+
+        if data[0] == "room::updateUsers":
+            for user in data[1].get("users", []):
+                print(f"updating user {user}")
+                self.ul.update(User(**user))
 
         #todo  update userlist when a name changes.
         if data[0] == "room::handleChange":
@@ -121,9 +145,10 @@ class QuantumJumpBot:
 
         if data[0] == "room::message":
             prefix = self.botconfig.prefix
+            data[1].update({"sender": self.ul.get_by_handle(handle=data[1].get("handle"))})
+            print(f"userlist {self.ul}")
+
             if data[1].get("message").startswith(prefix):
-                print(type(self.ul))
-                # data[1].update({"sender": self.ul.get_by_handle(handle=data[1].get("handle"))})
                 c = Command(prefix=prefix, data=Message(**data[1]))
                 if c.name == "reload" or c.name == "load":
                     if m := self.cm.import_module(c.message, self):
@@ -149,6 +174,7 @@ class QuantumJumpBot:
                         Message.makeMsg(message=f"modules: {self.cm.modules}, cogs:{self.cm.cogs}",
                                         room=self.room))
                 await self.cm.do_command(c)
+        await self.cm.do_event(data=data)
 
     async def pacemaker(self):
         if self.state == BotState.RUNNING:
