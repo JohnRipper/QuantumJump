@@ -119,7 +119,7 @@ class QuantumJumpBot:
         if data[0] == "self::join":
             nickmsg = [
                 "room::handleChange", {
-                    "userId": self.api.login_data.user.get("user_id"),
+                    "userId": self.api.login_data.user.get("userId"),
                     "handle": self.botconfig.nickname
                 }
             ]
@@ -145,7 +145,7 @@ class QuantumJumpBot:
 
         if data[0] == "room::message":
             prefix = self.botconfig.prefix
-            data[1].update({"sender": self.ul.get_by_handle(handle=data[1].get("handle"))})
+            data[1].update({"sender": self.ul.get_by_id(id=data[1].get("userId"))})
 
             if data[1].get("message").startswith(prefix):
                 c = Command(prefix=prefix, data=Message(**data[1]))

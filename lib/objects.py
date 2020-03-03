@@ -329,7 +329,7 @@ class UserList(JumpinObject):
         if not isinstance(self.users, list):
             self.users = []
         for pos, item in enumerate(self.users):
-            if user._id == item._id:
+            if user.user_id == item.user_id:
                 self.users[pos] = user
                 return
         self.users.append(user)
@@ -339,7 +339,7 @@ class UserList(JumpinObject):
             self.users = []
         if user:
             for pos, item in enumerate(self.users):
-                if user._id == item._id:
+                if user.user_id == item.user_id:
                     self.users[pos] = user
                     return True
             self.users.append(user)
@@ -349,14 +349,14 @@ class UserList(JumpinObject):
         if not isinstance(self.users, list):
             self.users = []
         for pos, item in enumerate(self.users):
-            if user_id == item._id:
+            if user_id == item.user_id:
                 self.users[pos].handle = handle
                 return True
         return False
 
     def remove(self, user: User):
         for pos, item in enumerate(self.users):
-            if user._id == item._id:
+            if user.user_id == item.user_id:
                 self.users.pop(pos)
 
     def get_by_handle(self, handle: str) -> User:
@@ -365,7 +365,11 @@ class UserList(JumpinObject):
                 if user.handle == handle:
                     return user
 
-
+    def get_by_id(self, id: str) -> User:
+        if self.users:
+            for user in self.users:
+                if user._id == id:
+                    return user
 
 class BotState(Enum):
     INITIALIZED = 0
