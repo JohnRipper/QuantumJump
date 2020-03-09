@@ -20,16 +20,14 @@
 
 import asyncio
 import importlib
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, field
 from imp import reload
-from logging import Filter, LogRecord
 from types import ModuleType
 
 from lib.command import Command
 from lib.logging import QuantumLogger
 from lib.objects import HandleChange, Message, Status, User, JumpinError, Banlist, UserList
-from lib.styling import Colors, Styles, encodetxt
-import modules
+from lib.styling import Colors, encodetxt
 
 
 def event(event: str, **attrs):
@@ -46,6 +44,7 @@ class Cog:
         self.name = self.__class__.__name__
         self.__cog__ = True
         self.log = QuantumLogger(self.name)
+        self.log.info(f"initializing cog")
         self.bot_settings = bot.botconfig
         self.settings = bot.settings.Modules.get(self.__class__.__name__, None)
 
@@ -255,7 +254,6 @@ class Cog:
 
     @event(event="room::updateUserList")
     async def updateUserList(self, userlist: UserList):
-        print("durr")
         pass
 
     @event(event="room::updateIgnore")
@@ -276,12 +274,10 @@ class Cog:
 
     @event(event="room::error")
     async def error(self, message):
-        print(message)
         pass
 
     @event(event="room::alert")
     async def alert(self, message):
-        print(message)
         pass
 
 

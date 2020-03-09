@@ -22,7 +22,7 @@ import json
 import time
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import List, Dict
+from typing import List
 
 
 @dataclass
@@ -325,7 +325,6 @@ class UserList(JumpinObject):
 
     def add(self, user: User):
         #update the list and return, else add to the list
-        print(type(self.users))
         if not isinstance(self.users, list):
             self.users = []
         for pos, item in enumerate(self.users):

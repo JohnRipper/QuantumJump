@@ -1,9 +1,30 @@
+# -*- coding: utf-8 -*-
+#
+# Copyright 2019, JohnnyCarcinogen ( https://github.com/JohnRipper/ ), All rights reserved.
+#
+# Created by dev at 2/8/20
+# This file is part of QuantumJump.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, see <http://www.gnu.org/licenses/>.
+
 import json
 import re as regex
 
 from aiohttp import ClientSession
 
 from lib.exceptions import HttpStatus
+from lib.logging import QuantumLogger
 from lib.objects import Session
 
 
@@ -30,6 +51,7 @@ class Http:
         self._session = None
         self.login_data = None
         self.urls = UrlBuilder()
+        self.log = QuantumLogger("Http")
 
     @property
     def session(self) -> ClientSession:
@@ -44,7 +66,6 @@ class Http:
     async def post(self, url: str = None, data: dict = None):
         result = await self.session.post(url=url, data=data)
         if result.status != 200:
-            print(await result.text())
             raise HttpStatus(code=result.status)
         else:
             return result
@@ -63,13 +84,7 @@ class Http:
     async def get_login_session(self) -> Session:
         resp = await self.post(self.urls.SESSION)
         data = json.loads(await resp.text())
-        if data.get("user", False):
-            print("Logged in successfully.")
-        else:
-            # guest does not have a user object associated with the token.
-            print("Login  not successful. Attempting guest mode.")
         self.login_data = Session(**data)
-
         return self.login_data
 
     async def get_sio_sid(self):
@@ -86,14 +101,15 @@ class Http:
         return self.urls.wss(token=self.login_data.token,
                              io=await self.get_sio_sid())
 
-    async def login(self, username: str, password: str):
-        await self.post(url=self.urls.LOGIN,
-                        data={
-                            "action": "login",
-                            "username": username,
-                            "password": password
-                        })
-        # todo check if successful
+    async def login(self, username: str, password: str) -> bool:
+        result = await self.post(url=self.urls.LOGIN,
+                                 data={
+                                     "action": "login",
+                                     "username": username,
+                                     "password": password
+                                 })
+        if "connect.sid" in result.cookies:
+            return True
 
     async def getroominfo(self, room: str) -> dict:
         action = await self.get(url=self.urls.room(room=room))

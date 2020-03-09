@@ -21,14 +21,14 @@
 import asyncio
 import json
 import time
-from enum import Enum
 
 import websockets
 
-from lib.http import Http
 from lib.cog import CogManager
 from lib.command import Command
-from lib.objects import Message, User, UserList, BotState, Join
+from lib.http import Http
+from lib.logging import QuantumLogger
+from lib.objects import Message, User, UserList, BotState
 
 
 class QuantumJumpBot:
@@ -42,18 +42,20 @@ class QuantumJumpBot:
         self.botconfig = self.settings.Bot
         self.ul = UserList()
         self.room = self.botconfig.roomname
+        if self.settings.Bot.debug:
+            self.log = QuantumLogger('QuantumJump', 10)
+        else:
+            self.log = QuantumLogger('QuantumJump', 19)
 
     async def wsend(self, data):
         if type(data) is list:
-            data = "42{}".format(json.dumps(data))
+            data = f"42{json.dumps(data)}"
         elif type(data) is str:
             type_exemptions = ["2probe", "5", "2"]
             if not data.startswith("42") and data not in type_exemptions:
                 data = f"42{data}"
-        else:
-            print("invalid data type for wsend")
         await self._ws.send(data)
-        print(f"SEND {data}")
+        self.log.ws_send(data)
 
     async def run(self):
         enabled_modules = self.settings.Modules["enabled"]
@@ -65,24 +67,27 @@ class QuantumJumpBot:
         await self._ws.close()
 
     async def connect(self):
-        await self.api.login(self.botconfig.username,
-                             self.botconfig.password)
+        logged_in = await self.api.login(self.botconfig.username,
+                                         self.botconfig.password)
+        self.log.info(f"Logged in: {logged_in}")
 
         async with websockets.connect(
                 uri=await self.api.get_wss(),
                 timeout=600,
                 origin="https://jumpin.chat"
         ) as self._ws:
-            print("Socket started")
+            self.log.info("Connected to websocket.")
             self.state = BotState.RUNNING
             await self.wsend("2probe")
             async for message in self._ws:
                 await self._recv(message=message)
 
     async def _recv(self, message: str):
-        print(f"RECV {message}")
+
         if message.isdigit():
             return
+        self.log.ws_event(message)
+
         if message == "3probe":
             await self.wsend("5")
             roommsg = [
@@ -131,21 +136,18 @@ class QuantumJumpBot:
             # self.ul = UserList(**user_list_data)
         if data[0] == "client::error":
             if error := data[1].get("error", False):
-                # todo logger
-                # todo create an enum for different error codes.
-
                 if error == 'ERR_ACCOUNT_REQUIRED':
-                    # if we do not disconnect, spy mode becomes possible.
                     await self.disconnect()
                     raise Exception("Account must be signed in to join this room.")
                 if error == 'ENOSESSION':
-                    # if we do not disconnect, spy mode becomes possible.
                     await self.disconnect()
                     raise Exception("Session was invalidated.")
 
         if data[0] == "room::message":
             prefix = self.botconfig.prefix
-            data[1].update({"sender": self.ul.get_by_id(id=data[1].get("userId"))})
+            sender = self.ul.get_by_id(id=data[1].get("userId"))
+            data[1].update({"sender": sender})
+            self.log.chat(msg=f"{sender.handle}|{sender.username}: {data[1].get('message')}")
 
             if data[1].get("message").startswith(prefix):
                 c = Command(prefix=prefix, data=Message(**data[1]))
@@ -178,7 +180,7 @@ class QuantumJumpBot:
     async def pacemaker(self):
         if self.state == BotState.RUNNING:
             await asyncio.sleep(25)
-            await self.wsend("2")
+            await self._ws.send("2")
             asyncio.create_task(self.pacemaker())
 
     def process_input(self, loop):
