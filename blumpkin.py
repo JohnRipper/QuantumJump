@@ -146,8 +146,12 @@ class QuantumJumpBot:
         if data[0] == "room::message":
             prefix = self.botconfig.prefix
             sender = self.ul.get_by_id(id=data[1].get("userId"))
-            data[1].update({"sender": sender})
-            self.log.chat(msg=f"{sender.handle}|{sender.username}: {data[1].get('message')}")
+            # bug when user is inside room twice
+            # todo take a closer look at how the data invalidates.
+            if sender:
+                data[1].update({"sender": sender})
+
+                self.log.chat(msg=f"{sender.handle}|{sender.username}: {data[1].get('message')}")
 
             if data[1].get("message").startswith(prefix):
                 c = Command(prefix=prefix, data=Message(**data[1]))
