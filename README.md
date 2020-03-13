@@ -26,7 +26,7 @@ pipenv install
 ```
 With `pip`
 ```
-pip3.8 install --user websockets tomlkit aiohttp beautifulsoup4 wikipedia aiohttp_socks pytz
+pip3.8 install -U --user websockets tomlkit aiohttp beautifulsoup4 wikipedia aiohttp_socks pytz
 ```
 
 ## Running
@@ -74,13 +74,13 @@ async def message(self, message: Message):
 | Command | Argument   | Description            |
 |---------|------------|------------------------|
 | roll    | sides dice | roll dice, default is 1 die, 6 sides |
-| rate    | things     | rate a thing out of 10 |
-| 8ball   | question   | standard magic 8ball   |
+| rate    | thing      | rate a thing out of 10 |
+| 8ball   | question?  | standard magic 8ball   |
 
 ### Movie
 | Command | Argument | Description |
 |---------|----------|-------------|
-| imdb    | query    | search The Movie Db for TV and movies |
+| imdb    | query    | search [The Movie Db](https://www.themoviedb.org/documentation/api) for TV and movies |
 
 ### Tokes
 | Command | Argument | Description                     |
@@ -94,7 +94,7 @@ async def message(self, message: Message):
 |---------|----------|-------------|
 | yt      | title or url |      play a video |
 
-### Urban
+### Urban Dictionary
 | Command | Argument | Description |
 |---------|----------|-------------|
 | urb     | query    | search Urban Dictionary |
@@ -102,8 +102,8 @@ async def message(self, message: Message):
 
 
 ## Contributors
-## Thanks to those who have helped make quantum a thing
+### Thanks to those who have helped make quantum a thing
 
-[`@autotonic`](https://github.com/Autotonic)
+[`@rkben`](https://github.com/rkben)
 
-[`@tech`](https://github.com/Technetium1) 
+[`@Tech`](https://github.com/Technetium1) 
