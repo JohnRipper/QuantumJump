@@ -99,3 +99,11 @@ async def message(self, message: Message):
 |---------|----------|-------------|
 | urb     | query    | search Urban Dictionary |
 ```
+
+
+## Contributors
+## Thanks to those who have helped make quantum a thing
+
+[`@autotonic`](https://github.com/Autotonic) for big brain
+
+[`@tech`](https://github.com/Technetium1) design and code review
