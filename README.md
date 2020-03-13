@@ -98,7 +98,7 @@ async def message(self, message: Message):
 | Command | Argument | Description |
 |---------|----------|-------------|
 | urb     | query    | search Urban Dictionary |
-```
+
 
 
 ## Contributors
