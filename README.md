@@ -104,6 +104,6 @@ async def message(self, message: Message):
 ## Contributors
 ## Thanks to those who have helped make quantum a thing
 
-[`@autotonic`](https://github.com/Autotonic) for big brain
+[`@autotonic`](https://github.com/Autotonic)
 
-[`@tech`](https://github.com/Technetium1) design and code review
+[`@tech`](https://github.com/Technetium1) 
