@@ -6,6 +6,7 @@ nickname = ""
 roomname = ""
 
 debug = false
+chunk_limit = 2
 rainbow = true
 restart_on_error = true
 restart_attempts = 10
