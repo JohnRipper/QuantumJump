@@ -78,7 +78,6 @@ class Cog:
                 chunk_limit = len(messages)
             for i in range(0, chunk_limit):
                 message = messages[i][:254]
-
                 await self.send_message(message, room=room, color=color, style=style)
             return
         if color is None and self.bot_settings.rainbow:
@@ -98,6 +97,7 @@ class Cog:
                 "room": room
             }
         ]
+        await asyncio.sleep(1)
         await self.ws_send(data=data)
 
     async def send_action(self, message: str, room: str = None, color=None, style=None):
