@@ -20,6 +20,7 @@
 
 import asyncio
 import importlib
+import re
 from dataclasses import dataclass, field
 from imp import reload
 from types import ModuleType
@@ -69,6 +70,17 @@ class Cog:
         await self.bot.wsend(data=data)
 
     async def send_message(self, message: str, room: str = None, color=None, style=None):
+        if len(message) > 254:
+            # re.DOTALL makes . match everything, including newline
+            messages = re.findall("(.{1,254}[.,;:]|.{1,254})", message, re.DOTALL)
+            chunk_limit = self.bot_settings.chunk_limit
+            if chunk_limit == 0 or chunk_limit == None:
+                chunk_limit = len(messages)
+            for i in range(0, chunk_limit):
+                message = messages[i][:254]
+
+                await self.send_message(message, room=room, color=color, style=style)
+            return
         if color is None and self.bot_settings.rainbow:
             color = Colors.random()
             await self.change_color(color)
