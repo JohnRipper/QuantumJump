@@ -1,6 +1,27 @@
+# -*- coding: utf-8 -*-
+#
+# Copyright 2019, JohnnyCarcinogen ( https://github.com/JohnRipper/ ), All rights reserved.
+#
+# Created by dev at 2/8/20
+# This file is part of QuantumJump.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, see <http://www.gnu.org/licenses/>.
+
 import asyncio
 import datetime
 import random
+import time
 from dataclasses import field
 from enum import Enum
 
@@ -10,6 +31,7 @@ from lib.cog import Cog
 from lib.command import Command, makeCommand
 from lib.objects import BotState
 from lib.styling import Colors, Styles
+from sched import scheduler
 
 @dataclass
 class Action:
@@ -21,43 +43,53 @@ class Action:
 class Tokes(Cog):
     def __init__(self, bot):
         super().__init__(bot)
+        self.s = scheduler(time.time, asyncio.sleep)
+        self.is_running_hourly = self.settings["hourly_420"]
+        self.how_many_420 = 0
+
+        if self.is_running_hourly:
+            asyncio.create_task(self.start_420_counter())
+
+        # undone
         self.cheers_replies = self.settings["cheers"]
         self.actions = {}
         self.running = ""
 
         self.prepares = self.settings["pre"]
         self.post_timer = self.settings["post"]
-        self.is_running_hourly = self.settings["hourly_420"]
 
-        if self.is_running_hourly:
-            asyncio.create_task(self.it_is_420())
 
-    async def it_is_420(self):
-        last_hr = 0
-        while self.bot.state is BotState.RUNNING and self.is_running_hourly:
-            minute = datetime.datetime.now().minute
-            hour = datetime.datetime.now().hour
-            # prevent message repeats.
-            if minute == 20 and (last_hr < hour or hour == 0):
-                await self.send_message("It's 420 somewhere",
+    async def start_420_counter(self):
+        # figure out next 420
+        current_minute = datetime.datetime.now().minute
+        wait_time = 60 - current_minute + 20
+        pre_wait_time = 60 - current_minute + 15
+        self.s.enter(pre_wait_time, 1, self.pre_happy_420, str(self.how_many_420))
+
+        self.s.enter(wait_time, 1, self.happy_420, f"{wait_time} minutes")
+
+
+    async def pre_happy_420(self):
+        await self.send_message("5 minutes before 420",
                                         color=Colors.greenalt,
                                         style=Styles.bold)
-                last_hr = hour
-                # let the internal timer sleep for 50 minutes before checking the clock again.
-                await asyncio.sleep(int(60 * 50))
-            # todo a count down?
-            await asyncio.sleep(60)
+    async def happy_420(self):
+        await self.send_message("It's 420 somewhere",
+                                        color=Colors.greenalt,
+                                        style=Styles.bold)
+
 
     @makeCommand(aliases=["420hour"],
                  description="enables/disables call for tokes hourly.")
     async def hour420(self, c: Command):
         self.is_running_hourly = not self.is_running_hourly
-        await self.send_message("Hourly 420 notification set to: {}".format(
-            self.is_running_hourly),
+        await self.send_message(f"Hourly 420 notification set to: { self.is_running_hourly}",
                                 color=Colors.greenalt,
                                 style=Styles.bold)
 
-    @makeCommand(aliases=["cheers"], description="Cheers!")
+
+    @makeCommand(aliases=["cheers"],
+                 description="Cheers!")
     async def cheers(self, c: Command):
         await self.send_message(random.choice(self.cheers_replies),
                                 style=Styles.script)
@@ -96,7 +128,10 @@ class Tokes(Cog):
                 return
         total_seconds = 0
         if c.message.isdigit():
-            total_seconds = c.message
+            total_seconds = float(c.message)
+            if total_seconds > 9223372036.854775:
+                await self.send_message(f"{c.message.handle} caused an integer overflow error!!!!!!! HOW DARE YOU@!")
+                return
             self.actions.update({c.name: Action(active=True, action=c.name, joined=[c.data.handle])})
         await self.do(thing=c.name, total_seconds=total_seconds)
 
@@ -170,3 +205,5 @@ class Tokes(Cog):
             await asyncio.sleep(0.6)
             await self.send_action(random.choice(self.post_timer),
                                    color=Colors.greenalt)
+
+

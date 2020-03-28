@@ -1,3 +1,23 @@
+# -*- coding: utf-8 -*-
+#
+# Copyright 2019, JohnnyCarcinogen ( https://github.com/JohnRipper/ ), All rights reserved.
+#
+# Created by dev at 2/8/20
+# This file is part of QuantumJump.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, see <http://www.gnu.org/licenses/>.
+
 import random
 
 from lib.cog import Cog
@@ -7,7 +27,7 @@ from lib.command import Command, makeCommand
 class Fun(Cog):
     def __init__(self, bot):
         super().__init__(bot)
-        # self.settings = self.bot.settings["module"]["fun"]
+
 
     @makeCommand(aliases=["roll"], description="<sides> <dice>, default is single 6 sided")
     async def roll(self, c: Command):
@@ -72,6 +92,8 @@ class Fun(Cog):
             "0/10", "1/10", "2/10", "3/10", "4/10", "5/10", "6/10", "7/10",
             "8/10", "9/10", "10/10"
         ]
+
+
         if not self.settings["allow_rate"]:
             msg = "I am the earth."
         elif len(c.message.strip()) == 0:

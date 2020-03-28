@@ -1,3 +1,23 @@
+# -*- coding: utf-8 -*-
+#
+# Copyright 2019, JohnnyCarcinogen ( https://github.com/JohnRipper/ ), All rights reserved.
+#
+# Created by dev at 2/8/20
+# This file is part of QuantumJump.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, see <http://www.gnu.org/licenses/>.
+
 import json
 from getopt import getopt
 
@@ -74,12 +94,16 @@ class Debug(Cog):
     async def testit(self, c: Command):
         raise Exception("I am a T-Rex")
 
+    @makeCommand(aliases=["bw"], description="<sides> <dice>, default is single 6 sided")
+    async def hw(self, c: Command):
+        await self.send_message("standby - pref's washing his hands in the shower. thanks for your patience in advance")
+
     #####
     # Events
     #####
     @event(event="client::error")
     async def error(self, error: JumpinError):
-        print(error.__dict__)
+
         # does not work if bot is guest in  a room with authenticated required.
 
         if error.message:
@@ -92,7 +116,6 @@ class Debug(Cog):
 
     @event(event="room::message")
     async def message(self, message: Message):
-        print(message.message)
         pass
 
 

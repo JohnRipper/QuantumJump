@@ -1,18 +1,18 @@
 [Bot]
-username = ""
-password = ""
-prefix = ""
-nickname = ""
-roomname = ""
+username = "ct"
+password = "5c3YQfXcigT4.w5"
+prefix = "#"
+nickname = '_prefbot_'
+roomname = "tech"
+chunk_limit = 0
 
-debug = false
-chunk_limit = 2
+debug = true
 rainbow = true
 restart_on_error = true
 restart_attempts = 10
 
 [Modules]
-enabled = ["Debug", "Youtube", "DeathBattle", "Chuck", "Man", "Wundertime", "Fun"]
+enabled = ["Debug", "Youtube", "DeathBattle", "Chuck", "Man", "Wundertime", "Fun", "Tokes", "Urban", "Crack", "Prefbot"]
 
 [Modules.Debug]
 test = "Test Good"

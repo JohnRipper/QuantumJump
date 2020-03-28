@@ -20,9 +20,12 @@
 
 import asyncio
 import json
+import ssl
 import time
+import random
 
 import websockets
+from websocket import WebSocket
 
 from lib.cog import CogManager
 from lib.command import Command
@@ -37,6 +40,7 @@ class QuantumJumpBot:
         self.state = BotState(BotState.INITIALIZED)
         self.start_time = time.time()
         self.api = Http()
+
         self.cm = CogManager()
         self.settings = settings
         self.botconfig = self.settings.Bot
@@ -66,11 +70,12 @@ class QuantumJumpBot:
         self.state = BotState.DISCONNECT
         await self._ws.close()
 
-    async def connect(self):
-        logged_in = await self.api.login(self.botconfig.username,
-                                         self.botconfig.password)
-        self.log.info(f"Logged in: {logged_in}")
 
+    async def connect(self):
+
+
+        logged_in = await self.api.login(self.botconfig.username,
+                                          self.botconfig.password)
         async with websockets.connect(
                 uri=await self.api.get_wss(),
                 timeout=600,
@@ -83,10 +88,12 @@ class QuantumJumpBot:
                 await self._recv(message=message)
 
     async def _recv(self, message: str):
+        if not message:
+            return
+        self.log.ws_event(message)
 
         if message.isdigit():
             return
-        self.log.ws_event(message)
 
         if message == "3probe":
             await self.wsend("5")
@@ -104,7 +111,7 @@ class QuantumJumpBot:
             for user in data[1].get("users", []):
                 if user:
                     self.ul.add(User(**user))
-            if user:=  data[1].get("user", None):
+            if user := data[1].get("user", None):
                 if user:
                     self.ul.add(User(**user))
         if data[0] == "room::updateUser":
@@ -114,7 +121,7 @@ class QuantumJumpBot:
             for user in data[1].get("users", []):
                 self.ul.update(User(**user))
 
-        #todo  update userlist when a name changes.
+        # todo  update userlist when a name changes.
         if data[0] == "room::handleChange":
             # ["room::handleChange",{"userId":"5e22c017be8a4900076d3e21","handle":"Tech"}]
             pass

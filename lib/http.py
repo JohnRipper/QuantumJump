@@ -26,6 +26,7 @@ from aiohttp import ClientSession
 from lib.exceptions import HttpStatus
 from lib.logging import QuantumLogger
 from lib.objects import Session
+from aiohttp_socks import SocksConnector
 
 
 class UrlBuilder:
@@ -52,13 +53,23 @@ class Http:
         self.login_data = None
         self.urls = UrlBuilder()
         self.log = QuantumLogger("Http")
+        self.connector = SocksConnector.from_url(
+            "socks5://127.0.0.1:9050")
+
+    async def close(self):
+        await self.session.close()
+        await self.connector.close()
 
     @property
     def session(self) -> ClientSession:
         if self._session is None:
+            self.connector = SocksConnector.from_url(
+                "socks5://127.0.0.1:9050")
             self._session = ClientSession()
         # Todo check if session is valid or reset
         if self._session.closed:
+            self.connector = SocksConnector.from_url(
+                "socks5://127.0.0.1:9050")
             self._session = ClientSession()
         return self._session
 
@@ -98,8 +109,11 @@ class Http:
 
     async def get_wss(self):
         await self.get_login_session()
-        return self.urls.wss(token=self.login_data.token,
+        result = self.urls.wss(token=self.login_data.token,
                              io=await self.get_sio_sid())
+        await self.print_cookies()
+
+        return result
 
     async def login(self, username: str, password: str) -> bool:
         result = await self.post(url=self.urls.LOGIN,

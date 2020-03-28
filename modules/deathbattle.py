@@ -1,3 +1,23 @@
+# -*- coding: utf-8 -*-
+#
+# Copyright 2019, JohnnyCarcinogen ( https://github.com/JohnRipper/ ), All rights reserved.
+#
+# Created by dev at 2/8/20
+# This file is part of QuantumJump.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, see <http://www.gnu.org/licenses/>.
+
 import asyncio
 import json
 import random
@@ -124,23 +144,39 @@ class DeathBattle(Cog):
         '{} makes fun of {} and causes {} points worth of emotional trauma damage.',
         '{} exposes {} deepest darkest secret and causes {} points worth of emotional trauma damage.',
     ]
+    @makeCommand(aliases=["md", "dmc"], description="measure dicks")
+    async def md(self, c: Command):
+        if c.message:
 
+            length_one = "".ljust(random.randint(0, 100), "=")
+            length_two = "".ljust(random.randint(0, 100), "=")
+            await self.send_message(f"8{length_one}D  ~ ~ {c.data.handle} ~ ~")
+            await self.send_message(f"8{length_two}D  ~ ~ {c.message} ~ ~")
+            if length_one > length_two:
+                await self.send_message(f"{c.data.handle} has a bigger dick")
+            elif length_one < length_two:
+                await self.send_message(f"{c.message} has a bigger dick")
+            elif length_one == length_two:
+                await self.send_message(f"DICK TWINS!!!!!!!!!!")
+        else:
+            await self.send_message(f"you need a bro to help you measure... for reasons. ")
 
-
-
-    @makeCommand(aliases=["battle"], description="attack in death battle")
+    @makeCommand(aliases=["battle", "deathbattle"], description="attack in death battle")
     async def boop(self, c: Command):
         if c.message:
-            player_one_damage = random.randint(0,100)
-            data = random.choice(self.BATTLECRIES).format(c.data.sender.username, c.message, player_one_damage)
+            player_one_damage = random.randint(0, 100)
+            data = random.choice(self.BATTLECRIES).format(c.data.handle, c.message, player_one_damage)
             await self.send_message(data)
+            await asyncio.sleep(.01)
 
-            player_two_damage = random.randint(0,100)
-            data = random.choice(self.BATTLECRIES).format( c.message,c.data.sender.username, player_two_damage)
+            player_two_damage = random.randint(0, 100)
+            data = random.choice(self.BATTLECRIES).format(c.message, c.data.handle, player_two_damage)
             await self.send_message(data)
             gold_stolen = random.randint(0, 42)
+            await asyncio.sleep(.01)
+
             if player_one_damage > player_two_damage:
-                await self.send_action(f"{c.data.sender.username} wins {gold_stolen} gold!")
+                await self.send_action(f"{c.data.handle} wins {gold_stolen} gold!")
             else:
                 await self.send_action(f"{c.message} wins {gold_stolen} gold!")
 
