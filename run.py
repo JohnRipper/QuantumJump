@@ -22,9 +22,9 @@ import asyncio
 import sys
 import traceback
 from concurrent import futures
+
 from blumpkin import QuantumJumpBot, BotState
 from lib.config import Configuration
-from lib.logging import QuantumLogger
 
 
 async def start(executor, bot, loop, count=0):
@@ -44,7 +44,7 @@ async def start(executor, bot, loop, count=0):
 
 def load_config():
     try:
-        return Configuration("example.toml")
+        return Configuration("config.toml")
     except FileNotFoundError:
         from lib.config import generate_config, write_config
         generated = generate_config()
