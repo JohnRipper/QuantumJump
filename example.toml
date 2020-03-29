@@ -1,9 +1,9 @@
 [Bot]
-username = "ct"
+username = ""
 password = ""
-prefix = "#"
-nickname = '_prefbot_'
-roomname = "tech"
+prefix = ""
+nickname = ""
+roomname = ""
 chunk_limit = 0
 
 debug = true
@@ -12,7 +12,7 @@ restart_on_error = true
 restart_attempts = 10
 
 [Modules]
-enabled = ["Debug", "Youtube", "DeathBattle", "Chuck", "Man", "Wundertime", "Fun", "Tokes", "Urban", "Crack", "Prefbot"]
+enabled = ["Autourl", "Builtins", "Debug", "Chuck", "Conversion", "Covid", "DeathBattle", "Fun", "Movie", "Tokes", "Urban", "Wikipedia", "Wundertime", "Youtube"]
 
 [Modules.Debug]
 test = "Test Good"
