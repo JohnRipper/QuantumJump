@@ -30,7 +30,7 @@ enabled = [
 
 [Modules.Autourl]
 # escape regex cause tomlkit
-use_tor = true
+use_tor = false
 tor_addr = "socks5://127.0.0.1:9050"
 pattern = "http.*\\S"
 exclusion_char = "!"
