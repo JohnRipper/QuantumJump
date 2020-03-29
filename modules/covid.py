@@ -58,6 +58,7 @@ class Country:
     critical: int
     casesPerOneMillion: int
     deathsPerOneMillion: int
+    updated: int
 
 
 @dataclass
