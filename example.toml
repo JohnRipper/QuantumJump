@@ -5,41 +5,58 @@ prefix = ""
 nickname = ""
 roomname = ""
 chunk_limit = 0
-
 debug = true
 rainbow = true
 restart_on_error = true
 restart_attempts = 10
 
 [Modules]
-enabled = ["Autourl", "Builtins", "Debug", "Chuck", "Conversion", "Covid", "DeathBattle", "Fun", "Movie", "Tokes", "Urban", "Wikipedia", "Wundertime", "Youtube"]
-
-[Modules.Debug]
-test = "Test Good"
-
-[Modules.Builtins]
+enabled = [
+    "Autourl",
+    "Builtins",
+    "Debug",
+    "Chuck",
+    "Conversion",
+    "Covid",
+    "DeathBattle",
+    "Fun",
+    "Movie",
+    "Tokes",
+    "Urban",
+    "Wikipedia",
+    "Wundertime",
+    "Youtube"
+]
 
 [Modules.Autourl]
 # escape regex cause tomlkit
 use_tor = true
 tor_addr = "socks5://127.0.0.1:9050"
-
 pattern = "http.*\\S"
 exclusion_char = "!"
-ignores = [
-        "jumpin.chat",
-        "tinychat.com\\/room\\/"
-        ]
+ignores = ["jumpin.chat", "tinychat.com\\/room\\/"]
 whitelist_mode = false
-whitelist = [
-          "youtu(.be|.com)",
-          "wikipedia.org"
-          ]
+whitelist = ["youtu(.be|.com)", "wikipedia.org"]
+
+[Modules.Builtins]
+
+[Modules.Chuck]
+
+[Modules.Conversion]
+
+[Modules.Covid]
+
+[Modules.DeathBattle]
+
+[Modules.Debug]
+test = "Test Good"
 
 [Modules.Fun]
 8ballcustom = []
 fancy_dice = true
 allow_rate = true
+
+[Modules.Man]
 
 [Modules.Movie]
 api_key = ""
@@ -54,32 +71,34 @@ pre = [
     "wants to smoke some green",
     "is down to toke",
     "torches up"
-    ]
+]
 post = [
-    "lights up", "blazes", "bakes",
-    "hotboxes your nan's bathroom", "puffs",
-    "sparks their blunt", "lights their blunt",
-    "sparks their joint", "lights their joint",
-    "tokes", "sits this one out",
+    "lights up",
+    "blazes",
+    "bakes",
+    "hotboxes your nan's bathroom",
+    "puffs",
+    "sparks their blunt",
+    "lights their blunt",
+    "sparks their joint",
+    "lights their joint",
+    "tokes",
+    "sits this one out",
     "gets a shotgun from your mom",
     "rips their bong"
-    ]
-
+]
 
 [Modules.Urban]
 blacklist = ["spam"]
+
+[Modules.Webc]
 
 [Modules.Wikipedia]
 language = "en"
 include_url = true
 sentences = 2
 
+[Modules.Wundertime]
+
 [Modules.Youtube]
 api_key = ""
-
-
-
-[Modules.DeathBattle]
-[Modules.Chuck]
-[Modules.Man]
-[Modules.Wundertime]
