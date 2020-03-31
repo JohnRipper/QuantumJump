@@ -20,12 +20,9 @@
 
 import asyncio
 import json
-import ssl
 import time
-import random
 
 import websockets
-from websocket import WebSocket
 
 from lib.cog import CogManager
 from lib.command import Command
@@ -52,14 +49,16 @@ class QuantumJumpBot:
             self.log = QuantumLogger('QuantumJump', 19)
 
     async def wsend(self, data):
+        print(f"help {data}")
         if type(data) is list:
             data = f"42{json.dumps(data)}"
         elif type(data) is str:
             type_exemptions = ["2probe", "5", "2"]
             if not data.startswith("42") and data not in type_exemptions:
                 data = f"42{data}"
-        await self._ws.send(data)
         self.log.ws_send(data)
+
+        await self._ws.send(data)
 
     async def run(self):
         enabled_modules = self.settings.Modules["enabled"]
