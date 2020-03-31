@@ -58,6 +58,7 @@ class Country:
     critical: int
     casesPerOneMillion: int
     deathsPerOneMillion: int
+    updated: int
 
 
 @dataclass
@@ -87,7 +88,7 @@ class Covid(Cog):
         message = f"cases:{data.cases} deaths:{data.deaths} recovered:{data.recovered} updated:{updated} active:{data.active}"
         await self.send_message(data.__repr__())
 
-    @makeCommand(aliases=["where"], description="<country name> covid's country kdr")
+    @makeCommand(aliases=["country", "where"], description="<country name> covid's country kdr")
     async def cwhere(self, c: Command):
         data = await self.bot.api.get(self.COUNTRY)
         data = json.loads(await data.text())
