@@ -22,18 +22,19 @@ import asyncio
 from lib.cog import Cog
 from lib.command import makeCommand, Command
 
+TRUCK = ["──────▄▌▐▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▌",
+         "───▄▄██▌█ beep beep",
+         "▄▄▄▌▐██▌█ {} delivery",
+         "███████▌█▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄",
+         "▀(@)▀▀▀▀▀▀▀(@)( @)▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀(@)▀"]
 
 class Art(Cog):
-    truck = ["──────▄▌▐▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▌",
-             "───▄▄██▌█ beep beep",
-             "▄▄▄▌▐██▌█ {} delivery",
-             "███████▌█▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄",
-             "▀(@)▀▀▀▀▀▀▀(@)( @)▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀(@)▀"]
+
 
     @makeCommand(aliases=["deliver", "amazon", "ebay", "craigslist"], description="<str> makes a delivery")
     async def deliver(self, c: Command):
         format_data = "gay porn"
-        d = self.truck
+        d = TRUCK.copy()
         if c.message:
             format_data = c.message
         d[2] = d[2].format(format_data)
