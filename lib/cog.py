@@ -97,7 +97,7 @@ class Cog:
                 "room": room
             }
         ]
-        await asyncio.sleep(1)
+        # await asyncio.sleep(.1)
         await self.ws_send(data=data)
 
     async def send_action(self, message: str, room: str = None, color=None, style=None):
@@ -312,7 +312,7 @@ class CogManager:
 
     def import_module(self, module: str, bot) -> ModuleType:
         # attempt to reload if already loaded
-        if mod := self.modules.get(module, False):
+        if mod := self.modules.get(module.lower(), False):
             self.unload(module)
             if m := reload(mod):
                 self.modules.update({module.lower(): m})
