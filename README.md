@@ -33,7 +33,7 @@ pipenv install
 With `pip`
 
 ```bash
-pip3.8 install -U --user websockets websocket tomlkit aiohttp beautifulsoup4 wikipedia aiohttp_socks pytz
+pip3.8 install -U --user websockets tomlkit aiohttp beautifulsoup4 wikipedia aiohttp_socks pytz
 ```
 
 ## Running
