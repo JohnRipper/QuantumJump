@@ -49,7 +49,6 @@ class QuantumJumpBot:
             self.log = QuantumLogger('QuantumJump', 19)
 
     async def wsend(self, data):
-        print(f"help {data}")
         if type(data) is list:
             data = f"42{json.dumps(data)}"
         elif type(data) is str:
