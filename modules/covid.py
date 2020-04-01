@@ -33,6 +33,7 @@ class World:
     recovered: int
     updated: int
     active: int
+    affectedCountries: int
 
 
 @dataclass
