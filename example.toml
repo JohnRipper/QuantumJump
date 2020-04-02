@@ -59,6 +59,9 @@ test = "Test Good"
 fancy_dice = true
 allow_rate = true
 
+[Modules.Jarvis]
+wolframalpha_appid = ""
+
 [Modules.Man]
 
 [Modules.Movie]

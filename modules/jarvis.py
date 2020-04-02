@@ -28,7 +28,8 @@ class Jarvis(Cog):
 
     def __init__(self, bot):
         super().__init__(bot)
-        self.client = wolframalpha.Client("")
+        self.wolframalpha_appid = self.settings["wolframalpha_appid"]
+        self.client = wolframalpha.Client(self.wolframalpha_appid)
 
     async def check_pods(self, pods: dict):
         pod_count = pods.get("@numpods")
