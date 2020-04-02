@@ -12,6 +12,7 @@ restart_attempts = 10
 
 [Modules]
 enabled = [
+    "Art",
     "Autourl",
     "Builtins",
     "Debug",
@@ -27,6 +28,8 @@ enabled = [
     "Wundertime",
     "Youtube"
 ]
+
+[Modules.Art]
 
 [Modules.Autourl]
 # escape regex cause tomlkit
