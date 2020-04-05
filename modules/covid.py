@@ -29,30 +29,8 @@ from lib.command import Command, makeCommand
 @dataclass
 class World:
     cases: int
-    deaths: int
-    recovered: int
-    updated: int
-    active: int
-    affectedCountries: int
-
-
-@dataclass
-class CountryInfo:
-    _id: int
-    lat: int
-    long: int
-    flag: str
-    iso3: str
-    iso2: str
-
-
-@dataclass
-class Country:
-    country: str
-    countryInfo: CountryInfo
-    cases: int
-    deaths: int
     todayCases: int
+    deaths: int
     todayDeaths: int
     recovered: int
     active: int
@@ -60,6 +38,37 @@ class Country:
     casesPerOneMillion: int
     deathsPerOneMillion: int
     updated: int
+    tests: int
+    testsPerOneMillion: int
+    affectedCountries: int
+
+
+@dataclass
+class CountryInfo:
+    _id: int
+    iso2: str
+    iso3: str
+    lat: int
+    long: int
+    flag: str
+
+
+@dataclass
+class Country:
+    country: str
+    countryInfo: CountryInfo
+    updated: int
+    cases: int
+    todayCases: int
+    deaths: int
+    todayDeaths: int
+    recovered: int
+    active: int
+    critical: int
+    casesPerOneMillion: int
+    deathsPerOneMillion: int
+    tests: int
+    testsPerOneMillion: int
 
 
 @dataclass
@@ -67,9 +76,11 @@ class State:
     state: str
     cases: int
     todayCases: int
-    todayDeaths: int
     deaths: int
+    todayDeaths: int
     active: int
+    tests: int
+    testsPerOneMillion: int
 
 
 class Covid(Cog):
