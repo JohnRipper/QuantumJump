@@ -24,7 +24,6 @@ import string
 from dataclasses import dataclass
 from enum import Enum
 
-import aiohttp
 import aioice
 from aiortc import RTCPeerConnection, RTCSessionDescription, VideoStreamTrack
 from aiortc.contrib.media import MediaPlayer
@@ -78,127 +77,8 @@ def transaction_id():
 
 
 class JanusPlugin:
-    def __init__(self, session, url):
+    def __init__(self):
         self._queue = asyncio.Queue()
-        self._session = session
-        self._url = url
-
-    async def send(self, payload):
-        message = {"janus": "message", "transaction": transaction_id()}
-        message.update(payload)
-        async with self._session._http.post(self._url, json=message) as response:
-            data = await response.json()
-            assert data["janus"] == "ack"
-
-        response = await self._queue.get()
-        assert response["transaction"] == message["transaction"]
-        return response
-
-
-class JanusSession:
-    def __init__(self, url, bot):
-        self._bot = bot
-        self._session = None
-        self._poll_task = None
-        self._plugins = {}
-        self._root_url = url
-
-    async def destroy(self):
-        if self._poll_task:
-            self._poll_task.cancel()
-            self._poll_task = None
-
-        if self._session_url:
-            message = {"janus": "destroy", "transaction": transaction_id()}
-            async with self._http.post(self._session_url, json=message) as response:
-                data = await response.json()
-                assert data["janus"] == "success"
-            self._session_url = None
-
-        if self._http:
-            await self._http.close()
-            self._http = None
-
-
-async def publish(plugin, player):
-    """
-    Send video to the room.
-    """
-    pc = RTCPeerConnection()
-    pcs.add(pc)
-
-    # configure media
-    media = {"audio": False, "video": True}
-    if player and player.audio:
-        pc.addTrack(player.audio)
-        media["audio"] = True
-
-    if player and player.video:
-        pc.addTrack(player.video)
-    else:
-        pc.addTrack(VideoStreamTrack())
-
-    # send offer
-    await pc.setLocalDescription(await pc.createOffer())
-    request = {"request": "configure"}
-    request.update(media)
-    response = await plugin.send(
-        {
-            "body": request,
-            "jsep": {
-                "sdp": pc.localDescription.sdp,
-                "trickle": False,
-                "type": pc.localDescription.type,
-            },
-        }
-    )
-
-    # apply answer
-    await pc.setRemoteDescription(
-        RTCSessionDescription(
-            sdp=response["jsep"]["sdp"], type=response["jsep"]["type"]
-        )
-    )
-
-
-async def subscribe(session, room, feed, recorder):
-    pc = RTCPeerConnection()
-    pcs.add(pc)
-
-    @pc.on("track")
-    async def on_track(track):
-        print("Track %s received" % track.kind)
-        if track.kind == "video":
-            recorder.addTrack(track)
-        if track.kind == "audio":
-            recorder.addTrack(track)
-
-    # subscribe
-    plugin = await session.attach("janus.plugin.videoroom")
-    response = await plugin.send(
-        {"body": {"request": "join", "ptype": "subscriber", "room": room, "feed": feed}}
-    )
-
-    # apply offer
-    await pc.setRemoteDescription(
-        RTCSessionDescription(
-            sdp=response["jsep"]["sdp"], type=response["jsep"]["type"]
-        )
-    )
-
-    # send answer
-    await pc.setLocalDescription(await pc.createAnswer())
-    response = await plugin.send(
-        {
-            "body": {"request": "start"},
-            "jsep": {
-                "sdp": pc.localDescription.sdp,
-                "trickle": False,
-                "type": pc.localDescription.type,
-            },
-        }
-    )
-    await recorder.start()
 
 
 class Webc(Cog):
@@ -206,18 +86,133 @@ class Webc(Cog):
     def __init__(self, bot):
         super().__init__(bot)
         self._plugins = {}
+        self.token = ""
+        self.janus_id = ""
+        self.handle_id = ""
+        self.username = ""
+        self.password = ""
         self._session_url = None
+        self._session = None
+        self._attach_id = transaction_id()
+        self._attach_plugin_id = transaction_id()
+        self.player = None
+        self.publish_transaction_id = transaction_id()
+        self.turnservers = None
+        self.pc = None
+
+    async def publish(self, plugin, player):
+        """
+        Send video to the room.
+        """
+        self.connection = aioice.Connection(ice_controlling=True, )
+        print(self.turnservers)
+
+        self.pc = RTCPeerConnection()
+        pcs.add(self.pc)
+
+        @self.pc.on("signalingstatechange")
+        async def on_signalingstatechange():
+            print("ICE signaling state is %s" % self.pc.signalingState)
+
+            if self.pc.iceConnectionState == "failed":
+                await self.connection.close()
+
+            if self.pc.iceConnectionState == 'completed':
+                print("completed")
+
+        @self.pc.on("iceconnectionstatechange")
+        async def on_iceconnectionstatechange():
+            print("ICE connection state is %s" % self.pc.iceConnectionState)
+
+            if self.pc.iceConnectionState == "failed":
+                await self.connection.close()
+
+            if self.pc.iceConnectionState == 'completed':
+                print("completed")
+
+        self.connection.turn_server = self.turnservers
+        self.connection.turn_transport = "udp"
+        self.connection.turn_username = self.username
+        self.connection.turn_password = self.password
+        self.connection.remote_username = self.username
+        self.connection.remote_password = self.password
+        print(f"hello {self.username} {self.password}")
+        # self.connection.remote_username = self.username
+        # self.connection.remote_password = self.password
+        # configure media
+        media = {"audio": False, "video": True}
+        if player and player.audio:
+            self.pc.addTrack(player.audio)
+            media["audio"] = True
+
+        if player and player.video:
+            self.pc.addTrack(player.video)
+        else:
+            self.pc.addTrack(VideoStreamTrack())
+
+        await self.connection.gather_candidates()
+
+        for c in self.connection.local_candidates:
+            c.sdpMid = 0
+            self.pc.addIceCandidate(c)
+
+        # send offer
+        offer = await self.pc.createOffer()
+        await self.pc.setLocalDescription(offer)
+        request = {"request": "configure"}
+        request.update(media)
+        message = {"janus": "message",
+                   "transaction": self.publish_transaction_id,
+                   "session_id": self.session_id,
+                   "handle_id": self.handle_id,
+                   "token": self.token
+                   }
+        payload = {
+            "body": request,
+            "jsep": {
+                "sdp": self.pc.localDescription.sdp,
+                "type": self.pc.localDescription.type,
+            },
+        }
+        message.update(payload)
+        await self.send(json.dumps(message))
+
+        print("getting candidates")
+        for c in self.connection.local_candidates:
+            data = {"janus": "trickle",
+                    "candidate": {
+                        "candidate": "candidate:" + aioice.Candidate.to_sdp(c),
+                        "sdpMid": "0", "sdpMLineIndex": 0}, "transaction": transaction_id(),
+                    "token": self.token,
+                    "session_id": self.session_id, "handle_id": self.handle_id}
+            await self.send(json.dumps(data))
+        completed = {"janus": "trickle", "candidate": {"completed": True},
+                     "transaction": "peepee",
+                     "token": self.token, "session_id": self.session_id,
+                     "handle_id": self.handle_id}
+        await self.send(json.dumps(completed))
+        configure = {"janus": "message",
+                     "body": {"request": "configure"},
+                     "transaction": "NXZQc2cE5Gik",
+                     "token": self.token,
+                     "session_id": self.session_id,
+                     "handle_id": self.handle_id}
+        await self.send(json.dumps(configure))
+
+    async def send(self, message):
+        print(f"sending: {message}")
+        await self._session.send_str(message)
 
     async def create(self):
         data = await self.bot.api.get('https://jumpin.chat/api/janus/token')
         t = json.loads(await data.text())
-        print(t)
         token = t.get("token", "")
         async with self.bot.api.session.ws_connect("wss://jumpin.chat/janus/ws") as self._session:
             create = {"janus": "create", "transaction": "create_this_shit",
                       "token": token}
-            await self._session.send_str(json.dumps(create))
+            await self.send(json.dumps(create))
             async for msg in self._session:
+                print(msg)
                 data = json.loads(msg.data)
 
                 if data["janus"] == "event":
@@ -227,210 +222,84 @@ class Webc(Cog):
                     else:
                         print(data)
 
-                if data.get("transaction") == "create_this_shit":
-                    session_id = data["data"]["id"]
-                    await self._session.send_str(json.dumps({"janus": "attach", "plugin": "janus.plugin.videoroom",
-                                                             "transaction": "attach_this_plugin",
-                                                             "token": token,
-                                                             "session_id": session_id}))
+                if data.get("janus") == "trickle" and data["candidate"].get("completed", False):
+                    d = {"janus": "message", "body": {"request": "configure"}, "transaction": "eiCUHTyqRe4z",
+                         "token": token,
+                         "session_id": self.session_id, "handle_id": self.handle_id}
+                    await self.send(json.dumps(d))
 
-    async def attach(self, plugin_name: str) -> JanusPlugin:
-        message = {
-            "janus": "attach",
-            "plugin": plugin_name,
-            "transaction": transaction_id()
-        }
-        async with await self.bot.api.post("wss://jumpin.chat/janus/ws", json=message) as response:
-            print(await response.text())
-            data = await response.json()
-            assert data["janus"] == "success"
-            plugin_id = data["data"]["id"]
-            plugin = JanusPlugin(self, self._session_url + "/" + str(plugin_id))
-            self._plugins[plugin_id] = plugin
-            return plugin
+                elif data.get("janus") == "trickle":
+                    pass
+                    # await self.pc.addIceCandidate(aioice.Candidate.from_sdp(json.dumps(data["candidate"])))
+                if data.get("transaction") == "create_this_shit":
+                    self.session_id = data["data"]["id"]
+                    await self.send(json.dumps({"janus": "attach", "plugin": "janus.plugin.videoroom",
+                                                "transaction": self._attach_plugin_id,
+                                                "token": token,
+                                                "session_id": self.session_id}))
+                if data.get("transaction") == self.publish_transaction_id or data.get("transaction") == "ppppp":
+                    #   apply answer
+                    if 'jsep' in data:
+                        if data['jsep'].get('type', "") == "answer":
+                            sdp = data['jsep'].get('sdp', "")
+
+                            description = RTCSessionDescription(type="answer", sdp=sdp)
+
+                            await self.pc.setRemoteDescription(description)
+                            asyncio.ensure_future(self.connection.connect(), loop=asyncio.get_event_loop())
+                            await self.bot.wsend('42["room::setUserIsBroadcasting",{"isBroadcasting":true}]')
+
+                if data.get("transaction") == self._attach_id:
+                    # send video
+                    pass
+
+                if data.get("transaction") == self._attach_plugin_id:
+                    self.handle_id = data["data"]["id"]
+                    plugin = JanusPlugin()
+                    self._plugins[self.session_id] = plugin
+                    message = {"janus": "message",
+                               "transaction": self._attach_id,
+                               "token": token,
+                               "session_id": self.session_id,
+                               "handle_id": self.handle_id
+                               }
+                    payload = {
+                        "body": {
+                            "display": "aiortc",
+                            "ptype": "publisher",
+                            "request": "join",
+                            "room": self.janus_id,
+                        }
+                    }
+
+                    message.update(payload)
+                    await self.send(json.dumps(message))
+                    await self.publish(plugin=list(self._plugins.values())[0], player=self.player)
+                    # exchange media for 10 minutes
+                    print("Exchanging media")
 
     @makeCommand(aliases=["cc"], description="cams up in a room")
     async def cc(self, c: Command):
         data = await self.bot.api.get('https://jumpin.chat/api/turn/')
         print(await data.text())
         data = json.loads(await data.text())
-        username = data.get("username", "")
-        password = data.get("password", "")
+        self.username = data.get("username", "")
+        self.password = data.get("password", "")
         uris = data.get("uris", "")
 
         turnservers = uris[0].split(":")
-        turn = (turnservers[1], turnservers[2])
+        self.turnservers = (turnservers[1], turnservers[2])
 
         options = {"volume": "33", "video_size": f"1920x1080"}
-        player = MediaPlayer("/dev/video2", format="v4l2", options=options)
+        self.player = MediaPlayer("/dev/video2", format="v4l2", options=options)
 
         data = await self.bot.api.get("https://jumpin.chat/api/rooms/johnripper")
         data = json.loads(await data.text())
-        janus_id = data['attrs'].get("janus_id")
-
-        # join video room
-        plugin = await self.attach("janus.plugin.videoroom")
-        response = await plugin.send(
-            {
-                "body": {
-                    "display": "aiortc",
-                    "ptype": "publisher",
-                    "request": "join",
-                    "room": janus_id,
-                }
-            })
-        publishers = response["plugindata"]["data"]["publishers"]
-        for publisher in publishers:
-            print("id: %(id)s, display: %(display)s" % publisher)
-        await self.create()
-
-        # send video
-        await publish(plugin=plugin, player=player)
-        # exchange media for 10 minutes
-        print("Exchanging media")
-        await asyncio.sleep(600)
-
-    @makeCommand(aliases=["cam"], description="Search Urban Dictionary")
-    async def cam(self, c: Command):
-
-        pc = RTCPeerConnection()
-
-        connection = None
-        video = Video()
-        player = None
-
-        data = await self.bot.api.get('https://jumpin.chat/api/turn/')
-        print(await data.text())
-        data = json.loads(await data.text())
-        # {"username":"1585259115:1585259115","password":"wBp0Wqg3ddna1j3QouYS3TBWSH8=","uris":["turn:turn.jumpin.chat:5349"],"ttl":86400}
-        username = data.get("username", "")
-        password = data.get("password", "")
-        uris = data.get("uris", "")
-        ttl = data.get("ttl", "")
-
-        data = await self.bot.api.get("https://jumpin.chat/api/rooms/johnripper")
-        data = json.loads(await data.text())
-        print(f"janusid {data}")
-        janus_id = data['attrs'].get("janus_id")
-        id = 0
-        handle_id = 0
+        self.janus_id = data['attrs'].get("janus_id")
 
         data = await self.bot.api.get('https://jumpin.chat/api/janus/token')
-        print(await data.text())
         t = json.loads(await data.text())
-        token = t.get("token", "")
+        self.token = t.get("token", "")
 
-        async with self.bot.api.session.ws_connect("wss://jumpin.chat/janus/ws", ) as self.ws:
-            create = {"janus": "create", "transaction": "prefbot",
-                      "token": token}
-            await self.ws.send_str(json.dumps(create))
-
-            async for msg in self.ws:
-                if msg.type == aiohttp.WSMsgType.TEXT:
-                    print(msg.data)
-
-                d = json.loads(msg.data)
-
-                if d.get("transaction") == "prefbot":
-                    print(f"sessoionid {d}")
-                    id = d['data'].get("id")
-                    await self.ws.send_str(json.dumps({"janus": "attach", "plugin": "janus.plugin.videoroom",
-                                                       "transaction": "prefbotnext",
-                                                       "token": token,
-                                                       "session_id": id}))
-
-                if d.get("transaction") == "prefbotnext":
-                    handle_id = d['data'].get("id")
-                    data = {"janus": "message", "body":
-                        {"request": "join",
-                         "room": janus_id,
-                         "ptype": "publisher",
-                         "display": "aiortc"},
-                            "transaction": "preftired",
-                            "token": token,
-                            "session_id": id,
-                            "handle_id": handle_id}
-                    print(data)
-                    await self.ws.send_str(json.dumps(data))
-
-                if d.get("transaction") == "preftired":
-
-                    # s_server = data['servers'][0].split(":")
-                    connection = aioice.Connection(ice_controlling=True, )
-
-                    video.type = Types.HTTPS
-                    video.url = 'http://dominicannetworkvideos.com/files/cinemas/Dunkirk.mp4'
-
-                    if video.type == Types.HTTPS:
-                        options = {"volume": "33", "video_size": f"{video.width}x{video.height}"}
-                        player = MediaPlayer(video.out_location, format="v4l2", options=options)
-
-                    # if player and player.audio:
-                    #    pc.addTrack(player.audio)
-                    if player and player.video:
-                        pc.addTrack(player.video)
-
-                    @pc.on("iceconnectionstatechange")
-                    async def on_iceconnectionstatechange():
-                        print("ICE connection state is %s" % pc.iceConnectionState)
-
-                        if pc.iceConnectionState == "failed":
-                            await connection.close()
-
-                        if pc.iceConnectionState == 'completed':
-                            print("completed")
-
-                    turnservers = uris[0].split(":")
-                    turn = (turnservers[1], turnservers[2])
-                    connection.turn_server = turn
-                    print(f"yooo {username} {password}")
-
-                    connection.turn_username = username
-                    connection.turn_password = password
-
-                    await connection.gather_candidates()
-
-                    await pc.setLocalDescription(await pc.createOffer())
-
-                    print(f"offer {pc.localDescription.sdp}")
-
-                    data = {"janus": "message",
-                            "body": {"request": "configure",
-                                     "audio": True, "video": True},
-                            "transaction": "pref_help_pls",
-                            "token": token,
-                            "jsep": {"type": "offer", "sdp": pc.localDescription.sdp},
-                            "session_id": id, "handle_id": handle_id}
-                    await self.ws.send_str(json.dumps(data))
-
-                    for c in connection.local_candidates:
-                        transaction = ''.join(random.choices(string.ascii_uppercase, k=13))
-
-                        data = {"janus": "trickle",
-                                "candidate": {
-                                    "candidate": "candidate:" + aioice.Candidate.to_sdp(c),
-                                    "sdpMid": "0", "sdpMLineIndex": 0}, "transaction": transaction,
-                                "token": token,
-                                "session_id": id, "handle_id": handle_id}
-                        print(f"sending {data}")
-                        await self.ws.send_str(json.dumps(data))
-
-                if d.get("transaction") == "pref_help_pls":
-                    print(f"prefhelppls {d}")
-                    if 'jsep' in d:
-                        if d['jsep'].get('type', "") == "answer":
-                            sdp = d['jsep'].get('sdp', "")
-
-                            self.bot.wsend('42["room::setUserIsBroadcasting",{"isBroadcasting":true}]')
-
-                            description = RTCSessionDescription(type="answer", sdp=sdp)
-                            await pc.setRemoteDescription(description)
-
-                            asyncio.ensure_future(connection.connect(), loop=asyncio.get_event_loop())
-
-                if d.get("janus") == "trickle" and d["candidate"].get("completed", False):
-                    data = {"janus": "message", "body": {"request": "configure"}, "transaction": "eiCUHTyqRe4z",
-                            "token": token,
-                            "session_id": id, "handle_id": handle_id}
-                    print(f"sending {data}")
-                    await self.ws.send_str(json.dumps(data))
+        # join video room
+        await self.create()
