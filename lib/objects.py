@@ -100,6 +100,7 @@ class User(JumpinObject):
     isBroadcasting: bool = False
     isGold: bool = False
     timestamp: str = None
+    roles: str = None
 
     @property
     def is_mod(self):
