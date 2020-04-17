@@ -56,9 +56,9 @@ class CountryInfo:
 
 @dataclass
 class Country:
+    updated: int
     country: str
     countryInfo: CountryInfo
-    updated: int
     cases: int
     todayCases: int
     deaths: int
@@ -70,6 +70,7 @@ class Country:
     deathsPerOneMillion: int
     tests: int
     testsPerOneMillion: int
+    continent: str
 
 
 @dataclass
