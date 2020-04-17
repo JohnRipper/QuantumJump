@@ -84,9 +84,9 @@ class State:
 
 
 class Covid(Cog):
-    WORLD = "https://corona.lmao.ninja/all"
-    COUNTRY = "https://corona.lmao.ninja/countries"
-    STATES = "https://corona.lmao.ninja/states"
+    WORLD = "https://corona.lmao.ninja/v2/all"
+    COUNTRY = "https://corona.lmao.ninja/v2/countries"
+    STATES = "https://corona.lmao.ninja/v2/states"
 
     def __init__(self, bot):
         super().__init__(bot)
