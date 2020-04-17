@@ -28,6 +28,7 @@ from lib.command import Command, makeCommand
 
 @dataclass
 class World:
+    updated: int
     cases: int
     todayCases: int
     deaths: int
@@ -37,9 +38,9 @@ class World:
     critical: int
     casesPerOneMillion: int
     deathsPerOneMillion: int
-    updated: int
     tests: int
     testsPerOneMillion: int
+    continent: str
     affectedCountries: int
 
 
