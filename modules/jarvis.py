@@ -56,7 +56,7 @@ class Jarvis(Cog):
                 for subpod in pod.get("subpod"):
                     await self.send_message(subpod.get("plaintext"))
 
-    @makeCommand(aliases=["ask"], description=["ask whatever the fuck you want"])
+    @makeCommand(aliases=["ask"], description=["<question> ask whatever the fuck you want"])
     async def ask(self, c: Command):
         if c.message != "":
             d = self.client.query(c.message)

@@ -19,11 +19,11 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 import asyncio
-import json
 import random
 
 from lib.cog import Cog
 from lib.command import makeCommand, Command
+
 
 class DeathBattle(Cog):
     BATTLECRIES = [
@@ -144,7 +144,7 @@ class DeathBattle(Cog):
         '{} makes fun of {} and causes {} points worth of emotional trauma damage.',
         '{} exposes {} deepest darkest secret and causes {} points worth of emotional trauma damage.',
     ]
-    @makeCommand(aliases=["md", "dmc"], description="measure dicks")
+    @makeCommand(aliases=["md", "dmc"], description="<opponent name> measure dicks")
     async def md(self, c: Command):
         if c.message:
 
@@ -180,5 +180,21 @@ class DeathBattle(Cog):
             else:
                 await self.send_action(f"{c.message} wins {gold_stolen} gold!")
 
+    @makeCommand(aliases=["attack"], description="<opponent name> attack in death battle")
+    async def attack(self, c: Command):
+        if c.message:
+            player_one_damage = random.randint(0, 100)
+            data = random.choice(self.BATTLECRIES).format("_prefbot_", c.message, player_one_damage)
+            await self.send_message(data)
+            await asyncio.sleep(.01)
 
+            player_two_damage = random.randint(0, 100)
+            data = random.choice(self.BATTLECRIES).format(c.message, c.data.handle, player_two_damage)
+            await self.send_message(data)
+            gold_stolen = random.randint(0, 42)
+            await asyncio.sleep(.01)
 
+            if player_one_damage > player_two_damage:
+                await self.send_action(f"_prefbot_ wins {gold_stolen} gold!")
+            else:
+                await self.send_action(f"{c.message} wins {gold_stolen} gold!")
