@@ -21,6 +21,7 @@
 import asyncio
 import json
 import time
+from difflib import get_close_matches
 
 import websockets
 
@@ -44,9 +45,9 @@ class QuantumJumpBot:
         self.ul = UserList()
         self.room = self.botconfig.roomname
         if self.settings.Bot.debug:
-            self.log = QuantumLogger('QuantumJump', 10)
+            self.log = QuantumLogger('QuantumJump', self.room, 10)
         else:
-            self.log = QuantumLogger('QuantumJump', 19)
+            self.log = QuantumLogger('QuantumJump', self.room, 19)
 
     async def wsend(self, data):
         if type(data) is list:
@@ -70,8 +71,6 @@ class QuantumJumpBot:
 
 
     async def connect(self):
-
-
         logged_in = await self.api.login(self.botconfig.username,
                                           self.botconfig.password)
         async with websockets.connect(
@@ -101,6 +100,7 @@ class QuantumJumpBot:
             ]
             await self.wsend(roommsg)
             asyncio.create_task(self.pacemaker())
+            # await self.api.enroll()
             return
 
         data = json.loads(message[2:])
@@ -170,7 +170,7 @@ class QuantumJumpBot:
                         await self.wsend(
                             Message.makeMsg(message=f"failed to {c.name} {c.message}",
                                             room=self.room))
-                if c.name == "unload":
+                elif c.name == "unload":
                     if self.cm.unload(c.message):
                         await self.wsend(
                             Message.makeMsg(message=f"unloaded {c.message}",
@@ -179,11 +179,22 @@ class QuantumJumpBot:
                         await self.wsend(
                             Message.makeMsg(message=f"Could not unload {c.message}",
                                             room=self.room))
-                if c.name == "loaded":
+                elif c.name == "loaded":
                     await self.wsend(
                         Message.makeMsg(message=f"modules: {self.cm.modules}, cogs:{self.cm.cogs}",
                                         room=self.room))
-                await self.cm.do_command(c)
+
+                elif not await self.cm.do_command(c):
+                    # command not found, lets attempt to correct their mistake.
+                    if self.settings.Bot.spellcheck_commands:
+                        commands = self.cm.all_commands
+                        matches = get_close_matches(c.name, commands.keys(), 1, .4)
+                        if len(matches) > 0:
+                            await self.wsend(
+                                Message.makeMsg(
+                                    message=f"did you mean {c.prefix}{matches[0]} - {commands.get(matches[0])}?",
+                                    room=self.room))
+
         await self.cm.do_event(data=data)
 
     async def pacemaker(self):

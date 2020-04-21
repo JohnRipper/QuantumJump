@@ -44,7 +44,7 @@ class Cog:
         self.bot = bot
         self.name = self.__class__.__name__
         self.__cog__ = True
-        self.log = QuantumLogger(self.name)
+        self.log = QuantumLogger(self.name, self.bot.room)
         self.log.info(f"initializing cog")
         self.bot_settings = bot.botconfig
         self.settings = bot.settings.Modules.get(self.__class__.__name__, None)
@@ -304,6 +304,15 @@ class CogManager:
     modules: dict = field(default_factory=dict)
     cogs: dict = field(default_factory=dict)
 
+    @property
+    def all_commands(self) -> dict:
+        cl = {}
+        for cog in self.cogs.values():
+            for command in cog.commands:
+                for name in command.__command_name__:
+                    cl.update({name: command.__description__})
+        return cl
+
     def igetattr(self, obj, attr):
         # just don't have modules with same spelling and different capitalization.
         for a in dir(obj):
@@ -331,8 +340,8 @@ class CogManager:
             self.add_cog(m, module, bot)
 
     def add_cog(self, mod: ModuleType, name: str, bot):
-        cog = self.igetattr(mod, name)
-        self.cogs.update({name.lower(): cog(bot)})
+        cog = self.igetattr(mod, name)(bot)
+        self.cogs.update({name.lower(): cog})
 
     def unload(self, module: str) -> bool:
         if module in self.cogs.keys():
@@ -366,8 +375,8 @@ class CogManager:
                         elif type(data[1]) is list:
                             asyncio.create_task(meth(choice(data[1])))
 
-
-    async def do_command(self, command: Command):
+    async def do_command(self, command: Command) -> bool:
+        found = False
         for cog in self.cogs.values():
             for meth in cog.commands:
                 if command.name in meth.__command_name__:
@@ -376,4 +385,7 @@ class CogManager:
                             asyncio.create_task(meth(command))
                     else:
                         asyncio.create_task(meth(command))
-
+                    # command found.
+                    return True
+        if not found:
+            return False
