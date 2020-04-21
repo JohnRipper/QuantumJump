@@ -9,6 +9,7 @@ debug = true
 rainbow = true
 restart_on_error = true
 restart_attempts = 10
+spellcheck_commands = true
 
 [Modules]
 enabled = [
