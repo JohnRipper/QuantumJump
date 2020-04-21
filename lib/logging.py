@@ -113,8 +113,9 @@ class QuantumLogger(getLoggerClass()):
         "e": ERROR
     }
 
-    def __init__(self, name, level=10, cleaner_log=True):
+    def __init__(self, name, room_name="None", level=10, cleaner_log=True):
         super().__init__(name, level)
+        self.room_name = room_name
         addLevelName(self.CHAT, "_CHAT")
         addLevelName(self.RECV, "_RECV")
         addLevelName(self.SENT, "_SENT")
@@ -136,8 +137,7 @@ class QuantumLogger(getLoggerClass()):
         if self.isEnabledFor(self.CHAT):
             self._log(self.CHAT, msg, args, **kwargs)
 
-    def log(self,  msg, log_level=20, *args, **kwargs):
-        self._log(log_level, msg, args, **kwargs)
+
 
     def ws_event(self, msg, *args, **kwargs):
         if self.isEnabledFor(self.RECV):
@@ -175,9 +175,11 @@ class QuantumLogger(getLoggerClass()):
                 stream_handler = StreamHandler(sys.stdout)
                 stream_handler.setLevel(level)
 
-                file_name = f"logs/{chosen_level[1]}.log"
-                open(os.path.join(dir_path, "..", f'{file_name}'), 'a').close()
-                file_handler = FileHandler(filename=f"logs/{chosen_level[1]}.log")
+                file_name = f"logs/{self.room_name}/{chosen_level[1]}.log"
+                if not os.path.exists(f"logs/{self.room_name}/"):
+                    os.mkdir(f"logs/{self.room_name}/")
+
+                file_handler = FileHandler(filename=f"logs/{self.room_name}/{chosen_level[1]}.log")
                 file_handler.setLevel(level)
                 file_handler.setFormatter(file_formatter)
 
