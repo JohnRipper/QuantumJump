@@ -17,20 +17,17 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
-import asyncio
 
 from lib.cog import Cog
 from lib.command import makeCommand, Command
 
-TRUCK = ["──────▄▌▐▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▌",
+TRUCK = ["──────▄▌▐▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▌",
          "───▄▄██▌█ beep beep",
          "▄▄▄▌▐██▌█ {} delivery",
-         "███████▌█▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄",
-         "▀(@)▀▀▀▀▀▀▀(@)( @)▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀(@)▀"]
+         "███████▌█▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄",
+         "▀(@)▀▀▀▀▀▀▀(@)( @)▀▀▀▀▀▀▀▀▀▀▀(@)▀"]
 
 class Art(Cog):
-
-
     @makeCommand(aliases=["deliver", "amazon", "ebay", "craigslist"], description="<str> makes a delivery")
     async def deliver(self, c: Command):
         format_data = "gay porn"
@@ -41,7 +38,7 @@ class Art(Cog):
         for line in d:
             await self.send_message(line)
 
-    @makeCommand(aliases=["fred"], description="makes fred")
+    @makeCommand(aliases=["fred"], description="draws sci")
     async def fred(self, c: Command):
         f = open("data/sci", "r")
         if f.mode == 'r':
@@ -50,7 +47,7 @@ class Art(Cog):
                 await self.send_message(line)
         f.close()
 
-    @makeCommand(aliases=["draw"], description="makes drawing")
+    @makeCommand(aliases=["draw"], description="<str> makes drawing")
     async def draw(self, c: Command):
         # wont work on windows. needs to use os.path.join for directory
         if c.message != "" or c.message is not None:
@@ -59,6 +56,4 @@ class Art(Cog):
                 lines = f.readlines()
                 for line in lines:
                     await self.send_message(line)
-                    await asyncio.sleep(.05)
-
             f.close()
