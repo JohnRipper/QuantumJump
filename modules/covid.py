@@ -40,7 +40,6 @@ class World:
     deathsPerOneMillion: int
     tests: int
     testsPerOneMillion: int
-    continent: str
     affectedCountries: int
 
 
