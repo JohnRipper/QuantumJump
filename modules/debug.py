@@ -18,15 +18,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 
-import json
-from getopt import getopt
-
 from lib.cog import Cog, event
 from lib.command import makeCommand, Command
-from lib.objects import User, Status, HandleChange, Message, JumpinError
-from lib.styling import Colors, Styles, encodetxt
-
-
+from lib.objects import Message, JumpinError
+from lib.styling import Styles, encodetxt
 
 
 class Debug(Cog):
@@ -52,8 +47,7 @@ class Debug(Cog):
     #     f.flush()
     #     f.close()
 
-
-    @makeCommand(aliases=["me", "you"], description="t")
+    @makeCommand(aliases=["do"], description="makes the bot do something.")
     async def thirdperson(self, c: Command):
         await self.send_action(c.message)
 
