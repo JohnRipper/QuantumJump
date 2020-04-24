@@ -21,6 +21,7 @@ import json
 import random
 
 from attr import dataclass
+from datetime import date
 
 from lib.cog import Cog
 from lib.command import Command, makeCommand
@@ -96,10 +97,9 @@ class Covid(Cog):
     async def world(self, c: Command):
         data = await self.bot.api.get(self.WORLD)
         data = World(**json.loads(await data.text()))
-        # todo convert to human readable time
-        updated = data.updated
-        message = f"cases:{data.cases} deaths:{data.deaths} recovered:{data.recovered} updated:{updated} active:{data.active}"
-        await self.send_message(data.__repr__())
+        updated = date.fromtimestamp(int(data.updated) / 1000).strftime('%Y-%m-%d %H:%M')
+        message = f"Cases:{data.cases} CasesToday:{data.todayCases} Deaths:{data.deaths} DeathsToday:{data.todayDeaths} Active:{data.active} Critical:{data.critical} Recovered:{data.recovered} CasesPer1M:{data.casesPerOneMillion} DeathsPer1M:{data.deathsPerOneMillion} Tests:{data.tests} TestsPer1M:{data.testsPerOneMillion} Countries:{data.affectedCountries} Updated:{updated}"
+        await self.send_message(message)
 
     @makeCommand(aliases=["country", "where"], description="<country name> covid's country kdr")
     async def cwhere(self, c: Command):
