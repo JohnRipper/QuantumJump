@@ -70,6 +70,13 @@ class Cog:
         await self.bot.wsend(data=data)
 
     async def send_message(self, message: str, room: str = None, color=None, style=None):
+        if not room:
+            room = self.bot_settings.roomname
+        if color is None and self.bot_settings.rainbow:
+            color = Colors.random()
+            await self.change_color(color)
+        elif color is not None:
+            await self.change_color(color)
         if len(message) > 254:
             # re.DOTALL makes . match everything, including newline
             messages = re.findall("(.{1,254}[.,;:]|.{1,254})", message, re.DOTALL)
@@ -78,27 +85,15 @@ class Cog:
                 chunk_limit = len(messages)
             for i in range(0, chunk_limit):
                 message = messages[i][:254]
+                if style is not None:
+                    message = encodetxt(message, style)
                 await self.send_message(message, room=room, color=color, style=style)
             return
-        if color is None and self.bot_settings.rainbow:
-            color = Colors.random()
-            await self.change_color(color)
-        elif color is not None:
-            await self.change_color(color)
-        if style is not None:
-            # TODO check if valid style
-            message = encodetxt(message, style)
-        if not room:
-            room = self.bot_settings.roomname
-        data = [
-            "room::message",
-            {
-                "message": message,
-                "room": room
-            }
-        ]
-        # await asyncio.sleep(.1)
-        await self.ws_send(data=data)
+        else:
+            if style is not None:
+                # TODO check if valid style
+                message = encodetxt(message, style)
+            await self.send_message(message, room=room, color=color, style=style)
 
     async def send_action(self, message: str, room: str = None, color=None, style=None):
         """/me messages, styling doesn't work"""
