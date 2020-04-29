@@ -44,13 +44,12 @@ class Command:
     def __init__(self, prefix: str, data: Message):
         self.prefix = prefix
         self.data = data
-        self.name = None
         self.message = data.message
+        self.name = ""
 
         parsed = re.search(
             command_pattern.format(self.prefix),
-            data.message)
-
+            self.message)
         if parsed is not None:
             self.name, self.message = parsed.groups()
             self.message = self.message.lstrip()
