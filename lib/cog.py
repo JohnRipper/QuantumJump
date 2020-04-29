@@ -72,6 +72,11 @@ class Cog:
     async def send_message(self, message: str, room: str = None, color=None, style=None):
         if not room:
             room = self.bot_settings.roomname
+        if color is None and self.bot_settings.rainbow:
+            color = Colors.random()
+            await self.change_color(color)
+        elif color is not None:
+            await self.change_color(color)
         if len(message) > 254:
             # re.DOTALL makes . match everything, including newline
             messages = re.findall("(.{1,254}[.,;:]|.{1,254})", message, re.DOTALL)
@@ -88,12 +93,15 @@ class Cog:
             if style is not None:
                 # TODO check if valid style
                 message = encodetxt(message, style)
-            await self.send_message(message, room=room, color=color, style=style)
-        if color is None and self.bot_settings.rainbow:
-            color = Colors.random()
-            await self.change_color(color)
-        elif color is not None:
-            await self.change_color(color)
+
+            data = [
+                "room::message",
+                {
+                    "message": message,
+                    "room": room
+                }
+            ]
+            await self.ws_send(data=data)
 
     async def send_action(self, message: str, room: str = None, color=None, style=None):
         """/me messages, styling doesn't work"""
