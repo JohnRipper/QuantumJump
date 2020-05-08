@@ -76,6 +76,7 @@ class Country:
 @dataclass
 class State:
     state: str
+    updated: int
     cases: int
     todayCases: int
     deaths: int
