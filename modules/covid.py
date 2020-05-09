@@ -110,7 +110,7 @@ class Covid(Cog):
         if c.message == "":
             await self.send_message("This command needs a country name")
         for country_data in data:
-            if country_data.get("country").lower() == c.message.lower():
+            if country_data.get("country").title() == c.message.title():
                 country = Country(**country_data)
                 await self.send_message(country.__repr__())
                 return
@@ -132,7 +132,7 @@ class Covid(Cog):
         if c.message == "":
             await self.send_message("This command needs a state name")
         for state_data in data:
-            if state_data.get("state").lower() == c.message.lower():
+            if state_data.get("state").title() == c.message.title():
                 state = State(**state_data)
                 await self.send_message(state.__repr__())
                 return
