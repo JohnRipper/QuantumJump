@@ -25,7 +25,7 @@ from lib.command import makeCommand, Command
 
 
 class Chuck(Cog):
-    @makeCommand(aliases=["cn", "chuck", "carlos"], description="Random Chuck Norris joke.")
+    @makeCommand(aliases=["cn", "chuck"], description="Random Chuck Norris joke.")
     async def chucknorris(self, c: Command):
         url = "https://api.chucknorris.io/jokes/random"
         async with aiohttp.ClientSession() as session:
@@ -40,7 +40,7 @@ class Chuck(Cog):
                         await self.send_message("Error while parsing the json.")
 
     # his real name is carlos.
-    @makeCommand(aliases=["carlos", "cn"], description="Random Carlos Norris joke.")
+    @makeCommand(aliases=["carlos"], description="Random Carlos Norris joke.")
     async def carlosnorris(self, c: Command):
         url = "https://api.chucknorris.io/jokes/random"
         async with aiohttp.ClientSession() as session:
