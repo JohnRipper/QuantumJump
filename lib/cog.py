@@ -27,7 +27,7 @@ from types import ModuleType
 
 from lib.command import Command
 from lib.logging import QuantumLogger
-from lib.objects import HandleChange, Message, Status, User, JumpinError, Banlist, UserList
+from lib.objects import HandleChange, Message, Status, User, JumpinError, Banlist, UserList, PlaylistUpdate
 from lib.styling import Colors, encodetxt
 
 
@@ -72,11 +72,13 @@ class Cog:
     async def send_message(self, message: str, room: str = None, color=None, style=None):
         if not room:
             room = self.bot_settings.roomname
+
         if color is None and self.bot_settings.rainbow:
             color = Colors.random()
             await self.change_color(color)
         elif color is not None:
             await self.change_color(color)
+
         if len(message) > 254:
             # re.DOTALL makes . match everything, including newline
             messages = re.findall("(.{1,254}[.,;:]|.{1,254})", message, re.DOTALL)
@@ -93,7 +95,6 @@ class Cog:
             if style is not None:
                 # TODO check if valid style
                 message = encodetxt(message, style)
-
             data = [
                 "room::message",
                 {
@@ -369,7 +370,7 @@ class CogManager:
                         "room::updateUserList": UserList,
                         "room::message": Message,
                         "client::error": JumpinError,
-                        "youtube::playlistUpdate": None,
+                        "youtube::playlistUpdate": PlaylistUpdate,
                         "room::operation::ban": Banlist
                     }
                     if choice := routes.get(data[0], False):
