@@ -4,7 +4,7 @@ A work in progress bot for [JumpInChat](https://jumpin.chat)
 
 ## Prerequisites
 
-QuantumJump requires at least [Python 3.8](https://www.python.org/downloads/release/python-380/)
+⚠ Requires [Python 3.8.0+](https://www.python.org/downloads/release/python-382/) ⁠— you may need to [compile it yourself](https://tecadmin.net/install-python-3-8-ubuntu/)
 
 Optionally, you can use [pipenv](https://pipenv.readthedocs.io/en/latest/) to manage the
 [virtualenv](https://virtualenv.pypa.io/en/stable/)
