@@ -19,13 +19,14 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 import json
 import re
+from urllib.parse import urlparse, parse_qs
 
 import aiohttp
+import requests
 
 from lib.cog import Cog, event
 from lib.command import Command, makeCommand
-from lib.objects import JumpinError
-from lib.styling import Colors, Styles
+from lib.objects import PlaylistUpdate
 
 
 class Youtube(Cog):
@@ -34,9 +35,7 @@ class Youtube(Cog):
         self.headers = None
         self.api_key = self.settings["api_key"]
 
-        if len(self.api_key) == 0:
-            self.api_key = "AIzaSyClXZOfbl68EYsCN2NQ5XM-b_a_0fulO74"
-            self.headers = {"referer": "https://tinychat.com"}
+
 
     async def ytsearch(self, query: str) -> dict:
         searchurl = "https://www.googleapis.com/youtube/v3/search?"\
@@ -47,6 +46,8 @@ class Youtube(Cog):
             async with session.get(url) as response:
                 ytjson = await response.json()
                 print(ytjson)
+                if ytjson.get("error", False):
+                    return {}
                 videoid = ytjson["items"][0]["id"]["videoId"]
                 title = ytjson["items"][0]["snippet"]["title"]
                 return {"title": title, "video_id": videoid}
@@ -62,13 +63,18 @@ class Youtube(Cog):
 
     @makeCommand(aliases=["yt"], description="<query | url> play youtube")
     async def playyt(self, c: Command):
+
         if re.search("youtu(be\.com|\.be)", c.message):
             ytid = re.search("(?:v=|\.be\/)(.{11})", c.message)[1]
             title = await self.ytidsearch(ytid)
             await self.play(video_id=ytid, title=title)
         else:
             ytinfo = await self.ytsearch(c.message)
-            await self.play(video_id=ytinfo["video_id"], title=ytinfo["title"])
+            if len(ytinfo) > 0:
+                await self.play(video_id=ytinfo["video_id"], title=ytinfo["title"])
+            else:
+                # failed try the back up search
+                await self.find(c)
 
     @makeCommand(aliases=["rm"], description="remove a video from the playlist")
     async def removeyt(self, c: Command):
@@ -84,13 +90,48 @@ class Youtube(Cog):
             # attempt to match to title?
             pass
 
-    @makeCommand(aliases=["pl"], description="append a playlist to jumpin's playlist")
-    async def addplaylist(self, c: Command):
-        pass
+    async def get_video_id(self, query, embed_search):
+        if embed_search:
+            q = f"!ducky+site:youtube.com/embed/+{query}"
+        else:
+            q = f"!ducky+site:youtube.com+{query}"
 
-    @event(event="client::error")
-    async def error(self, err: JumpinError):
-        if err.message == "Error starting Youtube video":
-            await self.send_message("Jumpin's quota has been reached :sob:",
-                                    color=Colors.red,
-                                    style=Styles.bold)
+        url = f"http://api.duckduckgo.com/?q=" + q + "&format=json&no_redirect=1"
+        print(url)
+        request = requests.get(url)
+        video_id = None
+        if len(request.text) > 0:
+            data = json.loads(request.text)
+            if redirect_url := data.get("Redirect", False):
+                video_url = urlparse(redirect_url)
+                if video_url.hostname == 'youtu.be':
+                    video_id = video_url.path[1:]
+                if video_url.hostname in ('www.youtube.com', 'youtube.com'):
+                    if video_url.path == '/watch':
+                        video_id = parse_qs(video_url.query)['v'][0]
+                    if video_url.path[:7] == '/embed/':
+                        video_id = video_url.path.split('/')[2]
+                    if video_url.path[:3] == '/v/':
+                        video_id = video_url.path.split('/')[2]
+        if embed_search and not video_id:
+            return await self.get_video_id(query, False)
+        else:
+            return video_id
+
+    @makeCommand(aliases=["find"], description="find a youtube video")
+    async def find(self, c: Command):
+        if c.message:
+            video_id = await self.get_video_id(c.message, True)
+            # get url id.
+            if video_id:
+                data = await self.bot.api.get("https://jumpin.chat/api/youtube/search/" + video_id)
+                title = await data.json()
+                await self.play(video_id=video_id, title=title[0].get("title", "No title found"))
+            else:
+                await self.send_message("I couldnt find shit. blame PrefB")
+        else:
+            await self.send_message("SEARCH FOR SOMETHING???")
+
+    @event(event="youtube::playlistUpdate")
+    async def playlistupdate(self, pl: PlaylistUpdate):
+        pass
