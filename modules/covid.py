@@ -19,9 +19,10 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 import json
 import random
+from datetime import date
+from difflib import get_close_matches
 
 from attr import dataclass
-from datetime import date
 
 from lib.cog import Cog
 from lib.command import Command, makeCommand
@@ -109,12 +110,22 @@ class Covid(Cog):
         # data = CountryInfo(**data)
         if c.message == "":
             await self.send_message("This command needs a country name")
+
+        if c.message.lower() == "united states":
+            # cool enough to use abbreviations fix.
+            c.message = "usa"
+
+        myDict = {}
+
         for country_data in data:
-            if country_data.get("country").title() == c.message.title():
-                country = Country(**country_data)
-                await self.send_message(country.__repr__())
-                return
-        # todo, support for inexact names? S. Korea?
+            country = country_data['country']
+            myDict[country] = country_data
+        matches = get_close_matches(c.message, myDict.keys(), 1, .4)
+
+        if myDict[matches[0]]:
+            country = Country(**myDict[matches[0]])
+            await self.send_message(country.__repr__())
+            return
         await self.send_message("Not Found!")
 
     @makeCommand(aliases=["randomc", "randc", "crand"], description="<country name> covid's random country kdr")
