@@ -111,14 +111,14 @@ class Covid(Cog):
         if c.message == "":
             await self.send_message("This command needs a country name")
 
-        if c.message.lower() == "united states":
-            # cool enough to use abbreviations fix.
-            c.message = "usa"
-
         myDict = {}
 
         for country_data in data:
             country = country_data['country']
+            # cool enough to use abbreviations fix.
+            if country == 'usa':
+                myDict['united states'] = country_data
+
             myDict[country] = country_data
         matches = get_close_matches(c.message, myDict.keys(), 1, .4)
 
