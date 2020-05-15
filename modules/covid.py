@@ -42,6 +42,10 @@ class World:
     deathsPerOneMillion: int
     tests: int
     testsPerOneMillion: int
+    population: int
+    activePerOneMillion: int
+    recoveredPerOneMillion: int
+    criticalPerOneMillion: int
     affectedCountries: int
 
 
@@ -71,7 +75,11 @@ class Country:
     deathsPerOneMillion: int
     tests: int
     testsPerOneMillion: int
+    population: int
     continent: str
+    activePerOneMillion: int
+    recoveredPerOneMillion: int
+    criticalPerOneMillion: int
 
 
 @dataclass
