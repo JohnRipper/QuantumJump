@@ -42,7 +42,7 @@ class Builtins(Cog):
         start = datetime.fromtimestamp(self.bot.start_time)
         difference = str(current - start)
         # strip after the decimal
-        message = "has been alive for {} ⏱".format(
+        message = "has been alive for {}⏱️".format(
             str(difference)[:7].replace(":", ";"))
         await self.send_action(message, style=Styles.bold)
 
