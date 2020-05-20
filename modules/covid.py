@@ -91,6 +91,8 @@ class State:
     deaths: int
     todayDeaths: int
     active: int
+    casesPerOneMillion: int
+    deathsPerOneMillion: int
     tests: int
     testsPerOneMillion: int
 
