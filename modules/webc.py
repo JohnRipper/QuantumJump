@@ -18,6 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 import asyncio
+import inspect
 import json
 import random
 import string
@@ -25,7 +26,7 @@ from dataclasses import dataclass
 from enum import Enum
 
 import aioice
-from aiortc import RTCPeerConnection, RTCSessionDescription, VideoStreamTrack
+from aiortc import RTCPeerConnection, RTCSessionDescription, VideoStreamTrack, RTCIceParameters
 from aiortc.contrib.media import MediaPlayer
 
 from lib.cog import Cog
@@ -66,7 +67,7 @@ class Video:
     height: int = 1080
     x_offset: int = 1920
     y_offset: int = 0
-    out_location: str = "/dev/video2"
+    out_location: str = "/dev/video1"
 
 
 pcs = set()
@@ -85,30 +86,38 @@ class Webc(Cog):
 
     def __init__(self, bot):
         super().__init__(bot)
+
+        self.create_id = transaction_id()
+        self._attach_id = transaction_id()
+        self._attach_plugin_id = transaction_id()
+        self.publish_transaction_id = transaction_id()
+        self.message_id = transaction_id()
+        self.candidates_complete = transaction_id()
+
+        self.transactions = {self.create_id: 'create',
+                             self._attach_id: 'attach',
+                             self._attach_plugin_id: 'attach_plugin',
+                             self.publish_transaction_id: 'publish',
+                             self.message_id: 'message',
+                             self.candidates_complete: 'candidates_complete', }
+
         self._plugins = {}
+
         self.token = ""
+        self.room = ""
         self.janus_id = ""
         self.handle_id = ""
         self.username = ""
         self.password = ""
         self._session_url = None
         self._session = None
-        self._attach_id = transaction_id()
-        self._attach_plugin_id = transaction_id()
+
         self.player = None
-        self.publish_transaction_id = transaction_id()
+
         self.turnservers = None
-        self.pc = None
-
-    async def publish(self, plugin, player):
-        """
-        Send video to the room.
-        """
+        p = RTCIceParameters(usernameFragment="", password="", iceLite=False)
         self.connection = aioice.Connection(ice_controlling=True, )
-        print(self.turnservers)
-
         self.pc = RTCPeerConnection()
-        pcs.add(self.pc)
 
         @self.pc.on("signalingstatechange")
         async def on_signalingstatechange():
@@ -130,15 +139,17 @@ class Webc(Cog):
             if self.pc.iceConnectionState == 'completed':
                 print("completed")
 
+    async def publish(self, plugin, player):
+        """
+        Send video to the room.
+        """
         self.connection.turn_server = self.turnservers
         self.connection.turn_transport = "udp"
         self.connection.turn_username = self.username
         self.connection.turn_password = self.password
         self.connection.remote_username = self.username
         self.connection.remote_password = self.password
-        print(f"hello {self.username} {self.password}")
-        # self.connection.remote_username = self.username
-        # self.connection.remote_password = self.password
+
         # configure media
         media = {"audio": False, "video": True}
         if player and player.audio:
@@ -152,9 +163,9 @@ class Webc(Cog):
 
         await self.connection.gather_candidates()
 
-        for c in self.connection.local_candidates:
-            c.sdpMid = 0
-            self.pc.addIceCandidate(c)
+        # for c in self.connection.local_candidates:
+        #     c.sdpMid = '0'
+        #     self.pc.addIceCandidate(c)
 
         # send offer
         offer = await self.pc.createOffer()
@@ -187,101 +198,155 @@ class Webc(Cog):
                     "session_id": self.session_id, "handle_id": self.handle_id}
             await self.send(json.dumps(data))
         completed = {"janus": "trickle", "candidate": {"completed": True},
-                     "transaction": "peepee",
+                     "transaction": self.candidates_complete,
                      "token": self.token, "session_id": self.session_id,
                      "handle_id": self.handle_id}
         await self.send(json.dumps(completed))
         configure = {"janus": "message",
-                     "body": {"request": "configure"},
-                     "transaction": "NXZQc2cE5Gik",
+                     "body": request,
+                     "transaction": self.message_id,
                      "token": self.token,
                      "session_id": self.session_id,
                      "handle_id": self.handle_id}
         await self.send(json.dumps(configure))
 
     async def send(self, message):
-        print(f"sending: {message}")
+        self.log.ws_send(message)
         await self._session.send_str(message)
 
     async def create(self):
-        data = await self.bot.api.get('https://jumpin.chat/api/janus/token')
-        t = json.loads(await data.text())
-        token = t.get("token", "")
+        """starts a janus connection"""
+        create = {"janus": "create", "transaction": self.create_id,
+                  "token": self.token}
+        await self.send(json.dumps(
+            create))
+
+    async def success(self, data):
+        trans = self.transactions.get(data['transaction'])
+        if trans:
+            self.log.info(f"transaction {trans}:{data['transaction']} succeeded")
+
+        if data.get("transaction") == self.create_id:
+            self.session_id = data["data"]["id"]
+            await self.send(json.dumps({"janus": "attach", "plugin": "janus.plugin.videoroom",
+                                        "transaction": self._attach_plugin_id,
+                                        "token": self.token,
+                                        "session_id": self.session_id}))
+        if data.get("transaction") == self.publish_transaction_id or data.get("transaction") == "ppppp":
+            if 'jsep' in data:
+                if data['jsep'].get('type', "") == "answer":
+                    sdp = data['jsep'].get('sdp', "")
+
+                    description = RTCSessionDescription(type="answer", sdp=sdp)
+
+                    await self.pc.setRemoteDescription(description)
+                    # await self.connection.connect()
+                    asyncio.ensure_future(self.connection.connect(), loop=asyncio.get_event_loop())
+                    await self.bot.wsend('42["room::setUserIsBroadcasting",{"isBroadcasting":true}]')
+
+        if data.get("transaction") == self._attach_id:
+            await self.attach(data)
+        if data.get("transaction") == self._attach_plugin_id:
+            await self.attach_plugin(data)
+
+    async def retrieve_name(self, var):
+        callers_local_vars = inspect.currentframe().f_back.f_locals.items()
+        return [var_name for var_name, var_val in callers_local_vars if var_val is var]
+
+    async def attach(self, data: json):
+        pass
+
+    async def attach_plugin(self, data):
+        self.handle_id = data["data"]["id"]
+        plugin = JanusPlugin()
+        self._plugins[self.session_id] = plugin
+        message = {"janus": "message",
+                   "transaction": self._attach_id,
+                   "token": self.token,
+                   "session_id": self.session_id,
+                   "handle_id": self.handle_id
+                   }
+        payload = {
+            "body": {
+                "display": "5e90938358e6a300086c279d",
+                "ptype": "publisher",
+                "request": "join",
+                "room": int(self.janus_id),
+            }
+        }
+
+        message.update(payload)
+        await self.send(json.dumps(message))
+        d = {"janus": "keepalive", "session_id": self.session_id, "transaction": transaction_id(),
+             "token": self.token}
+        await self.send(json.dumps(d))
+
+        await asyncio.sleep(3)
+        await self.publish(plugin=list(self._plugins.values())[0], player=self.player)
+        # exchange media for 10 minutes
+        print("Exchanging media")
+
+    async def trickle_complete(self, data):
+        d = {"janus": "message", "body": {"request": "configure"}, "transaction": self.candidates_complete,
+             "token": self.token,
+             "session_id": self.session_id, "handle_id": self.handle_id}
+        await self.send(json.dumps(d))
+
+    async def trickle(self, data: json):
+        if data.get("janus") == "trickle" and data["candidate"].get("completed", False):
+            await self.trickle_complete(data)
+        else:
+            data["candidate"]["sdpMid"] = int(data["candidate"]["sdpMid"])
+            candidate = json.dumps(data["candidate"])
+            candidate = candidate.replace(",", "")
+            c = candidate.split("candidate:")
+
+            candidate = candidate.replace("candidate:", "")
+            candidate = candidate[:44] + candidate[44:].replace('"', '')
+            candidate = aioice.Candidate.from_sdp(candidate)
+            candidate.sdpMid = data["candidate"]["sdpMid"]
+            self.pc.addIceCandidate(candidate)
+
+    async def message_joinroom(self):
+        pass
+
+    async def message_configure(self):
+        pass
+
+    async def ack(self, data):
+        pass
+
+    async def event(self, data):
+        plugin = self._plugins.get(data["sender"], None)
+        if plugin:
+            await plugin._queue.put(data)
+
+    async def keepalive(self):
+        pass
+
+    async def process_messages(self, message):
+        data = json.loads(message.data)
+        routes = {
+            'event': self.event,
+            'trickle': self.trickle,
+            'success': self.success,
+            'ack': self.ack,
+        }
+        route = routes.get(data.get("janus"))
+        if route:
+            self.log.info(f"Attempting{data.get('janus')}")
+            await route(data=data)
+
+    async def start(self):
         async with self.bot.api.session.ws_connect("wss://jumpin.chat/janus/ws") as self._session:
-            create = {"janus": "create", "transaction": "create_this_shit",
-                      "token": token}
-            await self.send(json.dumps(create))
+            await self.create()
             async for msg in self._session:
-                print(msg)
-                data = json.loads(msg.data)
-
-                if data["janus"] == "event":
-                    plugin = self._plugins.get(data["sender"], None)
-                    if plugin:
-                        await plugin._queue.put(data)
-                    else:
-                        print(data)
-
-                if data.get("janus") == "trickle" and data["candidate"].get("completed", False):
-                    d = {"janus": "message", "body": {"request": "configure"}, "transaction": "eiCUHTyqRe4z",
-                         "token": token,
-                         "session_id": self.session_id, "handle_id": self.handle_id}
-                    await self.send(json.dumps(d))
-
-                elif data.get("janus") == "trickle":
-                    pass
-                    # await self.pc.addIceCandidate(aioice.Candidate.from_sdp(json.dumps(data["candidate"])))
-                if data.get("transaction") == "create_this_shit":
-                    self.session_id = data["data"]["id"]
-                    await self.send(json.dumps({"janus": "attach", "plugin": "janus.plugin.videoroom",
-                                                "transaction": self._attach_plugin_id,
-                                                "token": token,
-                                                "session_id": self.session_id}))
-                if data.get("transaction") == self.publish_transaction_id or data.get("transaction") == "ppppp":
-                    #   apply answer
-                    if 'jsep' in data:
-                        if data['jsep'].get('type', "") == "answer":
-                            sdp = data['jsep'].get('sdp', "")
-
-                            description = RTCSessionDescription(type="answer", sdp=sdp)
-
-                            await self.pc.setRemoteDescription(description)
-                            asyncio.ensure_future(self.connection.connect(), loop=asyncio.get_event_loop())
-                            await self.bot.wsend('42["room::setUserIsBroadcasting",{"isBroadcasting":true}]')
-
-                if data.get("transaction") == self._attach_id:
-                    # send video
-                    pass
-
-                if data.get("transaction") == self._attach_plugin_id:
-                    self.handle_id = data["data"]["id"]
-                    plugin = JanusPlugin()
-                    self._plugins[self.session_id] = plugin
-                    message = {"janus": "message",
-                               "transaction": self._attach_id,
-                               "token": token,
-                               "session_id": self.session_id,
-                               "handle_id": self.handle_id
-                               }
-                    payload = {
-                        "body": {
-                            "display": "aiortc",
-                            "ptype": "publisher",
-                            "request": "join",
-                            "room": self.janus_id,
-                        }
-                    }
-
-                    message.update(payload)
-                    await self.send(json.dumps(message))
-                    await self.publish(plugin=list(self._plugins.values())[0], player=self.player)
-                    # exchange media for 10 minutes
-                    print("Exchanging media")
+                self.log.debug(f"{msg.data}")
+                await self.process_messages(msg)
 
     @makeCommand(aliases=["cc"], description="cams up in a room")
     async def cc(self, c: Command):
         data = await self.bot.api.get('https://jumpin.chat/api/turn/')
-        print(await data.text())
         data = json.loads(await data.text())
         self.username = data.get("username", "")
         self.password = data.get("password", "")
@@ -290,16 +355,18 @@ class Webc(Cog):
         turnservers = uris[0].split(":")
         self.turnservers = (turnservers[1], turnservers[2])
 
-        options = {"volume": "33", "video_size": f"1920x1080"}
-        self.player = MediaPlayer("/dev/video2", format="v4l2", options=options)
-
+        options = {"volume": "33", "video_size": f"720x480",
+                   "pix_fmt": "vp8"}
+        self.player = MediaPlayer(
+            "http://www.wiki-bazar.net/~josh/V%20for%20Vendetta/%5bfmovies.to%5d%20V%20For%20Vendetta%20-%20HD%201080p.mp4",
+            format="mp4", options=options)
         data = await self.bot.api.get("https://jumpin.chat/api/rooms/johnripper")
-        data = json.loads(await data.text())
-        self.janus_id = data['attrs'].get("janus_id")
+        data = await data.json()
+        self.janus_id = int(data['attrs'].get("janus_id"))
 
         data = await self.bot.api.get('https://jumpin.chat/api/janus/token')
-        t = json.loads(await data.text())
-        self.token = t.get("token", "")
-
-        # join video room
-        await self.create()
+        t = await data.json()
+        self.token = t.get("token", False)
+        if self.token:
+            # join video room
+            await self.start()
