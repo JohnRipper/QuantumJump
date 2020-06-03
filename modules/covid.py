@@ -36,6 +36,7 @@ class World:
     deaths: int
     todayDeaths: int
     recovered: int
+    todayRecovered: int
     active: int
     critical: int
     casesPerOneMillion: int
@@ -43,6 +44,9 @@ class World:
     tests: int
     testsPerOneMillion: int
     population: int
+    oneCasePerPeople: int
+    oneDeathPerPeople: int
+    oneTestPerPeople: int
     activePerOneMillion: int
     recoveredPerOneMillion: int
     criticalPerOneMillion: int
@@ -69,6 +73,7 @@ class Country:
     deaths: int
     todayDeaths: int
     recovered: int
+    todayRecovered: int
     active: int
     critical: int
     casesPerOneMillion: int
@@ -77,6 +82,9 @@ class Country:
     testsPerOneMillion: int
     population: int
     continent: str
+    oneCasePerPeople: int
+    oneDeathPerPeople: int
+    oneTestPerPeople: int
     activePerOneMillion: int
     recoveredPerOneMillion: int
     criticalPerOneMillion: int
@@ -110,7 +118,7 @@ class Covid(Cog):
         data = await self.bot.api.get(self.WORLD)
         data = World(**json.loads(await data.text()))
         updated = date.fromtimestamp(int(data.updated) / 1000).strftime('%Y-%m-%d %H:%M')
-        message = f"Updated:{updated} Cases:{data.cases} CasesToday:{data.todayCases} 💀:{data.deaths} 💀Today:{data.todayDeaths} Recovered:{data.recovered} Active:{data.active} Critical:{data.critical} CasesPer1M:{data.casesPerOneMillion} 💀Per1M:{data.deathsPerOneMillion} Tests:{data.tests} TestsPer1M:{data.testsPerOneMillion} Pop:{data.population} ActivePer1M:{data.activePerOneMillion} RecoveredPer1M:{data.recoveredPerOneMillion} CriticalPer1M:{data.criticalPerOneMillion} Countries:{data.affectedCountries}"
+        message = f"Updated:{updated} Cases:{data.cases} CasesToday:{data.todayCases} 💀:{data.deaths} 💀Today:{data.todayDeaths} Recovered:{data.recovered} RecoveredToday:{data.todayRecovered} Active:{data.active} Critical:{data.critical} Cases/1M:{data.casesPerOneMillion} 💀/1M:{data.deathsPerOneMillion} Tests:{data.tests} Tests/1M:{data.testsPerOneMillion} Pop:{data.population} 1Case/People:{data.oneCasePerPeople} 1💀/People:{data.oneDeathPerPeople} 1Test/People:{data.oneTestPerPeople} ActivePer1M:{data.activePerOneMillion} RecoveredPer1M:{data.recoveredPerOneMillion} CriticalPer1M:{data.criticalPerOneMillion} Countries:{data.affectedCountries}"
         await self.send_message(message)
 
     @makeCommand(aliases=["country", "where"], description="<country name> covid's country kdr")
