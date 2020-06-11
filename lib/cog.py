@@ -83,10 +83,9 @@ class Cog:
             # re.DOTALL makes . match everything, including newline
             messages = re.findall("(.{1,254}[.,;:]|.{1,254})", message, re.DOTALL)
             chunk_limit = self.bot_settings.chunk_limit
-            if chunk_limit == 0 or chunk_limit == None:
+            if chunk_limit == None:
                 chunk_limit = len(messages)
-            for i in range(0, chunk_limit):
-                message = messages[i][:254]
+            for message in messages[:chunk_limit]:
                 if style is not None:
                     message = encodetxt(message, style)
                 await self.send_message(message, room=room, color=color, style=style)
