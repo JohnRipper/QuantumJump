@@ -19,21 +19,22 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 import json
 import re
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import parse_qs, urlparse
 
 import aiohttp
 import requests
 
 from lib.cog import Cog, event
 from lib.command import Command, makeCommand
-from lib.objects import PlaylistUpdate
+from lib.objects import PlaylistUpdate, PlayVideo
 
 
 class Youtube(Cog):
     def __init__(self, bot):
         super().__init__(bot)
-        self.headers = None
-        self.api_key = self.settings["api_key"]
+        self.headers: dict = None
+        self.api_key: str = self.settings["api_key"]
+        self.current_duration: int = None
 
 
 
@@ -132,6 +133,24 @@ class Youtube(Cog):
         else:
             await self.send_message("SEARCH FOR SOMETHING???")
 
+    @makeCommand(aliases=["skip", "next"], description="skip video")
+    async def skip(self, c: Command):
+        await self.settime(self.current_duration)
+
+    @makeCommand(aliases=["seek"], description="seek a video")
+    async def seek(self, c: Command):
+        m = c.message.strip()
+        if m.isnumeric() and int(m) <= self.current_duration and self.current_duration is not None:
+            await self.settime(m)
+        elif int(m) > self.current_duration:
+            await self.send_message(f"The video is only {self.current_duration} seconds long")
+        else:
+            await self.send_message(f"{m} is not a number.")
+
     @event(event="youtube::playlistUpdate")
     async def playlistupdate(self, pl: PlaylistUpdate):
         pass
+
+    @event(event="youtube::playvideo")
+    async def update(self, video: PlayVideo):
+        self.current_duration = int(video.duration)

@@ -27,7 +27,8 @@ from types import ModuleType
 
 from lib.command import Command
 from lib.logging import QuantumLogger
-from lib.objects import HandleChange, Message, Status, User, JumpinError, Banlist, UserList, PlaylistUpdate
+from lib.objects import (Banlist, HandleChange, JumpinError, Message,
+                         PlaylistUpdate, PlayVideo, Status, User, UserList)
 from lib.styling import Colors, encodetxt
 
 
@@ -158,6 +159,15 @@ class Cog:
             "youtube::remove",
             {
                 "id": id
+            }
+        ]
+        await self.ws_send(data=data)
+
+    async def settime(self, t: int):
+        data = [
+            "youtube::seek",
+            {
+                "seekTo":0
             }
         ]
         await self.ws_send(data=data)
@@ -370,6 +380,7 @@ class CogManager:
                         "room::message": Message,
                         "client::error": JumpinError,
                         "youtube::playlistUpdate": PlaylistUpdate,
+                        "youtube::playvideo": PlayVideo,
                         "room::operation::ban": Banlist
                     }
                     if choice := routes.get(data[0], False):
