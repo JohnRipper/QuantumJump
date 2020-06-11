@@ -26,7 +26,7 @@ import requests
 
 from lib.cog import Cog, event
 from lib.command import Command, makeCommand
-from lib.objects import PlaylistUpdate, PlayVideo
+from lib.objects import Playlist, PlaylistUpdate, PlayVideo, UserList
 
 
 class Youtube(Cog):
@@ -35,7 +35,6 @@ class Youtube(Cog):
         self.headers: dict = None
         self.api_key: str = self.settings["api_key"]
         self.current_duration: int = None
-
 
 
     async def ytsearch(self, query: str) -> dict:
@@ -147,9 +146,12 @@ class Youtube(Cog):
         else:
             await self.send_message(f"{m} is not a number.")
 
-    @event(event="youtube::playlistUpdate")
-    async def playlistupdate(self, pl: PlaylistUpdate):
-        pass
+    @event(event="room::updateUserList")
+    async def notgreat(self, _: UserList):
+        # HACK to recieve the "playvideo" event from jumpin
+        # sending a full join message with
+        # user["settings"]["playYtVideos"] might avoid this
+        await self.ws_send(["youtube::checkisplaying",{"notify": True}])
 
     @event(event="youtube::playvideo")
     async def update(self, video: PlayVideo):
