@@ -37,7 +37,7 @@ class JumpinObject:
             "videoQuality": VideoQuality,
             "attrs": Attrs,
             "topic": Topic,
-            "updatedBy": UpdatedBy,
+            "updatedBy": UpdatedBy
         }
         for attr in self.__dict__:
             cheddar = getattr(self, attr)
@@ -264,7 +264,6 @@ class HandleChange:
     handle: str
 
 
-
 @dataclass
 class Attrs(JumpinObject):
     owner: str
@@ -314,7 +313,6 @@ class Settings(JumpinObject):
 #     createdAt: str = None
 
 
-
 # @dataclass
 # class PlaylistUpdate(List[PlaylistUpdateItem]):
 #     objects: List[PlaylistUpdateItem] = field(default_factory=PlaylistUpdateItem)
@@ -332,7 +330,7 @@ class UserList(JumpinObject):
     users: List[User] = field(default_factory=User)
 
     def add(self, user: User):
-        #update the list and return, else add to the list
+        # update the list and return, else add to the list
         if not isinstance(self.users, list):
             self.users = []
         for pos, item in enumerate(self.users):
@@ -377,6 +375,7 @@ class UserList(JumpinObject):
             for user in self.users:
                 if user._id == id:
                     return user
+
 
 class BotState(Enum):
     INITIALIZED = 0
