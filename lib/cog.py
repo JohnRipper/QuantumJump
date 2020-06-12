@@ -84,7 +84,7 @@ class Cog:
             # re.DOTALL makes . match everything, including newline
             messages = re.findall("(.{1,254}[.,;:]|.{1,254})", message, re.DOTALL)
             chunk_limit = self.bot_settings.chunk_limit
-            if chunk_limit == None:
+            if chunk_limit is None:
                 chunk_limit = len(messages)
             for message in messages[:chunk_limit]:
                 if style is not None:
@@ -305,7 +305,6 @@ class Cog:
     async def alert(self, message):
         pass
 
-
     @event(event="youtube::playlistUpdate")
     # 42["youtube::playlistUpdate",[{"startTime":null,"endTime":null,"description":null,"channelId":"UCqukXrA3L_B0EVHiM14EU7g","pausedAt":null,"_id":"5dea8a123533d70008b01aa9","mediaId":"jesc3yvZSws","title":"DANZIG - Mother Lyrics","link":"https://youtu.be/jesc3yvZSws","duration":226,"thumb":"https://i.ytimg.com/vi/jesc3yvZSws/default.jpg","mediaType":"TYPE_YOUTUBE","startedBy":"5c4b7b6746bb1a000712c13c","createdAt":"2019-12-06T17:04:18.334Z"}]]
     async def playlistUpdate(self, playlistUpdate: list):
@@ -370,7 +369,6 @@ class CogManager:
         if module in self.cogs.keys:
             return self.modules.get(module.lower())
 
-
     async def do_event(self, data: list):
         for cog in self.cogs.values():
             for meth in cog.events:
@@ -395,6 +393,7 @@ class CogManager:
             for meth in cog.commands:
                 if command.name in meth.__command_name__:
                     if meth.__restricted__:
+                        # Unresolved attribute reference 'sender' for class 'Command'
                         if command.sender.role >= meth.__role__:
                             asyncio.create_task(meth(command))
                     else:

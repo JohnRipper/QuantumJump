@@ -37,7 +37,7 @@ def makeCommand(aliases: [], description: str, role: Role = None, **attrs):
     return wrap
 
 
-command_pattern = "{}(\w+)(\\b.*)"
+command_pattern = "{}(\\w+)(\\b.*)"  # PEP 8: W605 invalid escape sequence '\w'
 
 
 class Command:
