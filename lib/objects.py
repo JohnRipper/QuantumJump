@@ -106,16 +106,14 @@ class User(JumpinObject):
     def is_mod(self):
         if self.operator_id is not None and self.assignedBy is None:
             return True
-        else:
-            return False
+        return False
 
     @property
     def is_op(self):
         # TODO ROOM OPS
         if self.operator_id is not None and self.assignedBy is not None:
             return True
-        else:
-            return False
+        return False
 
     @property
     def role(self) -> Role:
