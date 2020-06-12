@@ -42,7 +42,7 @@ class JumpinObject:
         for attr in self.__dict__:
             cheddar = getattr(self, attr)
             if type(cheddar) is dict:
-                setattr(self, attr, _routes.get(attr)(**cheddar))
+                setattr(self, attr, _routes.get(attr)(**cheddar))  # Unexpected argument(s)
 
 
 @dataclass
