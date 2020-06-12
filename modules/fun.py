@@ -28,7 +28,6 @@ class Fun(Cog):
     def __init__(self, bot):
         super().__init__(bot)
 
-
     @makeCommand(aliases=["roll"], description="<sides> <dice>, default is single 6 sided")
     async def roll(self, c: Command):
         parts = c.message.split(" ")
@@ -92,7 +91,6 @@ class Fun(Cog):
             "0/10", "1/10", "2/10", "3/10", "4/10", "5/10", "6/10", "7/10",
             "8/10", "9/10", "10/10"
         ]
-
 
         if not self.settings["allow_rate"]:
             msg = "I am the earth."

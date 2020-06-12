@@ -50,7 +50,6 @@ class Chuck(Cog):
                 else:
                     try:
                         cnjson = await response.json()
-                        sentence = cnjson["value"].replace("chuck", "Carlos")
                         sentence = cnjson["value"].replace("Chuck", "Carlos")
                         await self.send_action(sentence)
                     except (IndexError, KeyError) as e:

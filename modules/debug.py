@@ -53,9 +53,7 @@ class Debug(Cog):
 
     @makeCommand(aliases=["mock"], description="mocks a socket message.")
     async def mocking_bird(self, c: Command):
-        await self.bot._recv(c.message)
-
-
+        await self.bot._recv(c.message)  # Access to a protected member _recv of a class
 
     @makeCommand(aliases=["font"], description="")
     async def demofonts(self, c: Command):
@@ -101,12 +99,11 @@ class Debug(Cog):
         # does not work if bot is guest in  a room with authenticated required.
 
         if error.message:
-            #await self.send_message(f"{error.context}:{error.error}:{error.message}")
+            # await self.send_message(f"{error.context}:{error.error}:{error.message}")
             pass
         else:
-            #await self.send_message(f"{error.context}:{error.error}")
+            # await self.send_message(f"{error.context}:{error.error}")
             pass
-
 
     @event(event="room::message")
     async def message(self, message: Message):

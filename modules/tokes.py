@@ -58,7 +58,6 @@ class Tokes(Cog):
         self.prepares = self.settings["pre"]
         self.post_timer = self.settings["post"]
 
-
     async def start_420_counter(self):
         # figure out next 420
         current_minute = datetime.datetime.now().minute
@@ -68,16 +67,15 @@ class Tokes(Cog):
 
         self.s.enter(wait_time, 1, self.happy_420, f"{wait_time} minutes")
 
-
     async def pre_happy_420(self):
         await self.send_message("5 minutes before 420",
-                                        color=Colors.greenalt,
-                                        style=Styles.bold)
+                                color=Colors.greenalt,
+                                style=Styles.bold)
+
     async def happy_420(self):
         await self.send_message("It's 420 somewhere",
-                                        color=Colors.greenalt,
-                                        style=Styles.bold)
-
+                                color=Colors.greenalt,
+                                style=Styles.bold)
 
     @makeCommand(aliases=["420hour"],
                  description="enables/disables call for tokes hourly.")
@@ -86,7 +84,6 @@ class Tokes(Cog):
         await self.send_message(f"Hourly 420 notification set to: { self.is_running_hourly}",
                                 color=Colors.greenalt,
                                 style=Styles.bold)
-
 
     @makeCommand(aliases=["cheers"],
                  description="Cheers!")
@@ -140,7 +137,7 @@ class Tokes(Cog):
         if c.message:
             try:
                 thing, seconds = c.message.split(" ", 1)
-            except (ValueError):
+            except ValueError:
                 thing = c.message
                 seconds = 0
 

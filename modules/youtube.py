@@ -36,7 +36,6 @@ class Youtube(Cog):
         self.api_key: str = self.settings["api_key"]
         self.current_duration: int = None
 
-
     async def ytsearch(self, query: str) -> dict:
         searchurl = "https://www.googleapis.com/youtube/v3/search?"\
             "part=snippet&type=video&q={query}&maxResults=1&"\
@@ -64,8 +63,8 @@ class Youtube(Cog):
     @makeCommand(aliases=["yt"], description="<query | url> play youtube")
     async def playyt(self, c: Command):
 
-        if re.search("youtu(be\.com|\.be)", c.message):
-            ytid = re.search("(?:v=|\.be\/)(.{11})", c.message)[1]
+        if re.search("youtu(be\\.com|\\.be)", c.message):
+            ytid = re.search("(?:v=|\\.be\\/)(.{11})", c.message)[1]
             title = await self.ytidsearch(ytid)
             await self.play(video_id=ytid, title=title)
         else:

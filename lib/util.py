@@ -27,7 +27,7 @@ def prompt(query: str) -> bool:
     options = ["y", "n"]
     check = input(f"{query} ").lower()
     if check not in options:
-        return ValueError
+        raise ValueError
     elif check == "y":
         return True
     else:
