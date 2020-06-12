@@ -27,7 +27,7 @@ from types import ModuleType
 
 from lib.command import Command
 from lib.logging import QuantumLogger
-from lib.objects import (Banlist, HandleChange, JumpinError, Message,
+from lib.objects import (Banlist, HandleChange, JumpinError, Message, Playlist,
                          PlaylistUpdate, PlayVideo, Status, User, UserList)
 from lib.styling import Colors, encodetxt
 
@@ -167,7 +167,7 @@ class Cog:
         data = [
             "youtube::seek",
             {
-                "seekTo":0
+                "seekTo": t
             }
         ]
         await self.ws_send(data=data)
@@ -379,7 +379,7 @@ class CogManager:
                         "room::updateUserList": UserList,
                         "room::message": Message,
                         "client::error": JumpinError,
-                        "youtube::playlistUpdate": PlaylistUpdate,
+                        "youtube::playlistUpdate": Playlist,
                         "youtube::playvideo": PlayVideo,
                         "room::operation::ban": Banlist
                     }

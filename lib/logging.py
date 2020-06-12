@@ -137,8 +137,6 @@ class QuantumLogger(getLoggerClass()):
         if self.isEnabledFor(self.CHAT):
             self._log(self.CHAT, msg, args, **kwargs)
 
-
-
     def ws_event(self, msg, *args, **kwargs):
         if self.isEnabledFor(self.RECV):
             self._log(self.RECV, msg, args, **kwargs)
