@@ -11,6 +11,7 @@ beautifulsoup4 = '*'
 wikipedia = '*'
 aiohttp-socks = '*'
 pytz = '*'
+wolframalpha = '*'
 
 [requires]
 python_full_version = '3.8.5'
