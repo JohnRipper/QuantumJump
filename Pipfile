@@ -1,18 +1,16 @@
 [[source]]
-name = "pypi"
-url = "https://pypi.python.org/simple"
+name = 'pypi'
+url = 'https://pypi.python.org/simple'
 verify_ssl = true
 
-[dev-packages]
-
 [packages]
-websockets = "*"
-tomlkit = "*"
-aiohttp = "*"
-beautifulsoup4 = "*"
-wikipedia = "*"
-aiohttp-socks = "*"
-pytz = "*"
+websockets = '*'
+tomlkit = '*'
+aiohttp = '*'
+beautifulsoup4 = '*'
+wikipedia = '*'
+aiohttp-socks = '*'
+pytz = '*'
 
 [requires]
-python_version = "3.8"
+python_full_version = '3.8.5'
