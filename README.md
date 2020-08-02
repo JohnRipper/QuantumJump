@@ -20,6 +20,7 @@ A few Python modules are required:
 - [wikipedia](https://github.com/goldsmith/Wikipedia)
 - [aiohttp_socks](https://github.com/romis2012/aiohttp-socks) (Tor support)
 - [pytz](https://pythonhosted.org/pytz/) (Wundertime support)
+- [wolframalpha](https://github.com/jaraco/wolframalpha) (WolframAlpha support)
 
 QuantumJump is confirmed working on GNU/Linux, the status of operation on other operating systems is currently unknown.
 Feel free to give it a go and report back.
