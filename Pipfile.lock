@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "8223d9331b69f825eca34e15d8e37b856331b714ea4eb76237118d53a641faed"
+            "sha256": "4986b80e87d7d5b020dd63232d7032da7c0a9192594324e072a8a03e5a986bff"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -81,6 +81,13 @@
             ],
             "version": "==3.0.4"
         },
+        "dhooks": {
+            "hashes": [
+                "sha256:5e3f599c06e09a7e185a1368d8ce665ad7682e689f01e510682b379d2f8a9d2b"
+            ],
+            "index": "pypi",
+            "version": "==1.1.4"
+        },
         "idna": {
             "hashes": [
                 "sha256:b307872f855b18632ce0c21c5e45be78c0ea7ae4c15c828c20788b26921eb3f6",
@@ -88,6 +95,30 @@
             ],
             "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
             "version": "==2.10"
+        },
+        "inflect": {
+            "hashes": [
+                "sha256:053dabafaebc41375361cea2cbaea52f91c7d5bd30e079847ee4e4e49739d41b",
+                "sha256:def6f3791be9181f0c01e0bf5949304007ec6e04c6674fbef7cc49c657b8a9a5"
+            ],
+            "markers": "python_version >= '3.6'",
+            "version": "==4.1.0"
+        },
+        "jaraco.itertools": {
+            "hashes": [
+                "sha256:6447d567f57efe5efea386265c7864652e9530830a1b80f43e60b4f222b9ab84",
+                "sha256:a9c91fe1a1026904e86e4ff8f7c1a65c851983afe273d0e6263f38408d6b9f37"
+            ],
+            "markers": "python_version >= '3.6'",
+            "version": "==5.0.0"
+        },
+        "more-itertools": {
+            "hashes": [
+                "sha256:68c70cc7167bdf5c7c9d8f6954a7837089c6a36bf565383919bb595efb8a17e5",
+                "sha256:b78134b2063dd214000685165d81c154522c3ee0a1c0d4d113c80361c234c5a2"
+            ],
+            "markers": "python_version >= '3.5'",
+            "version": "==8.4.0"
         },
         "multidict": {
             "hashes": [
@@ -127,6 +158,14 @@
             ],
             "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4'",
             "version": "==2.24.0"
+        },
+        "six": {
+            "hashes": [
+                "sha256:30639c035cdb23534cd4aa2dd52c3bf48f06e5f4a941509c8bafd8ce11080259",
+                "sha256:8b74bedcbbbaca38ff6d7491d76f2b06b3592611af620f8426e82dddb04a5ced"
+            ],
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
+            "version": "==1.15.0"
         },
         "soupsieve": {
             "hashes": [
@@ -186,6 +225,21 @@
             ],
             "index": "pypi",
             "version": "==1.4.0"
+        },
+        "wolframalpha": {
+            "hashes": [
+                "sha256:0acf5f097346e100f9c867c1dee693da21ebd9b835aaff26f04090a136b64cc1",
+                "sha256:fae771cf2be760f2304aecea1e8fcfe1cd4985c9c15c3d7097207f3395004694"
+            ],
+            "index": "pypi",
+            "version": "==4.0.0"
+        },
+        "xmltodict": {
+            "hashes": [
+                "sha256:50d8c638ed7ecb88d90561beedbf720c9b4e851a9fa6c47ebd64e99d166d8a21",
+                "sha256:8bbcb45cc982f48b2ca8fe7e7827c5d792f217ecf1792626f808bf41c3b86051"
+            ],
+            "version": "==0.12.0"
         },
         "yarl": {
             "hashes": [
