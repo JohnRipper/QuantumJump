@@ -86,9 +86,9 @@ class Debug(Cog):
     async def testit(self, c: Command):
         raise Exception("I am a T-Rex")
 
-    @makeCommand(aliases=["bw"], description="<sides> <dice>, default is single 6 sided")
+    @makeCommand(aliases=["hw"], description="42")
     async def hw(self, c: Command):
-        await self.send_message("standby - pref's washing his hands in the shower. thanks for your patience in advance")
+        await self.send_message("Please standby - Pref's washing his hands. Thanks for your patience in advance")
 
     #####
     # Events
