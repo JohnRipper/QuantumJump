@@ -68,6 +68,10 @@ wolframalpha_appid = ""
 [Modules.Movie]
 api_key = ""
 
+[Modules.Relay]
+d_webhookurl = ""
+embed_hook = false
+
 [Modules.Tokes]
 hourly_420 = true
 # these support the :emoji: things
