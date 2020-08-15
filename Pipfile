@@ -3,16 +3,23 @@ name = 'pypi'
 url = 'https://pypi.python.org/simple'
 verify_ssl = true
 
+[pipenv]
+allow_prereleases = true
+
 [packages]
-websockets = '*'
-tomlkit = '*'
 aiohttp = '*'
-beautifulsoup4 = '*'
-wikipedia = '*'
 aiohttp-socks = '*'
-pytz = '*'
-wolframalpha = '*'
+beautifulsoup4 = '*'
 dhooks = '*'
+pytz = '*'
+tomlkit = '*'
+websockets = '*'
+wikipedia = '*'
+wolframalpha = '*'
+
+[dev-packages]
+black = "*"
+pylama = "*"
 
 [requires]
 python_full_version = '3.8.5'
