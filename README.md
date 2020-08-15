@@ -30,13 +30,13 @@ Feel free to give it a go and report back.
 With `pipenv`
 
 ```bash
-pipenv install
+pipenv install --dev
 ```
 
 With `pip`
 
 ```bash
-pip3.8 install -U --user aiohttp aiohttp_socks beautifulsoup4 pytz tomlkit websockets wikipedia wolframalpha
+pip3.8 install -U --user aiohttp aiohttp_socks beautifulsoup4 dhooks pytz tomlkit websockets wikipedia wolframalpha
 ```
 
 ## Running
