@@ -98,11 +98,13 @@ class State:
     todayCases: int
     deaths: int
     todayDeaths: int
+    recovered: int
     active: int
     casesPerOneMillion: int
     deathsPerOneMillion: int
     tests: int
     testsPerOneMillion: int
+    population: int
 
 
 class Covid(Cog):
