@@ -2,7 +2,7 @@
 #
 # Copyright 2020, JohnnyCarcinogen ( https://github.com/JohnRipper/ ), All rights reserved.
 #
-# Created by tech 8/1/20
+# Created by Tech ( https://github.com/Technetium1 ) 8/1/20
 # This file is part of QuantumJump
 #
 # This program is free software; you can redistribute it and/or modify
@@ -37,6 +37,7 @@ class Relay(Cog):
         embed_hook = self.settings["embed_hook"]
         roomname = self.bot_settings.roomname
 
+        botnick = self.bot_settings.nickname
         msgprofile = message.sender.username
         msgnick = message.handle
         msg = message.message
@@ -50,7 +51,7 @@ class Relay(Cog):
             username="Jumpin Relay",
             avatar_url=jprofilepic,
         ) as hook:
-            if embed_hook and msgnick != self.bot_settings.nickname or None:
+            if embed_hook and msgnick != botnick or None:
                 em = Embed(
                     title=roomname.title,
                     url=jumpinurl,
@@ -60,16 +61,16 @@ class Relay(Cog):
                     thumbnail_url=jprofilepic,
                 )
                 em.set_footer(text="via git.io/QuantumJump", icon_url=giticon)
-                if msgnick != self.bot_settings.nickname:
+                if msgnick != botnick:
                     em.add_field(
                         name=f"**__{msgnick}__** ({msgprofile}):",
                         value=f"`{msg}`",
                         inline=False,
                     )
                 # await hook.send(embeds=[em])
-            elif embed_hook is False and msgnick != self.bot_settings.nickname or None:
-                await asyncio.sleep(1.1)
+            elif embed_hook is False and msgnick != botnick or None:
+                await asyncio.sleep(1.2)
                 await hook.send(f"**__{msgnick}__** ({msgprofile}): `{msg}`")
             else:
-                raise Exception("WEBHOOK FAILED TO SEND!")
+                raise Exception("WEBHOOK FAILED TO SEND! PLEASE REPORT REPEATED ISSUES WITH CONTEXT!")
 
