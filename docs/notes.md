@@ -12,12 +12,16 @@
 - [API](#sec-2)
   - [Youtube](#sec-2-1)
     - [Playlist](#sec-2-1-1)
-    - [Search](#sec-2-1-2)
+    - [Search DEPRECATED](#sec-2-1-2)
   - [Room](#sec-2-2)
     - [Users](#sec-2-2-1)
     - [Unread](#sec-2-2-2)
     - [Profile](#sec-2-2-3)
     - [Emoji](#sec-2-2-4)
+    - [Room Settings](#sec-2-2-5)
+    - [Broadcast Options](#sec-2-2-6)
+    - [Room Roles](#sec-2-2-7)
+    - [Session](#sec-2-2-8)
 
 ### Some notes on IDs
 In most if not all cases `_id` is the "user_list_id", that's the key used for sending ban messages so we might aswell call it that's
@@ -62,6 +66,31 @@ Initial connection is sending `2probe` and receiving `3probe` then sending `5`. 
       }
     ]
     ```
+1. `room::ignoreUser`
+    
+    Response: `room::status`, `room::updateIgnore`
+    
+    ```json
+    42[
+      "room::ignoreUser",
+      {
+        "userListId": "",
+        "roomName": "<ROOM>"
+      }
+    ]
+    ```
+1. `room::unignoreUser`
+    
+    Response: `room::status`, `room:updateIgnore`
+    
+    ```json
+    42[
+      "room::unignoreUser",
+      {
+        "id":""
+      }
+    ]
+    ```
 
 2.  `room::handleChange`
 
@@ -101,8 +130,8 @@ Initial connection is sending `2probe` and receiving `3probe` then sending `5`. 
       {
         "room": "<ROOM>",
         "user": {
-          "user_id": "<24 CHAR STR>", 
-          "username": "<ACCOUNT>",
+          "user_id": "<USER ID>", 
+          "username": "<USERNAME>",
           "isAdmin": false,
           "isSiteMod": false,
           "isSupporter": false,
@@ -117,7 +146,8 @@ Initial connection is sending `2probe` and receiving `3probe` then sending `5`. 
             "darkTheme": true,
             "videoQuality": "VIDEO_240",
             "userIcon": null,
-            "ignoreList": []
+            "ignoreList": [],
+            "wideLayout": false
           },
           "videoQuality": {
             "id": "VIDEO_240",
@@ -258,7 +288,7 @@ Initial connection is sending `2probe` and receiving `3probe` then sending `5`. 
         "user": {
           "_id": "",
           "handle": "",
-          "operator_id": "",
+          "operator_id": DEPRECATED,
           "user_id": "",
           "username": "",
           "isBroadcasting": true,
@@ -267,7 +297,8 @@ Initial connection is sending `2probe` and receiving `3probe` then sending `5`. 
           "isSiteMod": false,
           "isSupporter": false,
           "userIcon": null,
-          "color": "green"
+          "color": "green",
+          "roles": [""]
         }
       }
     ]
@@ -293,7 +324,7 @@ Initial connection is sending `2probe` and receiving `3probe` then sending `5`. 
         "user": {
           "_id": "<ID?>",
           "handle": "addicted_profit",
-          "operator_id": "<OP ID>",
+          "operator_id": DEPRECATED,
           "user_id": "<USER ID>",
           "username": "aida",
           "isBroadcasting": false,
@@ -302,7 +333,8 @@ Initial connection is sending `2probe` and receiving `3probe` then sending `5`. 
           "isSiteMod": false,
           "isSupporter": false,
           "userIcon": null,
-          "color": "bluealt"
+          "color": "bluealt",
+          "roles": [""]
         }
       }
     ]
@@ -358,16 +390,17 @@ Initial connection is sending `2probe` and receiving `3probe` then sending `5`. 
         "user": {
           "_id": "<USER ID>",
           "handle": "<NICK>",
-          "operator_id": null,
-          "user_id": null,
-          "username": null,
+          "operator_id": DEPREICATED,
+          "user_id": "",
+          "username": "",
           "isBroadcasting": false,
           "assignedBy": null,
           "isAdmin": false,
           "isSiteMod": false,
           "isSupporter": false,
           "userIcon": null,
-          "color": "red"
+          "color": "red",
+          "roles": [""]
         }
       }
     ]
@@ -541,9 +574,9 @@ Initial connection is sending `2probe` and receiving `3probe` then sending `5`. 
       {
         "user": {
           "user_id": "<USER ID>",
-          "operator_id": "<OP ID>",
+          "operator_id": DEPRECATED,
           "assignedBy": null,
-          "username": "<USER>",
+          "username": "<USERNAME>",
           "isBroadcasting": false,
           "isAdmin": false,
           "isSiteMod": false,
@@ -554,17 +587,7 @@ Initial connection is sending `2probe` and receiving `3probe` then sending `5`. 
           "color": "bluealt",
           "createdAt": "<ISO 8601 UTC>",
           "joinTime": "<ISO 8601 UTC>",
-          "operatorPermissions": {
-            "ban": true,
-            "close_cam": true,
-            "mute_user_audio": true,
-            "mute_user_chat": true,
-            "mute_room_chat": false,
-            "mute_room_audio": false,
-            "apply_password": false,
-            "assign_operator": true,
-            "play_youtube": true
-          }
+          "roles": [""],
         }
       }
     ]
@@ -609,7 +632,7 @@ Response:
 ]
 ```
 
-### Search<a id="sec-2-1-2"></a>
+### Search DEPRECATED<a id="sec-2-1-2"></a>
 
 Path: `youtube/search/<QUERY>`
 
@@ -766,7 +789,7 @@ TODO: Sort this out
 
 ### Profile<a id="sec-2-2-3"></a>
 
-Path: `user/<USER ID>/profile`
+Path: `/user/<USER ID>/profile`
 
 Method: `GET`
 
@@ -774,20 +797,112 @@ Response:
 
 ```json
 {
-  "username": "<ACCOUNT>",
-  "joinDate": "<ISO 8601 UTC>",
-  "lastActive": "<ISO 8601 UTC>",
-  "location": null,
-  "pic": "user-avatar/avatar-blank.png",
-  "trophies": [],
-  "trophyCount": 0,
-  "userType": "registered user"
+    "username": "notfat",
+    "joinDate": "<ISO 8601 UTC>",
+    "lastActive": "<ISO 8601 UTC>",
+    "location": "",
+    "pic": "user-avatar/avatar-<USERNAME>.png",
+    "trophies": [{
+        "image": "https://s3.amazonaws.com/jic-assets/trophies/trophy-email-verified.jpg",
+        "description": "You have confirmed your email is real and is owned by you. Useful in case you need to reset your password",
+        "_id": "5b16450d8de04a00075d1f47",
+        "name": "TROPHY_EMAIL_VERIFIED",
+        "type": "TYPE_MANUAL",
+        "__v": 0,
+        "title": "Email verified"
+    }, {
+        "image": "https://s3.amazonaws.com/jic-assets/trophies/trophy-site-supporter.jpg",
+        "description": "A user who has supported the site",
+        "_id": "5b16450d8de04a00075d1f49",
+        "name": "TROPHY_SITE_SUPPORTER",
+        "type": "TYPE_MANUAL",
+        "__v": 0,
+        "title": "Site supporter!"
+    }, {
+        "image": "https://s3.amazonaws.com/jic-assets/trophies/trophy-site-supporter-gold.jpg",
+        "description": "A supporter who has set up recurring donation payments, or who has donated a significant amount",
+        "_id": "5b16450d8de04a00075d1f4a",
+        "name": "TROPHY_SITE_SUPPORTER_GOLD",
+        "type": "TYPE_MANUAL",
+        "__v": 0,
+        "title": "Gold site supporter!"
+    }, {
+        "conditions": {
+            "date": {
+                "day": 1,
+                "month": 1,
+                "year": 2020
+            }
+        },
+        "image": "https://s3.amazonaws.com/jic-assets/trophies/trophy-placeholder.png",
+        "description": "",
+        "_id": "5b16450d8de04a00075d1f56",
+        "name": "TROPHY_NEW_YEARS_2020",
+        "type": "TYPE_OCCASION",
+        "__v": 0,
+        "title": "Happy new year 2020"
+    }, {
+        "conditions": {
+            "date": {
+                "day": 25,
+                "month": 12,
+                "year": 2019
+            }
+        },
+        "image": "https://s3.amazonaws.com/jic-assets/trophies/trophy-placeholder.png",
+        "description": "",
+        "_id": "5b16450d8de04a00075d1f55",
+        "name": "TROPHY_XMAS_2019",
+        "type": "TYPE_OCCASION",
+        "__v": 0,
+        "title": "Xmas 2019"
+    }, {
+        "conditions": {
+            "date": {
+                "day": 5,
+                "month": 11,
+                "year": 2019
+            }
+        },
+        "image": "https://s3.amazonaws.com/jic-assets/trophies/trophy-5th-nov-2019.jpg",
+        "description": "",
+        "_id": "5b16450d8de04a00075d1f54",
+        "name": "TROPHY_FIFTH_NOVEMBER_2019",
+        "type": "TYPE_OCCASION",
+        "__v": 0,
+        "title": "Fifth of November 2019"
+    }, {
+        "conditions": {
+            "date": {
+                "day": 31,
+                "month": 10,
+                "year": 2019
+            }
+        },
+        "image": "https://s3.amazonaws.com/jic-assets/trophies/trophy-halloween-2019.jpg",
+        "description": "",
+        "_id": "5b16450d8de04a00075d1f53",
+        "name": "TROPHY_HALLOWEEN_2019",
+        "type": "TYPE_OCCASION",
+        "__v": 0,
+        "title": "Halloween 2019"
+    }, {
+        "image": "https://s3.amazonaws.com/jic-assets/trophies/trophy-gifted.jpg",
+        "description": "Someone sent this user support status as a gift",
+        "_id": "5c8b78f2cb32320008c2adb7",
+        "name": "TROPHY_GIFTED",
+        "title": "Gifted support",
+        "type": "TYPE_MANUAL",
+        "__v": 0
+    }],
+    "trophyCount": 8,
+    "userType": "site supporter"
 }
 ```
 
 ### Emoji<a id="sec-2-2-4"></a>
 
-Path: `rooms/tech/emoji`
+Path: `/rooms/tech/emoji`
 
 Method: `GET`
 
@@ -795,4 +910,218 @@ Response:
 
 ```json
 []
+```
+
+### Room Settings<a id="sec-2-2-5"></a>
+Path: `/api/rooms/<ROOM>`
+  
+Method: `GET`
+
+Response:
+
+```json
+{
+    "_id": "<ROOM ID>",
+    "name": "<ROOM>",
+    "users": [],
+    "attrs": {
+        "owner": "<OWNER ID>",
+        "janus_id": "",
+        "fresh": false,
+        "ageRestricted": false
+    },
+    "settings": {
+        "public": true,
+        "modOnlyPlayMedia": true,
+        "forcePtt": true,
+        "forceUser": true,
+        "description": "",
+        "topic": {
+            "text": "",
+            "updatedAt": "<ISO 8601 UTC>",
+            "updatedBy": {
+                "_id": "<USER ID>",
+                "username": "<USERNAME>"
+            }
+        },
+        "display": "room-display/display-<ROOM>.png",
+        "requiresPassword": false
+    }
+}
+```
+
+### Broadcast Options<a id="sec-2-2-6"></a>
+
+Path: `/api/user/checkCanBroadcast/<ROOM>`
+
+Method: `GET`
+
+Response:
+
+```json
+{
+    "videoOptions": [{
+        "id": "VIDEO_240",
+        "label": "240p",
+        "dimensions": {
+            "width": 320,
+            "height": 240
+        },
+        "frameRate": 15,
+        "bitRate": 128000
+    }, {
+        "id": "VIDEO_480",
+        "label": "480p",
+        "dimensions": {
+            "width": 640,
+            "height": 480
+        },
+        "frameRate": 30,
+        "bitRate": 1024000
+    }, {
+        "id": "VIDEO_720",
+        "label": "720p",
+        "dimensions": {
+            "width": 960,
+            "height": 720
+        },
+        "frameRate": 30,
+        "bitRate": 2048000
+    }, {
+        "id": "VIDEO_720_60",
+        "label": "720p 60fps",
+        "dimensions": {
+            "width": 960,
+            "height": 720
+        },
+        "frameRate": 60,
+        "bitRate": 4096000
+    }, {
+        "id": "VIDEO_1080",
+        "label": "1080p",
+        "dimensions": {
+            "width": 1920,
+            "height": 1080
+        },
+        "frameRate": 30,
+        "bitRate": 4096000
+    }, {
+        "id": "VIDEO_1080_60",
+        "label": "1080p 60fps",
+        "dimensions": {
+            "width": 1920,
+            "height": 1080
+        },
+        "frameRate": 60,
+        "bitRate": 8192000
+    }]
+}
+```
+
+### Roles<a id="sec-2-2-7"></a>
+
+Path: `/api/role/room/<ROOM>/all`
+
+Method: `GET`
+
+Response:
+
+```json
+[{
+    "icon": {
+        "url": null,
+        "color": "aqua"
+    },
+    "permissions": {
+        "ban": false,
+        "kick": false,
+        "closeCam": false,
+        "muteUserAudio": false,
+        "muteUserChat": false,
+        "muteRoomChat": false,
+        "muteRoomAudio": false,
+        "applyPassword": false,
+        "assignRoles": false,
+        "manageRoles": false,
+        "playMedia": false,
+        "controlMedia": false,
+        "playYoutube": true,
+        "uploadEmoji": false,
+        "roomDetails": false,
+        "broadcast": true,
+        "bypassPassword": false
+    },
+    "permanent": true,
+    "isDefault": true,
+    "_id": "<ROLE ID>",
+    "name": "Everyone",
+    "tag": "everyone",
+    "roomId": "<ROOM ID>",
+    "createdBy": "<PROBABLY OWNER ID>",
+    "createdAt": "<ISO 8601 UTC>",
+    "__v": 0,
+    "order": 0
+}]
+```
+
+### Session<a id="sec-2-2-8"></a>
+
+Path: `/api/user/session`
+
+Method: `POST`
+
+```json
+{
+    "fp": ""
+}
+```
+
+Response:
+
+```json
+{
+    "user": {
+        "user_id": "<USER ID>",
+        "username": "<USERNAME>",
+        "isAdmin": false,
+        "isSiteMod": false,
+        "isSupporter": false,
+        "isGold": null,
+        "userIcon": null,
+        "settings": {
+            "playYtVideos": false,
+            "allowPrivateMessages": true,
+            "pushNotificationsEnabled": false,
+            "receiveUpdates": false,
+            "receiveMessageNotifications": true,
+            "darkTheme": true,
+            "videoQuality": "VIDEO_240",
+            "wideLayout": false,
+            "userIcon": null,
+            "ignoreList": []
+        },
+        "videoQuality": {
+            "id": "VIDEO_240",
+            "label": "240p",
+            "dimensions": {
+                "width": 320,
+                "height": 240
+            },
+            "frameRate": 15,
+            "bitRate": 128000
+        }
+    },
+    "token": ""
+}
+```
+
+### Request Template
+
+Path: ``
+
+Method: `GET`
+
+Response:
+
+```json
 ```
