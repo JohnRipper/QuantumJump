@@ -45,9 +45,9 @@ class QuantumJumpBot:
         self.ul = UserList()
         self.room = self.botconfig.roomname
         if self.settings.Bot.debug:
-            self.log = QuantumLogger('QuantumJump', self.room, 10)
+            self.log = QuantumLogger("QuantumJump", self.room, 10)
         else:
-            self.log = QuantumLogger('QuantumJump', self.room, 19)
+            self.log = QuantumLogger("QuantumJump", self.room, 19)
 
     async def wsend(self, data):
         if type(data) is list:
@@ -134,19 +134,22 @@ class QuantumJumpBot:
                 }
             ]
             await self.wsend(nickmsg)
-            await self.wsend('42["room::users", {}]')
+            await self.wsend("42[\"room::users\", {}]")
 
             # deprecated
             # user_list_data = await self.api.getroominfo(room=str(self.room))
             # self.ul = UserList(**user_list_data)
         if data[0] == "client::error":
             if error := data[1].get("error", False):
-                if error == 'ERR_ACCOUNT_REQUIRED':
+                if error == "ERR_ACCOUNT_REQUIRED":
                     await self.disconnect()
                     raise Exception("Account must be signed in to join this room.")
-                if error == 'ENOSESSION':
+                if error == "ENOSESSION":
                     await self.disconnect()
                     raise Exception("Session was invalidated.")
+                if error == "ERR_VERIFIED_EMAIL_REQUIRED":
+                    await self.disconnect()
+                    raise Exception("Room requires a verified email to join.")
 
         if data[0] == "room::message":
             prefix = self.botconfig.prefix
@@ -155,8 +158,8 @@ class QuantumJumpBot:
             # todo take a closer look at how the data invalidates.
             if sender:
                 data[1].update({"sender": sender})
-
-                self.log.chat(msg=f"{sender.handle}|{sender.username}: {data[1].get('message')}")
+                msg = data[1].get("message")
+                self.log.chat(msg=f"{sender.handle}|{sender.username}: {msg}")
 
             if data[1].get("message").startswith(prefix):
                 c = Command(prefix=prefix, data=Message(**data[1]))
