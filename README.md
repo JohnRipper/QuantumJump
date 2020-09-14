@@ -14,14 +14,14 @@ Optionally, you can use [pipenv](https://pipenv.readthedocs.io/en/latest/) to ma
 A few Python modules are required:
 
 - [aiohttp](https://github.com/aio-libs/aiohttp/)
-- [aiohttp_socks](https://github.com/romis2012/aiohttp-socks) (Tor support)
+- [aiohttp_socks](https://github.com/romis2012/aiohttp-socks) (Tor support) - *Optional*
 - [beautifulsoup4](https://code.launchpad.net/beautifulsoup)
-- [dhooks](https://github.com/kyb3r/dhooks)
-- [pytz](https://pythonhosted.org/pytz/) (Wundertime support)
+- [dhooks](https://github.com/kyb3r/dhooks) (Discord relay support) - *Optional*
+- [pytz](https://pythonhosted.org/pytz/) (Wundertime support) - *Optional*
 - [tomlkit](https://github.com/sdispater/tomlkit)
 - [websockets](https://github.com/aaugustin/websockets)
-- [wikipedia](https://github.com/goldsmith/Wikipedia)
-- [wolframalpha](https://github.com/jaraco/wolframalpha) (WolframAlpha support)
+- [wikipedia](https://github.com/goldsmith/Wikipedia) (Wikipedia support) - *Optional*
+- [wolframalpha](https://github.com/jaraco/wolframalpha) (WolframAlpha support) - *Optional*
 
 QuantumJump is confirmed working on GNU/Linux, the status of operation on other operating systems is currently unknown.
 Feel free to give it a go and report back.
