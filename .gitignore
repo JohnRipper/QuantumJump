@@ -24,3 +24,6 @@ pip-delete-this-directory.txt
 .mypy_cache/
 .dmypy.json
 dmypy.json
+
+# cache
+.dccache
