@@ -110,7 +110,7 @@ class Tokes(Cog):
                     action.joined.append(c.data.handle)
                     self.actions.update({c.name: action})
 
-    @makeCommand(aliases=["tokes"], description="<int> calls for tokes")
+    @makeCommand(aliases=["tokes", "dabs"], description="<int> calls for tokes")
     async def tokes(self, c: Command):
         await self.do_wrap(c)
 
